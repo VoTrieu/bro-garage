@@ -1,5 +1,7 @@
+import { useDispatch } from "react-redux";
 import { Menubar } from "primereact/menubar";
 import { InputText } from "primereact/inputtext";
+import { uiActions } from "../../../store/ui-slice";
 // import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 
@@ -7,6 +9,7 @@ import { Button } from "primereact/button";
 import { Fragment } from "react";
 
 function MainNavigation() {
+  const dispatch = useDispatch();
   // const navigate = useNavigate();
   const items = [
     // {
@@ -25,15 +28,19 @@ function MainNavigation() {
     // }
   ];
 
+  const toggleSlidebarMenu = () => {
+    dispatch(uiActions.toggleSlidebar());
+  };
+
   const start = (
     <Fragment>
       <img
         alt="logo"
-        src={require('../../../images/garage-logo.webp')}
+        src={require("../../../images/garage-logo.webp")}
         height="40"
         className="mr-2 md:w-13rem md:mr-8 hidden md:inline"
       ></img>
-      <Button icon="pi pi-bars" />
+      <Button icon="pi pi-bars" onClick={toggleSlidebarMenu} />
     </Fragment>
   );
   const end = (
