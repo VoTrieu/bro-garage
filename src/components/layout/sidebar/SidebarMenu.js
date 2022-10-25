@@ -6,14 +6,14 @@ const SidebarMenu = () => {
     const navigate = useNavigate();
   const items = [
     {
-      label: "Home",
+      label: "Trang Chủ",
       icon: "pi pi-fw pi-home",
       command: () => {
         navigate("/");
       },
     },
     {
-      label: "Customer",
+      label: "Khách Hàng",
       icon: "pi pi-fw pi-user",
       command: () => {
         navigate("/customer");
@@ -23,8 +23,8 @@ const SidebarMenu = () => {
 
   return (
     isShowSlidebar && (
-      <div className="p-3 md:w-20rem w-screen">
-        <div className="card h-full w-full">
+      <div className="p-3 pb-1 md:w-20rem w-screen">
+        <div className="card h-full w-full overflow-hidden">
                 <SlideMenu model={items} className="h-full w-full" menuWidth={286} viewportHeight={800}></SlideMenu>
             </div>
       </div>

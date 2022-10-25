@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import MainNavigation from "../main-navigation/MainNavigation";
 import SideBarMenu from "../sidebar/SidebarMenu";
 
+
 import classes from "./RootLayout.module.css";
 
 function RootLayout({ children }) {
@@ -10,7 +11,7 @@ function RootLayout({ children }) {
       <MainNavigation />
       <div className={`flex ${classes.main_container}`}>
         <SideBarMenu />
-        <main>{children}</main>
+        <main className="w-full relative pr-4 pt-3">{children}</main>
       </div>
     </Fragment>
   );
