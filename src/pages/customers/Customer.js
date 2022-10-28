@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
-import AppPanel from "../../components/app-panel/AppPanel";
+import ToggleablePanel from "../../components/panels/ToogleablePanel";
+import CarTable from "../../components/car-table/CarTable";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
@@ -42,8 +43,8 @@ const CustomerPage = () => {
   };
 
   return (
-    <Fragment>
-      <AppPanel header="Khách Hàng" className="pb-2" toggleable>
+    <div className="relative h-full pb-8">
+      <ToggleablePanel header="Khách Hàng" className="pb-2" toggleable>
         <div className="formgrid grid">
           <div className="field col-12 md:col-6">
             <label htmlFor="fullName">Tên Khách Hàng</label>
@@ -134,9 +135,12 @@ const CustomerPage = () => {
             />
           </div>
         </div>
-      </AppPanel>
+      </ToggleablePanel>
+      <ToggleablePanel header="Xe" className="pb-2" toggleable>
+        <CarTable />
+      </ToggleablePanel>
       <Footer items={functionButtons} />
-    </Fragment>
+    </div>
   );
 };
 

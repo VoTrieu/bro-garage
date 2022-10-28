@@ -11,7 +11,7 @@ function RootLayout({ children }) {
       <MainNavigation />
       <div className={`flex ${classes.main_container}`}>
         <SideBarMenu />
-        <main className="w-full relative pr-4 pt-3">{children}</main>
+        <main className="w-full h-full px-4 pt-3">{children}</main>
       </div>
     </Fragment>
   );

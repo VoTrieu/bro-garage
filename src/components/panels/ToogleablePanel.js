@@ -1,7 +1,7 @@
 import { Panel } from "primereact/panel";
 import { Ripple } from "primereact/ripple";
 
-const AppPanel = (props) => {
+const ToggleablePanel = (props) => {
   const template = (options) => {
     const toggleIcon = options.collapsed
       ? "pi pi-chevron-down"
@@ -24,10 +24,10 @@ const AppPanel = (props) => {
   };
 
   return (
-    <Panel headerTemplate={template} toggleable>
+    <Panel headerTemplate={template} className="mb-3" toggleable>
       {props.children}
     </Panel>
   );
 };
 
-export default AppPanel;
+export default ToggleablePanel;
