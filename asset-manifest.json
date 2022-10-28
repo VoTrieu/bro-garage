@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/bro-garage/index.html/static/css/main.e26ab123.css",
-    "main.js": "/bro-garage/index.html/static/js/main.fc69c12a.js",
-    "static/js/787.c2b644a8.chunk.js": "/bro-garage/index.html/static/js/787.c2b644a8.chunk.js",
-    "static/media/primeicons.svg": "/bro-garage/index.html/static/media/primeicons.e1441b135b3ca9ad643c.svg",
-    "static/media/primeicons.eot": "/bro-garage/index.html/static/media/primeicons.d44157bdfa026dc877af.eot",
-    "static/media/primeicons.woff": "/bro-garage/index.html/static/media/primeicons.10d3152104f2208ac82a.woff",
-    "static/media/primeicons.ttf": "/bro-garage/index.html/static/media/primeicons.ea5358601d0a3fd6670b.ttf",
-    "static/media/primeicons.woff2": "/bro-garage/index.html/static/media/primeicons.78172950b335ccdb94e2.woff2",
-    "static/media/garage-logo.webp": "/bro-garage/index.html/static/media/garage-logo.3a0d5fe6915fadcbe661.webp",
-    "index.html": "/bro-garage/index.html/index.html",
-    "main.e26ab123.css.map": "/bro-garage/index.html/static/css/main.e26ab123.css.map",
-    "main.fc69c12a.js.map": "/bro-garage/index.html/static/js/main.fc69c12a.js.map",
-    "787.c2b644a8.chunk.js.map": "/bro-garage/index.html/static/js/787.c2b644a8.chunk.js.map"
+    "main.css": "/bro-garage/static/css/main.603864bc.css",
+    "main.js": "/bro-garage/static/js/main.bae7de54.js",
+    "static/js/787.c2b644a8.chunk.js": "/bro-garage/static/js/787.c2b644a8.chunk.js",
+    "static/media/primeicons.svg": "/bro-garage/static/media/primeicons.e1441b135b3ca9ad643c.svg",
+    "static/media/primeicons.eot": "/bro-garage/static/media/primeicons.d44157bdfa026dc877af.eot",
+    "static/media/primeicons.woff": "/bro-garage/static/media/primeicons.10d3152104f2208ac82a.woff",
+    "static/media/primeicons.ttf": "/bro-garage/static/media/primeicons.ea5358601d0a3fd6670b.ttf",
+    "static/media/primeicons.woff2": "/bro-garage/static/media/primeicons.78172950b335ccdb94e2.woff2",
+    "static/media/garage-logo.webp": "/bro-garage/static/media/garage-logo.3a0d5fe6915fadcbe661.webp",
+    "index.html": "/bro-garage/index.html",
+    "main.603864bc.css.map": "/bro-garage/static/css/main.603864bc.css.map",
+    "main.bae7de54.js.map": "/bro-garage/static/js/main.bae7de54.js.map",
+    "787.c2b644a8.chunk.js.map": "/bro-garage/static/js/787.c2b644a8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e26ab123.css",
-    "static/js/main.fc69c12a.js"
+    "static/css/main.603864bc.css",
+    "static/js/main.bae7de54.js"
   ]
 }
