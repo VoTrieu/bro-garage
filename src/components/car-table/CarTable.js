@@ -204,6 +204,7 @@ const CarTable = (props) => {
         modal
         className="p-fluid"
         footer={carDialogFooter}
+        onHide={hideCarDetailDialog}
       >
         <div className="field">
           <label htmlFor="txtCarTypeId">Dòng xe</label>
