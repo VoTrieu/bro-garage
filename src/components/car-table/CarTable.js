@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -15,13 +15,17 @@ const CarTable = (props) => {
     YearOfManufacture: "",
     VIN: "",
   };
-
-  const [cars, setCars] = useState([]);
+  const { handleCarsChange } = props;
+  const [cars, setCars] = useState(props.cars || []);
   const [selectedCar, setSelectedCar] = useState(emptyCar);
   const [updatedCar, setUpdatedCar] = useState();
   const [isShowDeleteCarDialog, setIsShowDeleteCarDialog] = useState(false);
   const [isShowCarDetailDialog, setIsShowCarDetailDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    handleCarsChange(cars);
+  }, [cars, handleCarsChange]);
 
   const hideDeleteCarDialog = () => {
     setIsShowDeleteCarDialog(false);
