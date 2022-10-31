@@ -18,6 +18,7 @@ const CarTable = (props) => {
 
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(emptyCar);
+  const [updatedCar, setUpdatedCar] = useState();
   const [isShowDeleteCarDialog, setIsShowDeleteCarDialog] = useState(false);
   const [isShowCarDetailDialog, setIsShowCarDetailDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -30,7 +31,25 @@ const CarTable = (props) => {
     setIsShowCarDetailDialog(false);
   };
 
-  const deleteCar = () => {};
+  const showDeleteCarDialog = (car) => {
+    setSelectedCar({ ...car });
+    setIsShowDeleteCarDialog(true);
+  };
+
+  const onEditCard = (car) => {
+    setSelectedCar(car);
+    setUpdatedCar(car);
+    setIsShowCarDetailDialog(true);
+  };
+
+  const deleteCar = () => {
+    const newCarList = cars.filter(
+      (car) => car.LicensePlate !== selectedCar.LicensePlate
+    );
+    setCars(newCarList);
+    setSelectedCar(emptyCar);
+    setIsShowDeleteCarDialog(false);
+  };
 
   const saveCar = () => {
     setSubmitted(true);
@@ -39,7 +58,18 @@ const CarTable = (props) => {
         return;
       }
     }
-    setCars((currentCars) => [...currentCars, selectedCar]);
+    //update existed car
+    const _cars = [...cars];
+    const index = _cars.findIndex(
+      (car) => car.LicensePlate === updatedCar.LicensePlate
+    );
+    if (_cars[index]) {
+      _cars[index] = { ...selectedCar };
+      setCars(_cars);
+    } else {
+      //add new car
+      setCars((currentCars) => [...currentCars, selectedCar]);
+    }
     setSelectedCar(emptyCar);
     setIsShowCarDetailDialog(false);
   };
@@ -77,12 +107,12 @@ const CarTable = (props) => {
         <Button
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success mr-2"
-          onClick={() => ""}
+          onClick={() => onEditCard(rowData)}
         />
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning"
-          onClick={() => ""}
+          onClick={() => showDeleteCarDialog(rowData)}
         />
       </Fragment>
     );
@@ -129,7 +159,6 @@ const CarTable = (props) => {
         dataKey="CarTypeId"
         header={header}
         responsiveLayout="scroll"
-        
       >
         <Column field="LicensePlate" header="Biển số xe" sortable></Column>
         <Column field="CarTypeId" header="Dòng xe" sortable></Column>
