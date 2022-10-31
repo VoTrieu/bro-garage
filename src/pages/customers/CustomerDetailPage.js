@@ -1,13 +1,16 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import CarTable from "../../components/car-table/CarTable";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
+import { sendCustomerData } from "../../store/customer-actions";
 import Footer from "../../components/layout/footer/Footer";
-const CustomerPage = () => {
+const CustomerDetailPage = () => {
+  const dispatch = useDispatch();
   const saveCustomer = () => {
-    alert("save");
+    dispatch(sendCustomerData(formValue));
   };
 
   const functionButtons = [
@@ -30,7 +33,15 @@ const CustomerPage = () => {
     },
   ];
   // const phoneRegex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
-  const [formValue, setFormValue] = useState({});
+  const [formValue, setFormValue] = useState({
+    Email: "",
+    FullName: "",
+    PhoneNumber: "",
+    Remark: "",
+    Representative: "",
+    TaxCode: "",
+    TypeId: 0,
+  });
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -38,8 +49,8 @@ const CustomerPage = () => {
     setFormValue((values) => ({ ...values, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleCarsChange = (cars) => {
+    setFormValue((values) => ({ ...values, Cars: cars }));
   };
 
   return (
@@ -61,7 +72,7 @@ const CustomerPage = () => {
             <Dropdown
               id="customerType"
               optionLabel="label"
-              value={formValue.customerType}
+              value={formValue.TypeId}
               options={customerTypes}
               className="w-full"
               name="TypeId"
@@ -137,11 +148,11 @@ const CustomerPage = () => {
         </div>
       </ToggleablePanel>
       <ToggleablePanel header="Xe" className="pb-2" toggleable>
-        <CarTable />
+        <CarTable handleCarsChange={handleCarsChange} />
       </ToggleablePanel>
       <Footer items={functionButtons} />
     </div>
   );
 };
 
-export default CustomerPage;
+export default CustomerDetailPage;

@@ -16,7 +16,7 @@ const SidebarMenu = () => {
       label: "Khách Hàng",
       icon: "pi pi-fw pi-user",
       command: () => {
-        navigate("/customer");
+        navigate("/customer-detail");
       },
     }
   ];

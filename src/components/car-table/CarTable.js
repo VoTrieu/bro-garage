@@ -25,7 +25,7 @@ const CarTable = (props) => {
 
   useEffect(() => {
     handleCarsChange(cars);
-  }, [cars, handleCarsChange]);
+  }, [cars]);
 
   const hideDeleteCarDialog = () => {
     setIsShowDeleteCarDialog(false);
