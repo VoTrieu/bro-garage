@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import CarTable from "../../components/car-table/CarTable";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
+import { classNames } from "primereact/utils";
 import { sendCustomerData } from "../../store/customer-actions";
 import Footer from "../../components/layout/footer/Footer";
+
 const CustomerDetailPage = () => {
   const dispatch = useDispatch();
-  const saveCustomer = () => {
-    dispatch(sendCustomerData(formValue));
-  };
+  const formRef = useRef();
 
   const functionButtons = [
     {
       label: "Lưu",
       icon: "pi pi-check",
       className: "p-button-success",
-      action: saveCustomer,
+      action: () => {
+        formRef.current.requestSubmit();
+      },
     },
   ];
 
@@ -33,7 +36,7 @@ const CustomerDetailPage = () => {
     },
   ];
   // const phoneRegex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
-  const [formValue, setFormValue] = useState({
+  const defaultValues = {
     Email: "",
     FullName: "",
     PhoneNumber: "",
@@ -41,111 +44,204 @@ const CustomerDetailPage = () => {
     Representative: "",
     TaxCode: "",
     TypeId: 0,
-  });
-
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setFormValue((values) => ({ ...values, [name]: value }));
   };
+  const [formValue, setFormValue] = useState(defaultValues);
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues });
+
+  // const handleChange = (event) => {
+  //   const name = event.target.name;
+  //   const value = event.target.value;
+  //   setFormValue((values) => ({ ...values, [name]: value }));
+  // };
 
   const handleCarsChange = (cars) => {
     setFormValue((values) => ({ ...values, Cars: cars }));
   };
 
+  const onSubmit = (formData, e) => {
+    e.nativeEvent.preventDefault();
+    setFormValue((values) => ({ ...values, ...formData }));
+    dispatch(sendCustomerData(formValue));
+  };
+
+  const getFormErrorMessage = (name) => {
+    return (
+      errors[name] && <small className="p-error">{errors[name].message}</small>
+    );
+  };
+
   return (
     <div className="relative h-full pb-8">
       <ToggleablePanel header="Khách Hàng" className="pb-2" toggleable>
-        <div className="formgrid grid">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit(onSubmit)}
+          className="formgrid grid"
+        >
           <div className="field col-12 md:col-6">
-            <label htmlFor="fullName">Tên Khách Hàng</label>
-            <InputText
-              id="fullName"
-              className="block w-full"
+            <label htmlFor="FullName">Tên Khách Hàng</label>
+            <Controller
               name="FullName"
-              value={formValue.FullName}
-              onChange={handleChange}
+              control={control}
+              rules={{ required: "Tên khách hàng không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("FullName")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="customerType">Loại Khách Hàng</label>
-            <Dropdown
-              id="customerType"
-              optionLabel="label"
-              value={formValue.TypeId}
-              options={customerTypes}
-              className="w-full"
+            <label htmlFor="TypeId">Loại Khách Hàng</label>
+            <Controller
               name="TypeId"
-              onChange={handleChange}
-              placeholder="Chọn Loại Khách Hàng"
+              control={control}
+              render={({ field }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="label"
+                  options={customerTypes}
+                  className="w-full"
+                  placeholder="Chọn Loại Khách Hàng"
+                />
+              )}
             />
+            {getFormErrorMessage("TypeId")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtPhoneNumber">Số điện thoại</label>
-            <InputText
-              id="txtPhoneNumber"
-              className="block w-full"
+            <label htmlFor="PhoneNumber">Số điện thoại</label>
+            <Controller
               name="PhoneNumber"
-              value={formValue.PhoneNumber}
-              onChange={handleChange}
+              control={control}
+              rules={{
+                required: "Số điện thoại không được để trống!",
+                pattern: {
+                  value: /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/,
+                  message: "Số điện thoại không hợp lệ!",
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("PhoneNumber")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtRepresentative">Người đại diện</label>
-            <InputText
-              id="txtRepresentative"
-              className="block w-full"
+            <label htmlFor="Representative">Người đại diện</label>
+            <Controller
               name="Representative"
-              value={formValue.Representative}
-              onChange={handleChange}
+              control={control}
+              rules={{ required: "Người đại diện không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("Representative")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtTaxCode">Mã Số Thuế</label>
-            <InputText
-              id="txtTaxCode"
-              className="block w-full"
+            <label htmlFor="TaxCode">Mã Số Thuế</label>
+            <Controller
               name="TaxCode"
-              value={formValue.TaxCode}
-              onChange={handleChange}
+              control={control}
+              rules={{ required: "Mã số thuế không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("TaxCode")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtEmail">Email</label>
-            <InputText
-              id="txtEmail"
-              className="block w-full"
+            <label htmlFor="Email">Email</label>
+            <Controller
               name="Email"
-              keyfilter="email"
-              value={formValue.Email}
-              onChange={handleChange}
+              control={control}
+              rules={{
+                required: "Email không được để trống!",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Email không hợp lệ. E.g. example@email.com",
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("Email")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtAddress">Địa Chỉ</label>
-            <InputTextarea
-              rows={5}
-              cols={30}
-              id="txtAddress"
-              className="block w-full"
+            <label htmlFor="Address">Địa Chỉ</label>
+            <Controller
               name="Address"
-              value={formValue.Address}
-              onChange={handleChange}
+              control={control}
+              rules={{ required: "Địa chỉ không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <InputTextarea
+                  rows={5}
+                  cols={30}
+                  id={field.name}
+                  {...field}
+                  className={classNames("block w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
+            {getFormErrorMessage("Address")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="txtRemark">Ghi Chú</label>
-            <InputTextarea
-              rows={5}
-              cols={30}
-              id="txtRemark"
-              className="block w-full"
+            <label htmlFor="Remark">Ghi Chú</label>
+            <Controller
               name="Remark"
-              value={formValue.Remark}
-              onChange={handleChange}
+              control={control}
+              render={({ field }) => (
+                <InputTextarea
+                  rows={5}
+                  cols={30}
+                  id={field.name}
+                  {...field}
+                  className="block w-full"
+                />
+              )}
             />
           </div>
-        </div>
+        </form>
       </ToggleablePanel>
       <ToggleablePanel header="Xe" className="pb-2" toggleable>
         <CarTable handleCarsChange={handleCarsChange} />
