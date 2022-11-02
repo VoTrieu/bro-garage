@@ -207,7 +207,9 @@ const CarTable = (props) => {
         onHide={hideCarDetailDialog}
       >
         <div className="field">
-          <label htmlFor="txtCarTypeId">Dòng xe</label>
+          <label htmlFor="txtCarTypeId">
+            Dòng xe <b className="p-error">*</b>
+          </label>
           <InputText
             id="txtCarTypeId"
             value={selectedCar.CarTypeId}
@@ -219,11 +221,13 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.CarTypeId && (
-            <small className="p-error">Dòng xe không hợp lệ.</small>
+            <small className="p-error">Dòng xe được để trống.</small>
           )}
         </div>
         <div className="field">
-          <label htmlFor="txtManufaturerId">Hãng xe</label>
+          <label htmlFor="txtManufaturerId">
+            Hãng xe <b className="p-error">*</b>
+          </label>
           <InputText
             id="txtManufaturerId"
             value={selectedCar.ManufaturerId}
@@ -234,11 +238,13 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.ManufaturerId && (
-            <small className="p-error">Hãng xe không hợp lệ.</small>
+            <small className="p-error">Hãng xe được để trống.</small>
           )}
         </div>
         <div className="field">
-          <label htmlFor="txtLicensePlate">Biển số xe</label>
+          <label htmlFor="txtLicensePlate">
+            Biển số xe <b className="p-error">*</b>
+          </label>
           <InputText
             id="txtLicensePlate"
             value={selectedCar.LicensePlate}
@@ -249,11 +255,13 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.LicensePlate && (
-            <small className="p-error">Biển số xe không hợp lệ.</small>
+            <small className="p-error">Biển số xe được để trống.</small>
           )}
         </div>
         <div className="field">
-          <label htmlFor="txtYearOfManufacture">Năm sản xuất</label>
+          <label htmlFor="txtYearOfManufacture">
+            Năm sản xuất <b className="p-error">*</b>
+          </label>
           <InputText
             id="txtYearOfManufacture"
             value={selectedCar.YearOfManufacture}
@@ -265,11 +273,13 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.YearOfManufacture && (
-            <small className="p-error">Năm sản xuất không hợp lệ.</small>
+            <small className="p-error">Năm sản xuất được để trống.</small>
           )}
         </div>
         <div className="field">
-          <label htmlFor="txtVIN">VIN</label>
+          <label htmlFor="txtVIN">
+            VIN <b className="p-error">*</b>
+          </label>
           <InputText
             id="txtVIN"
             value={selectedCar.VIN}
@@ -281,7 +291,7 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.VIN && (
-            <small className="p-error">VIN không hợp lệ.</small>
+            <small className="p-error">VIN không được để trống.</small>
           )}
         </div>
       </Dialog>

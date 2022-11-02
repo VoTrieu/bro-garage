@@ -85,7 +85,9 @@ const CustomerDetailPage = () => {
           className="formgrid grid"
         >
           <div className="field col-12 md:col-6">
-            <label htmlFor="FullName">Tên Khách Hàng</label>
+            <label htmlFor="FullName">
+              Tên Khách Hàng <b className="p-error">*</b>
+            </label>
             <Controller
               name="FullName"
               control={control}
@@ -103,7 +105,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("FullName")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="TypeId">Loại Khách Hàng</label>
+            <label htmlFor="TypeId">
+              Loại Khách Hàng <b className="p-error">*</b>
+            </label>
             <Controller
               name="TypeId"
               control={control}
@@ -122,7 +126,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("TypeId")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="PhoneNumber">Số điện thoại</label>
+            <label htmlFor="PhoneNumber">
+              Số điện thoại <b className="p-error">*</b>
+            </label>
             <Controller
               name="PhoneNumber"
               control={control}
@@ -146,7 +152,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("PhoneNumber")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="Representative">Người đại diện</label>
+            <label htmlFor="Representative">
+              Người đại diện <b className="p-error">*</b>
+            </label>
             <Controller
               name="Representative"
               control={control}
@@ -164,7 +172,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("Representative")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="TaxCode">Mã Số Thuế</label>
+            <label htmlFor="TaxCode">
+              Mã Số Thuế <b className="p-error">*</b>
+            </label>
             <Controller
               name="TaxCode"
               control={control}
@@ -182,7 +192,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("TaxCode")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="Email">Email</label>
+            <label htmlFor="Email">
+              Email <b className="p-error">*</b>
+            </label>
             <Controller
               name="Email"
               control={control}
@@ -206,7 +218,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("Email")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="Address">Địa Chỉ</label>
+            <label htmlFor="Address">
+              Địa Chỉ <b className="p-error">*</b>
+            </label>
             <Controller
               name="Address"
               control={control}
