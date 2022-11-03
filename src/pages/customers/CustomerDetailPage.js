@@ -35,7 +35,7 @@ const CustomerDetailPage = () => {
       value: 1,
     },
   ];
-  // const phoneRegex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
+  
   const defaultValues = {
     Email: "",
     FullName: "",
@@ -54,12 +54,6 @@ const CustomerDetailPage = () => {
     reset,
   } = useForm({ defaultValues });
 
-  // const handleChange = (event) => {
-  //   const name = event.target.name;
-  //   const value = event.target.value;
-  //   setFormValue((values) => ({ ...values, [name]: value }));
-  // };
-
   const handleCarsChange = (cars) => {
     setFormValue((values) => ({ ...values, Cars: cars }));
   };
@@ -68,6 +62,7 @@ const CustomerDetailPage = () => {
     e.nativeEvent.preventDefault();
     setFormValue((values) => ({ ...values, ...formData }));
     dispatch(sendCustomerData(formValue));
+    reset();
   };
 
   const getFormErrorMessage = (name) => {

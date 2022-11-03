@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./store/index";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import axios from "axios";
+import { authActions } from "./store/auth-slice";
 
 /*
   primereact config
@@ -13,6 +15,12 @@ import "primereact/resources/themes/saga-green/theme.css"; //theme
 import "primereact/resources/primereact.min.css"; //core css
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
+
+axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
+axios.defaults.headers.common['Authorization'] = store.getState().auth.accessToken;
+
+const currentAuthorization = localStorage.getItem('currentAuthorization');
+store.dispatch(authActions.setCurrentAuthorization(JSON.parse(currentAuthorization)));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

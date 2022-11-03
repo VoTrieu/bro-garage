@@ -1,8 +1,7 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Menubar } from "primereact/menubar";
-import { InputText } from "primereact/inputtext";
 import { uiActions } from "../../../store/ui-slice";
-
+import Login from "../../login/Login";
 import { Button } from "primereact/button";
 
 // import classes from "./MainNavigation.module.css";
@@ -10,8 +9,7 @@ import { Fragment } from "react";
 
 function MainNavigation() {
   const dispatch = useDispatch();
-
-  
+  const fullName = useSelector((state) => state.auth.fullName);
 
   const toggleSlidebarMenu = () => {
     dispatch(uiActions.toggleSlidebar());
@@ -29,15 +27,21 @@ function MainNavigation() {
     </Fragment>
   );
   const end = (
-    <Fragment>
-      <InputText placeholder="Search" type="text" className="mr-2" />
-      <Button icon="pi pi-sign-in" />
-    </Fragment>
+    <div className="flex align-items-center">
+      <span className="mr-2">{fullName}</span>
+      <Button
+        icon="pi pi-sign-in"
+        onClick={() => {
+          dispatch(uiActions.showLoginDialog(true));
+        }}
+      />
+    </div>
   );
 
   return (
     <header>
       <Menubar model={[]} start={start} end={end} />
+      <Login />
     </header>
   );
 }
