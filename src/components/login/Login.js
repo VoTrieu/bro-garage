@@ -23,9 +23,9 @@ const Login = (props) => {
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
-    reset,
+    // reset,
   } = useForm({ defaultValues });
 
   const onHideLoginForm = () => {
@@ -39,7 +39,7 @@ const Login = (props) => {
   const onSubmitLogin = (formValue, e) => {
     e.nativeEvent.preventDefault();
     dispatch(loginRequest(formValue));
-    reset();
+    // reset();
   };
 
   const getFormErrorMessage = (name) => {
@@ -57,6 +57,7 @@ const Login = (props) => {
         onClick={onHideLoginForm}
       />
       <Button
+        disabled={isSubmitting}
         label="Đăng nhập"
         icon="pi pi-check"
         className="p-button-text"
@@ -75,7 +76,15 @@ const Login = (props) => {
       footer={loginDialogFooter}
       onHide={onHideLoginForm}
     >
-      {!loginSuccess && <Message className="mb-3 justify-content-start" severity="error" sticky={true} closable={true} text={errorMessage} />}
+      {!loginSuccess && (
+        <Message
+          className="mb-3 justify-content-start"
+          severity="error"
+          sticky={true}
+          closable={true}
+          text={errorMessage}
+        />
+      )}
       <form
         ref={formRef}
         onSubmit={handleSubmit(onSubmitLogin)}

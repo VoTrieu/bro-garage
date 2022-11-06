@@ -9,7 +9,19 @@ export const loginRequest = (account) => {
       dispatch(authActions.setCurrentAuthorization(data));
       if (data.IsSuccess) {
         dispatch(uiActions.showLoginDialog(false));
-        localStorage.setItem('currentAuthorization', JSON.stringify(data));
+        localStorage.setItem("currentAuthorization", JSON.stringify(data));
+      }
+    });
+  };
+};
+
+export const refreshToken = (refreshToken) => {
+  return async (dispatch) => {
+    axios.post("/user/refresh-token", { refreshToken }).then((response) => {
+      const data = response.data;
+      dispatch(authActions.setCurrentAuthorization(data));
+      if (data.IsSuccess) {
+        localStorage.setItem("currentAuthorization", JSON.stringify(data));
       }
     });
   };

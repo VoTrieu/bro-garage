@@ -3,8 +3,10 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
+import axios from "axios";
 import { trim } from "lodash";
 
 const CarTable = (props) => {
@@ -22,10 +24,34 @@ const CarTable = (props) => {
   const [isShowDeleteCarDialog, setIsShowDeleteCarDialog] = useState(false);
   const [isShowCarDetailDialog, setIsShowCarDetailDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [carTypes, setCarTypes] = useState();
+  const [manufacturers, setManufacturers] = useState();
 
   useEffect(() => {
     handleCarsChange(cars);
   }, [cars]);
+
+  //get carTypes
+  useEffect(() => {
+    const fetchCarType = async () => {
+      const response = await axios.get("car-type/get-all");
+      const _carTypes = response.data.Result;
+      setCarTypes(_carTypes);
+    };
+
+    fetchCarType();
+  }, []);
+
+    //get Manufacturers
+    useEffect(() => {
+      const fetchManufacturers = async () => {
+        const response = await axios.get("manufacturer/get-all");
+        const _manufacturers = response.data.Result;
+        setManufacturers(_manufacturers);
+      };
+  
+      fetchManufacturers();
+    }, []);
 
   const hideDeleteCarDialog = () => {
     setIsShowDeleteCarDialog(false);
@@ -210,15 +236,17 @@ const CarTable = (props) => {
           <label htmlFor="txtCarTypeId">
             Dòng xe <b className="p-error">*</b>
           </label>
-          <InputText
+          <Dropdown
             id="txtCarTypeId"
             value={selectedCar.CarTypeId}
+            optionValue="TypeId"
             onChange={(e) => onInputChange(e, "CarTypeId")}
-            required
-            autoFocus
+            optionLabel="TypeName"
+            options={carTypes}
             className={classNames({
               "p-invalid": submitted && !selectedCar.CarTypeId,
             })}
+            placeholder="Chọn dòng xe"
           />
           {submitted && !selectedCar.CarTypeId && (
             <small className="p-error">Dòng xe được để trống.</small>
@@ -228,14 +256,17 @@ const CarTable = (props) => {
           <label htmlFor="txtManufaturerId">
             Hãng xe <b className="p-error">*</b>
           </label>
-          <InputText
+          <Dropdown
             id="txtManufaturerId"
             value={selectedCar.ManufaturerId}
+            optionValue="ManufacturerId"
             onChange={(e) => onInputChange(e, "ManufaturerId")}
-            required
+            optionLabel="ManufacturerName"
+            options={manufacturers}
             className={classNames({
-              "p-invalid": submitted && !selectedCar.ManufaturerId,
+              "p-invalid": submitted && !selectedCar.CarTypeId,
             })}
+            placeholder="Chọn nhà sản xuất"
           />
           {submitted && !selectedCar.ManufaturerId && (
             <small className="p-error">Hãng xe được để trống.</small>

@@ -28,14 +28,14 @@ const CustomerDetailPage = () => {
   const customerTypes = [
     {
       label: "Cá nhân",
-      value: 0,
+      value: 1,
     },
     {
       label: "Doanh nghiệp",
-      value: 1,
+      value: 2,
     },
   ];
-  
+
   const defaultValues = {
     Email: "",
     FullName: "",
@@ -51,7 +51,7 @@ const CustomerDetailPage = () => {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
+    // reset,
   } = useForm({ defaultValues });
 
   const handleCarsChange = (cars) => {
@@ -61,8 +61,10 @@ const CustomerDetailPage = () => {
   const onSubmit = (formData, e) => {
     e.nativeEvent.preventDefault();
     setFormValue((values) => ({ ...values, ...formData }));
-    dispatch(sendCustomerData(formValue));
-    reset();
+    setTimeout(() => {
+      dispatch(sendCustomerData(formValue));
+    },0);
+    // reset();
   };
 
   const getFormErrorMessage = (name) => {
