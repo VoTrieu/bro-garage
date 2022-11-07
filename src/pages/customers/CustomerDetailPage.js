@@ -1,18 +1,52 @@
-import { useState, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import CarTable from "../../components/car-table/CarTable";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-import { sendCustomerData } from "../../store/customer-actions";
 import Footer from "../../components/layout/footer/Footer";
+import {
+  getCustomerDetail,
+  createNewCustomer,
+  updateCustomer,
+} from "../../util/api";
 
 const CustomerDetailPage = () => {
-  const dispatch = useDispatch();
+  const [existedCars, setExistedCars] = useState([]);
   const formRef = useRef();
+  const params = useParams();
+  const selectedCustomerId = params?.id;
+
+  const defaultValues = {
+    Email: "",
+    FullName: "",
+    PhoneNumber: "",
+    Remark: "",
+    Representative: "",
+    TaxCode: "",
+    TypeId: 0,
+  };
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues });
+
+  useEffect(() => {
+    if (selectedCustomerId) {
+      getCustomerDetail(selectedCustomerId).then((response) => {
+        const customer = response.data.Result;
+        setExistedCars(customer.Cars);
+        setFormValue(customer);
+        reset(customer);
+      });
+    }
+  }, [reset, selectedCustomerId]);
 
   const functionButtons = [
     {
@@ -36,23 +70,7 @@ const CustomerDetailPage = () => {
     },
   ];
 
-  const defaultValues = {
-    Email: "",
-    FullName: "",
-    PhoneNumber: "",
-    Remark: "",
-    Representative: "",
-    TaxCode: "",
-    TypeId: 0,
-  };
   const [formValue, setFormValue] = useState(defaultValues);
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    // reset,
-  } = useForm({ defaultValues });
 
   const handleCarsChange = (cars) => {
     setFormValue((values) => ({ ...values, Cars: cars }));
@@ -60,11 +78,12 @@ const CustomerDetailPage = () => {
 
   const onSubmit = (formData, e) => {
     e.nativeEvent.preventDefault();
+    if (formValue.CustomerId) {
+      updateCustomer({ ...formValue, ...formData });
+    } else {
+      createNewCustomer({ ...formValue, ...formData });
+    }
     setFormValue((values) => ({ ...values, ...formData }));
-    setTimeout(() => {
-      dispatch(sendCustomerData(formValue));
-    },0);
-    // reset();
   };
 
   const getFormErrorMessage = (name) => {
@@ -237,9 +256,9 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("Address")}
           </div>
           <div className="field col-12 md:col-6">
-            <label htmlFor="Remark">Ghi Chú</label>
+            <label htmlFor="Note">Ghi Chú</label>
             <Controller
-              name="Remark"
+              name="Note"
               control={control}
               render={({ field }) => (
                 <InputTextarea
@@ -255,7 +274,10 @@ const CustomerDetailPage = () => {
         </form>
       </ToggleablePanel>
       <ToggleablePanel header="Xe" className="pb-2" toggleable>
-        <CarTable handleCarsChange={handleCarsChange} />
+        <CarTable
+          existedCars={existedCars}
+          handleCarsChange={handleCarsChange}
+        />
       </ToggleablePanel>
       <Footer items={functionButtons} />
     </div>

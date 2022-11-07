@@ -26,16 +26,38 @@ const AppDataTable = (props) => {
     setSelectedItem(rowData);
   };
 
+  const createNewItem = () => {
+    props.createNewItem();
+  };
+
+  const updateItem = (rowData) => {
+    props.updateItem(rowData);
+  };
+
   const header = (
-    <div className="table-header flex justify-content-end">
-      <span className="p-input-icon-left">
-        <i className="pi pi-search" />
-        <InputText
-          type="search"
-          onInput={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Tìm kiếm..."
-        />
-      </span>
+    <div className="table-header flex justify-content-between align-items-center">
+      <div>
+        <h3>{props.title}</h3>
+      </div>
+      <div className="flex align-items-center">
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText
+            type="search"
+            onInput={(e) => setGlobalFilter(e.target.value)}
+            placeholder="Tìm kiếm..."
+          />
+        </span>
+        <span className="p-input-icon-left ml-4">
+          <i className="pi pi-search" />
+          <Button
+            label="Thêm mới"
+            icon="pi pi-plus"
+            className="p-button-success"
+            onClick={createNewItem}
+          />
+        </span>
+      </div>
     </div>
   );
 
@@ -45,6 +67,9 @@ const AppDataTable = (props) => {
         <Button
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success mr-2"
+          onClick={() => {
+            updateItem(rowData);
+          }}
         />
         <Button
           icon="pi pi-trash"
@@ -86,7 +111,8 @@ const AppDataTable = (props) => {
           globalFilter={globalFilter}
           header={header}
           responsiveLayout="scroll"
-          expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)}
+          expandedRows={expandedRows}
+          onRowToggle={(e) => setExpandedRows(e.data)}
           rowExpansionTemplate={props.rowExpansionTemplate}
         >
           {props.rowExpansionTemplate && (

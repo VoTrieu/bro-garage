@@ -26,10 +26,15 @@ const CarTable = (props) => {
   const [submitted, setSubmitted] = useState(false);
   const [carTypes, setCarTypes] = useState();
   const [manufacturers, setManufacturers] = useState();
+  const existedCars = props.existedCars;
 
   useEffect(() => {
     handleCarsChange(cars);
   }, [cars]);
+
+  useEffect(() => {
+    setCars(existedCars);
+  }, [existedCars]);
 
   //get carTypes
   useEffect(() => {
@@ -42,16 +47,16 @@ const CarTable = (props) => {
     fetchCarType();
   }, []);
 
-    //get Manufacturers
-    useEffect(() => {
-      const fetchManufacturers = async () => {
-        const response = await axios.get("manufacturer/get-all");
-        const _manufacturers = response.data.Result;
-        setManufacturers(_manufacturers);
-      };
-  
-      fetchManufacturers();
-    }, []);
+  //get Manufacturers
+  useEffect(() => {
+    const fetchManufacturers = async () => {
+      const response = await axios.get("manufacturer/get-all");
+      const _manufacturers = response.data.Result;
+      setManufacturers(_manufacturers);
+    };
+
+    fetchManufacturers();
+  }, []);
 
   const hideDeleteCarDialog = () => {
     setIsShowDeleteCarDialog(false);
@@ -91,13 +96,23 @@ const CarTable = (props) => {
     //update existed car
     const _cars = [...cars];
     const index = _cars.findIndex(
-      (car) => car.LicensePlate === updatedCar.LicensePlate
+      (car) => car.LicensePlate === updatedCar?.LicensePlate
     );
     if (_cars[index]) {
       _cars[index] = { ...selectedCar };
       setCars(_cars);
     } else {
       //add new car
+      const selectedCarType = carTypes.find(
+        (car) => car.TypeId === selectedCar.CarTypeId
+      );
+      selectedCar.CarTypeName = selectedCarType.TypeName;
+
+      const selectedManufacturer = manufacturers.find(
+        (manufacturer) =>
+          manufacturer.ManufactureId === selectedCar.ManufactureId
+      );
+      selectedCar.ManufactureName = selectedManufacturer.ManufacturerName;
       setCars((currentCars) => [...currentCars, selectedCar]);
     }
     setSelectedCar(emptyCar);
@@ -191,8 +206,8 @@ const CarTable = (props) => {
         responsiveLayout="scroll"
       >
         <Column field="LicensePlate" header="Biển số xe" sortable></Column>
-        <Column field="CarTypeId" header="Dòng xe" sortable></Column>
-        <Column field="ManufaturerId" header="Hãng xe" sortable></Column>
+        <Column field="CarTypeName" header="Dòng xe" sortable></Column>
+        <Column field="ManufactureName" header="Hãng xe" sortable></Column>
         <Column
           field="YearOfManufacture"
           header="Năm sản xuất"
@@ -243,6 +258,7 @@ const CarTable = (props) => {
             onChange={(e) => onInputChange(e, "CarTypeId")}
             optionLabel="TypeName"
             options={carTypes}
+            autoFocus
             className={classNames({
               "p-invalid": submitted && !selectedCar.CarTypeId,
             })}
@@ -298,7 +314,6 @@ const CarTable = (props) => {
             value={selectedCar.YearOfManufacture}
             onChange={(e) => onInputChange(e, "YearOfManufacture")}
             required
-            autoFocus
             className={classNames({
               "p-invalid": submitted && !selectedCar.YearOfManufacture,
             })}

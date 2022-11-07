@@ -33,13 +33,14 @@ const lastRequest = axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (response) => {
     if (response.data.IsSuccess) {
-      store.dispatch(
-        uiActions.setToastContent({
-          severity: "success",
-          summary: "Success Message",
-          detail: response.data.Message,
-        })
-      );
+      response.data.Message &&
+        store.dispatch(
+          uiActions.setToastContent({
+            severity: "success",
+            summary: "Success Message",
+            detail: response.data.Message,
+          })
+        );
     } else {
       store.dispatch(
         uiActions.setToastContent({
