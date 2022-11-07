@@ -5,8 +5,9 @@ import { Toast } from 'primereact/toast';
 import './App.css';
 
 import RootLayout from './components/layout/root-layout/RootLayout';
-import HomePage from '../src/pages/home/Home';
-import CustomerDetailPage from '../src/pages/customers/CustomerDetailPage';
+import HomePage from './pages/home/Home';
+import CustomerDetailPage from './pages/customers/CustomerDetailPage';
+import CustomersPage from './pages/customers/CustomersPage';
 
 function App() {
   const toastContent = useSelector(state => state.ui.toastContent);
@@ -23,6 +24,7 @@ function App() {
       <RootLayout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/customers" element={<CustomersPage />}></Route>
           <Route path="/customer-detail" element={<CustomerDetailPage />}>
             {/* <Route index element={<BlogPostsPage />} />
             <Route path=":id" element={<PostDetailPage />} /> */}

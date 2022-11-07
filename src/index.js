@@ -32,13 +32,23 @@ const lastRequest = axios.interceptors.request.use((config) => {
 
 axios.interceptors.response.use(
   (response) => {
-    store.dispatch(
-      uiActions.setToastContent({
-        severity: "success",
-        summary: "Success Message",
-        detail: response.data.Message,
-      })
-    );
+    if (response.data.IsSuccess) {
+      store.dispatch(
+        uiActions.setToastContent({
+          severity: "success",
+          summary: "Success Message",
+          detail: response.data.Message,
+        })
+      );
+    } else {
+      store.dispatch(
+        uiActions.setToastContent({
+          severity: "error",
+          summary: "Error Message",
+          detail: response.data.Message,
+        })
+      );
+    }
     return response;
   },
   (error) => {
