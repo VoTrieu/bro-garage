@@ -26,7 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/app" element={<RootLayout />}>
-          <Route path="home" element={<HomePage />}/>
+          <Route index path="home" element={<HomePage />}/>
           <Route path="customers" element={<CustomersPage />}/>
           <Route path="customer-detail">
             <Route path="new" element={<CustomerDetailPage />} />

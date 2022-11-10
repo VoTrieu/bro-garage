@@ -2,13 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { uiActions } from "./store/ui-slice";
+import { authActions } from "./store/auth-slice";
 import store from "./store/index";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import axios from "axios";
-import { authActions } from "./store/auth-slice";
-import { fnRefreshToken } from "./store/auth-actions";
 
 /*
   primereact config
@@ -23,10 +22,15 @@ const currentAuthorization = JSON.parse(
 );
 
 currentAuthorization.isTokenValid = false;
+
+var requestNumber = 0;
+var finishedRequestNumber = 0;
 store.dispatch(authActions.setCurrentAuthorization(currentAuthorization));
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 axios.interceptors.request.use((config) => {
+  requestNumber++;
+  store.dispatch(uiActions.showSpinner(true));
   const token = store.getState().auth.accessToken;
   config.headers.Authorization = token;
   return config;
@@ -34,6 +38,7 @@ axios.interceptors.request.use((config) => {
 
 axios.interceptors.response.use(
   (response) => {
+    finishedRequestNumber++;
     if (response.data.IsSuccess) {
       response.data.Message &&
         store.dispatch(
@@ -52,19 +57,39 @@ axios.interceptors.response.use(
         })
       );
     }
+
+    if (requestNumber === finishedRequestNumber) {
+      store.dispatch(uiActions.showSpinner(false));
+      requestNumber = 0;
+      finishedRequestNumber = 0;
+    }
     return response;
   },
   (error) => {
     const {
+      status,
       data: { message },
     } = error.response;
-    store.dispatch(
-      uiActions.setToastContent({
-        severity: "error",
-        summary: "Error Message!",
-        detail: message,
-      })
-    );
+
+    finishedRequestNumber++;
+
+    if ((status === 401) & (message === "Unauthorized")) {
+      window.location.href = "/";
+    } else {
+      store.dispatch(
+        uiActions.setToastContent({
+          severity: "error",
+          summary: "Error Message!",
+          detail: message,
+        })
+      );
+    }
+
+    if (requestNumber === finishedRequestNumber) {
+      store.dispatch(uiActions.showSpinner(false));
+      requestNumber = 0;
+      finishedRequestNumber = 0;
+    }
   }
 );
 // axios.defaults.headers.common['authorization'] = store.getState().auth.accessToken;

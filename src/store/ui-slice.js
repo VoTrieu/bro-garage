@@ -5,6 +5,7 @@ const uiSlice = createSlice({
   initialState: {
     slidebarIsVisible: true,
     isShowLoginDialog: false,
+    isShowSpinner: false,
     toastContent: {},
   },
   reducers: {
@@ -17,6 +18,9 @@ const uiSlice = createSlice({
     setToastContent(state, action) {
       state.toastContent = action.payload;
     },
+    showSpinner(state, action){
+      state.isShowSpinner = action.payload;
+    }
   },
 });
 

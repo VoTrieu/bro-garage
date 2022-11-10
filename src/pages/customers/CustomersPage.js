@@ -57,11 +57,11 @@ const CustomersPage = () => {
   };
 
   const updateCustomer = (selectedCustomer) => {
-    navigate(`/customer-detail/${selectedCustomer.CustomerId}`);
+    navigate(`/app/customer-detail/${selectedCustomer.CustomerId}`);
   };
 
   const createNewCustomer = () => {
-    navigate("/customer-detail/new");
+    navigate("/app/customer-detail/new");
   };
 
   const rowExpansionTemplate = (customer) => {
