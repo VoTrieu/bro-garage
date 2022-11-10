@@ -206,8 +206,8 @@ const CarTable = (props) => {
         responsiveLayout="scroll"
       >
         <Column field="LicensePlate" header="Biển số xe" sortable></Column>
-        <Column field="CarTypeName" header="Dòng xe" sortable></Column>
         <Column field="ManufactureName" header="Hãng xe" sortable></Column>
+        <Column field="CarTypeName" header="Dòng xe" sortable></Column>
         <Column
           field="YearOfManufacture"
           header="Năm sản xuất"
@@ -248,6 +248,27 @@ const CarTable = (props) => {
         onHide={hideCarDetailDialog}
       >
         <div className="field">
+          <label htmlFor="txtManufaturerId">
+            Hãng xe <b className="p-error">*</b>
+          </label>
+          <Dropdown
+            id="txtManufaturerId"
+            value={selectedCar.ManufaturerId}
+            optionValue="ManufacturerId"
+            onChange={(e) => onInputChange(e, "ManufaturerId")}
+            optionLabel="ManufacturerName"
+            options={manufacturers}
+            className={classNames({
+              "p-invalid": submitted && !selectedCar.CarTypeId,
+            })}
+            placeholder="Chọn nhà sản xuất"
+          />
+          {submitted && !selectedCar.ManufaturerId && (
+            <small className="p-error">Hãng xe được để trống.</small>
+          )}
+        </div>
+
+        <div className="field">
           <label htmlFor="txtCarTypeId">
             Dòng xe <b className="p-error">*</b>
           </label>
@@ -268,26 +289,7 @@ const CarTable = (props) => {
             <small className="p-error">Dòng xe được để trống.</small>
           )}
         </div>
-        <div className="field">
-          <label htmlFor="txtManufaturerId">
-            Hãng xe <b className="p-error">*</b>
-          </label>
-          <Dropdown
-            id="txtManufaturerId"
-            value={selectedCar.ManufaturerId}
-            optionValue="ManufacturerId"
-            onChange={(e) => onInputChange(e, "ManufaturerId")}
-            optionLabel="ManufacturerName"
-            options={manufacturers}
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.CarTypeId,
-            })}
-            placeholder="Chọn nhà sản xuất"
-          />
-          {submitted && !selectedCar.ManufaturerId && (
-            <small className="p-error">Hãng xe được để trống.</small>
-          )}
-        </div>
+        
         <div className="field">
           <label htmlFor="txtLicensePlate">
             Biển số xe <b className="p-error">*</b>

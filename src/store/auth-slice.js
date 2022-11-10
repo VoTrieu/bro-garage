@@ -9,6 +9,7 @@ const authSlice = createSlice({
     fullName: "",
     accessToken: "",
     refreshToken: "",
+    isTokenValid: false,
   },
   reducers: {
     setCurrentAuthorization(state, action) {
@@ -18,6 +19,7 @@ const authSlice = createSlice({
       state.refreshToken = action.payload?.Result?.RefreshToken || "";
       state.errorMessage = action.payload?.Message || "";
       state.loginSuccess = action.payload?.IsSuccess || true;
+      state.isTokenValid = action.payload?.isTokenValid;
     },
   },
 });

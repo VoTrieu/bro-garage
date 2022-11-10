@@ -6,6 +6,7 @@ export const loginRequest = (account) => {
   return async (dispatch) => {
     axios.post("/user/login", account).then((response) => {
       const data = response.data;
+      data.isTokenValid = true;
       dispatch(authActions.setCurrentAuthorization(data));
       if (data.IsSuccess) {
         dispatch(uiActions.showLoginDialog(false));
@@ -15,10 +16,11 @@ export const loginRequest = (account) => {
   };
 };
 
-export const refreshToken = (refreshToken) => {
+export const fnRefreshToken = (refreshToken) => {
   return async (dispatch) => {
     axios.post("/user/refresh-token", { refreshToken }).then((response) => {
       const data = response.data;
+      data.isTokenValid = true;
       dispatch(authActions.setCurrentAuthorization(data));
       if (data.IsSuccess) {
         localStorage.setItem("currentAuthorization", JSON.stringify(data));

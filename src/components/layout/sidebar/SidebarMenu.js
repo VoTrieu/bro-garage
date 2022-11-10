@@ -9,14 +9,14 @@ const SidebarMenu = () => {
       label: "Trang Chủ",
       icon: "pi pi-fw pi-home",
       command: () => {
-        navigate("/");
+        navigate("/app/home");
       },
     },
     {
       label: "Khách Hàng",
       icon: "pi pi-fw pi-user",
       command: () => {
-        navigate("/customers");
+        navigate("/app/customers");
       },
     },
   ];

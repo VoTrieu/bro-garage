@@ -29,12 +29,12 @@ function MainNavigation() {
   const end = (
     <div className="flex align-items-center">
       <span className="mr-2">{fullName}</span>
-      <Button
+      {/* <Button
         icon="pi pi-sign-in"
         onClick={() => {
           dispatch(uiActions.showLoginDialog(true));
         }}
-      />
+      /> */}
     </div>
   );
 
