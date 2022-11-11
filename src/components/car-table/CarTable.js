@@ -264,7 +264,7 @@ const CarTable = (props) => {
             placeholder="Chọn nhà sản xuất"
           />
           {submitted && !selectedCar.ManufaturerId && (
-            <small className="p-error">Hãng xe được để trống.</small>
+            <small className="p-error">Hãng xe không được để trống.</small>
           )}
         </div>
 
@@ -286,7 +286,7 @@ const CarTable = (props) => {
             placeholder="Chọn dòng xe"
           />
           {submitted && !selectedCar.CarTypeId && (
-            <small className="p-error">Dòng xe được để trống.</small>
+            <small className="p-error">Dòng xe không được để trống.</small>
           )}
         </div>
         
@@ -304,7 +304,7 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.LicensePlate && (
-            <small className="p-error">Biển số xe được để trống.</small>
+            <small className="p-error">Biển số xe không được để trống.</small>
           )}
         </div>
         <div className="field">
@@ -321,7 +321,7 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.YearOfManufacture && (
-            <small className="p-error">Năm sản xuất được để trống.</small>
+            <small className="p-error">Năm sản xuất không được để trống.</small>
           )}
         </div>
         <div className="field">
@@ -339,7 +339,7 @@ const CarTable = (props) => {
             })}
           />
           {submitted && !selectedCar.VIN && (
-            <small className="p-error">VIN không được để trống.</small>
+            <small className="p-error">VIN không không được để trống.</small>
           )}
         </div>
       </Dialog>

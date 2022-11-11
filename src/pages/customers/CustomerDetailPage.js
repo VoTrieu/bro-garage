@@ -12,7 +12,7 @@ import {
   getCustomerDetail,
   createNewCustomer,
   updateCustomer,
-} from "../../util/api";
+} from "../../services/customer-service";
 
 const CustomerDetailPage = () => {
   const [existedCars, setExistedCars] = useState([]);

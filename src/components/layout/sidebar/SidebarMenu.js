@@ -19,6 +19,13 @@ const SidebarMenu = () => {
         navigate("/app/customers");
       },
     },
+    {
+      label: "Phụ tùng",
+      icon: "pi pi-fw pi-box",
+      command: () => {
+        navigate("/app/spare-part");
+      },
+    },
   ];
 
   return (

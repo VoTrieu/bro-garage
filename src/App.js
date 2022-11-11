@@ -9,6 +9,7 @@ import HomePage from "./pages/home/Home";
 import CustomerDetailPage from "./pages/customers/CustomerDetailPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import LoginPage from "./pages/login/LoginPage";
+import SparePartPage from "./pages/spare-part/SparePartPage";
 
 function App() {
   const toastContent = useSelector((state) => state.ui.toastContent);
@@ -26,12 +27,13 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/app" element={<RootLayout />}>
-          <Route index path="home" element={<HomePage />}/>
-          <Route path="customers" element={<CustomersPage />}/>
+          <Route index path="home" element={<HomePage />} />
+          <Route path="customers" element={<CustomersPage />} />
           <Route path="customer-detail">
             <Route path="new" element={<CustomerDetailPage />} />
             <Route path=":id" element={<CustomerDetailPage />} />
           </Route>
+          <Route path="spare-part" element={<SparePartPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

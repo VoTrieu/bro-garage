@@ -1,8 +1,7 @@
 import axios from "axios";
 
 export async function getCustomers() {
-  const response = await axios.get("/customer/get-pagination");
-  return response?.data?.Result;
+  return axios.get("/customer/get-pagination");
 }
 
 export function getCustomerDetail(customerId) {
@@ -19,4 +18,10 @@ export const createNewCustomer = (customer) => {
 
 export const updateCustomer = (customer) => {
   return axios.put("/customer/edit", customer);
+};
+
+export const deleteCustomer = (customerId) => {
+  return axios.delete("/customer/delete", {
+    params: { id: customerId },
+  });
 };

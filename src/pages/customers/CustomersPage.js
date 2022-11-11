@@ -3,14 +3,14 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
 import AppDataTable from "../../components/tables/AppDataTable";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { deleteCustomer, getCustomers } from "../../services/customer-service";
 
 const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState(null);
   useEffect(() => {
-    axios.get("/customer/get-pagination").then((response) => {
+    getCustomers().then((response) => {
       const data = response.data.Result.Data;
       setCustomers(data);
     });
@@ -44,16 +44,12 @@ const CustomersPage = () => {
   ];
 
   const deletedSelectedCustomer = (selectedCustomer) => {
-    axios
-      .delete("/customer/delete", {
-        params: { id: selectedCustomer.CustomerId },
-      })
-      .then(() => {
-        const updatedCustomerList = customers.filter(
-          (customer) => customer.CustomerId !== selectedCustomer.CustomerId
-        );
-        setCustomers(updatedCustomerList);
-      });
+    deleteCustomer(selectedCustomer.CustomerId).then(() => {
+      const updatedCustomerList = customers.filter(
+        (customer) => customer.CustomerId !== selectedCustomer.CustomerId
+      );
+      setCustomers(updatedCustomerList);
+    });
   };
 
   const updateCustomer = (selectedCustomer) => {
