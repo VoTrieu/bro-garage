@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/bro-garage/static/css/main.603864bc.css",
-    "main.js": "/bro-garage/static/js/main.e1e2d9bc.js",
+    "main.css": "/bro-garage/static/css/main.ff212033.css",
+    "main.js": "/bro-garage/static/js/main.0ccb3abf.js",
     "static/js/787.c2b644a8.chunk.js": "/bro-garage/static/js/787.c2b644a8.chunk.js",
     "static/media/primeicons.svg": "/bro-garage/static/media/primeicons.e1441b135b3ca9ad643c.svg",
     "static/media/primeicons.eot": "/bro-garage/static/media/primeicons.d44157bdfa026dc877af.eot",
@@ -10,12 +10,12 @@
     "static/media/primeicons.woff2": "/bro-garage/static/media/primeicons.78172950b335ccdb94e2.woff2",
     "static/media/garage-logo.webp": "/bro-garage/static/media/garage-logo.3a0d5fe6915fadcbe661.webp",
     "index.html": "/bro-garage/index.html",
-    "main.603864bc.css.map": "/bro-garage/static/css/main.603864bc.css.map",
-    "main.e1e2d9bc.js.map": "/bro-garage/static/js/main.e1e2d9bc.js.map",
+    "main.ff212033.css.map": "/bro-garage/static/css/main.ff212033.css.map",
+    "main.0ccb3abf.js.map": "/bro-garage/static/js/main.0ccb3abf.js.map",
     "787.c2b644a8.chunk.js.map": "/bro-garage/static/js/787.c2b644a8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.603864bc.css",
-    "static/js/main.e1e2d9bc.js"
+    "static/css/main.ff212033.css",
+    "static/js/main.0ccb3abf.js"
   ]
 }
