@@ -163,6 +163,8 @@ const SparePartPage = () => {
         deleteSelectedItem={onDeletedSparePart}
         createNewItem={onCreateNewSparePart}
         updateItem={onUpdateSparePart}
+        excelExportable={true}
+        excelFileName="Phụ tùng"
       />
 
       <Dialog
