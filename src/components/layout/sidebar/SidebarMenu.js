@@ -30,8 +30,8 @@ const SidebarMenu = () => {
 
   return (
     isShowSlidebar && (
-      <div className="p-3 pb-0 pr-0 md:w-20rem w-screen">
-        <div className="card h-full w-full overflow-hidden">
+      <div className="p-3 pb-0 pr-0">
+        <div className="card h-full w-20rem overflow-hidden ">
           <SlideMenu
             model={items}
             className="h-full w-full"

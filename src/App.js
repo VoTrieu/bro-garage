@@ -13,6 +13,7 @@ import SparePartPage from "./pages/spare-part/SparePartPage";
 
 function App() {
   const toastContent = useSelector((state) => state.ui.toastContent);
+  const { isTokenValid } = useSelector((state) => state.ui);
   const toast = useRef();
 
   useEffect(() => {
@@ -25,7 +26,12 @@ function App() {
     <BrowserRouter>
       {/* <RootLayout> */}
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            isTokenValid ? <Navigate to="/app" replace /> : <LoginPage />
+          }
+        />
         <Route path="/app" element={<RootLayout />}>
           <Route index path="home" element={<HomePage />} />
           <Route path="customers" element={<CustomersPage />} />

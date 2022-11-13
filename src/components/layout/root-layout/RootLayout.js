@@ -23,7 +23,10 @@ function RootLayout() {
             strokeWidth="4"
             fill="var(--surface-ground)"
             animationDuration=".5s"
-            className={[classes.app_spinner, classNames('absolute left-50', {'hidden': !isShowSpinner})]}
+            className={[
+              classes.app_spinner,
+              classNames("absolute left-50", { hidden: !isShowSpinner }),
+            ]}
           />
         </main>
       </div>
