@@ -1,7 +1,9 @@
 import axios from "axios";
 
-export async function getCustomers() {
-  return axios.get("/customer/get-pagination");
+export async function getCustomers(pageSize, pageIndex) {
+  return axios.get("/customer/get-pagination", {
+    params: { pageSize: pageSize || 10, pageIndex: pageIndex || 1 },
+  });
 }
 
 export function getCustomerDetail(customerId) {

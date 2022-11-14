@@ -1,7 +1,9 @@
 import axios from "axios";
 
-export async function getSparePart() {
-  return axios.get("/product/get-pagination");
+export async function getSparePart(pageSize, pageIndex) {
+  return axios.get("/product/get-pagination", {
+    params: { pageSize: pageSize || 10, pageIndex: pageIndex || 1 },
+  });
 }
 
 export const deleteSparePart = (productId) => {

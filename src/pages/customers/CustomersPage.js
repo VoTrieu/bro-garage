@@ -9,12 +9,24 @@ import { deleteCustomer, getCustomers } from "../../services/customer-service";
 const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState(null);
+  const [paginatorOptions, setPaginatorOptions] = useState();
   useEffect(() => {
-    getCustomers().then((response) => {
-      const data = response.data.Result.Data;
-      setCustomers(data);
-    });
+    getData();
   }, []);
+
+  const getData = (pageSize, pageIndex) => {
+    getCustomers(pageSize, pageIndex).then((response) => {
+      const { Data, ...paginatorOptions } = response.data.Result;
+      setPaginatorOptions(paginatorOptions);
+      setCustomers(Data);
+    });
+  };
+
+  const onPageChange = (options) => {
+    const pageIndex = options.page + 1;
+    const pageSize = options.rows;
+    getData(pageSize, pageIndex);
+  };
 
   const columns = [
     {
@@ -85,6 +97,8 @@ const CustomersPage = () => {
         rowExpansionTemplate={rowExpansionTemplate}
         createNewItem={createNewCustomer}
         updateItem={updateCustomer}
+        paginatorOptions={paginatorOptions}
+        onPageChange={onPageChange}
       />
     </Fragment>
   );

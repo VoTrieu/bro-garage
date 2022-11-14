@@ -22,6 +22,7 @@ const SparePartPage = () => {
     useState(false);
 
   const [submitted, setSubmitted] = useState(false);
+  const [paginatorOptions, setPaginatorOptions] = useState();
 
   const emptySparePart = {
     ProductCode: "",
@@ -34,11 +35,16 @@ const SparePartPage = () => {
   const [selectedSparePart, setSelectSparePart] = useState(emptySparePart);
 
   useEffect(() => {
-    getSparePart().then((response) => {
-      const data = response.data.Result.Data;
-      setSpareParts(data);
-    });
+    getData();
   }, []);
+
+  const getData = (pageSize, pageIndex) => {
+    getSparePart(pageSize, pageIndex).then((response) => {
+      const { Data, ...paginatorOptions } = response.data.Result;
+      setPaginatorOptions(paginatorOptions);
+      setSpareParts(Data);
+    });
+  };
 
   const columns = [
     {
@@ -67,7 +73,7 @@ const SparePartPage = () => {
     },
   ];
 
-  const units = ["Hộp", "Cái", "Lít", "Kg"];
+  const units = ["Hộp", "Cái", "Lít", "Kg", "Gói", "Bịch"];
 
   const onDeletedSparePart = (selectedSparePart) => {
     deleteSparePart(selectedSparePart.ProductId).then(() => {
@@ -121,7 +127,10 @@ const SparePartPage = () => {
         data: { IsSuccess },
       } = response;
       if (IsSuccess) {
-        setSpareParts((exsitedSparePart) => [...exsitedSparePart, selectedSparePart]);
+        setSpareParts((exsitedSparePart) => [
+          ...exsitedSparePart,
+          selectedSparePart,
+        ]);
         setShowSparePartDetailDialog(false);
       }
     });
@@ -153,6 +162,12 @@ const SparePartPage = () => {
     </Fragment>
   );
 
+  const onPageChange = (options) => {
+    const pageIndex = options.page + 1;
+    const pageSize = options.rows;
+    getData(pageSize, pageIndex);
+  };
+
   return (
     <Fragment>
       <AppDataTable
@@ -165,6 +180,8 @@ const SparePartPage = () => {
         updateItem={onUpdateSparePart}
         excelExportable={true}
         excelFileName="Phụ tùng"
+        paginatorOptions={paginatorOptions}
+        onPageChange={onPageChange}
       />
 
       <Dialog

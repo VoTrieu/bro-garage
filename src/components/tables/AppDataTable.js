@@ -1,15 +1,38 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
+import { Ripple } from "primereact/ripple";
+import { classNames } from "primereact/utils";
+import { Dropdown } from "primereact/dropdown";
+import { Paginator } from "primereact/paginator";
 
 const AppDataTable = (props) => {
   const [globalFilter, setGlobalFilter] = useState(null);
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [expandedRows, setExpandedRows] = useState(null);
+  const { TotalPage, PageIndex, PageSize, TotalRow } =
+    props.paginatorOptions || {
+      TotalPage: 0,
+      PageIndex: 1,
+      PageSize: 10,
+    };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInputTooltip, setPageInputTooltip] = useState(
+    "Nhấn phím 'Enter' để đi tới trang này."
+  );
+
+  const [first, setFirst] = useState();
+  const [rows, setRows] = useState(PageSize);
+  const paginatorRef = useRef();
+
+  useEffect(() => {
+    const _first = (PageIndex - 1) * PageSize;
+    setFirst(_first);
+  }, [PageIndex, PageSize]);
 
   const deleteSelectedItem = () => {
     props.deleteSelectedItem(selectedItem);
@@ -138,17 +161,132 @@ const AppDataTable = (props) => {
     </Fragment>
   );
 
+  const onPageInputKeyDown = (event, options) => {
+    if (event.key === "Enter") {
+      const page = parseInt(currentPage);
+      if (page < 1 || page > options.totalPages) {
+        setPageInputTooltip(
+          `Value must be between 1 and ${options.totalPages}.`
+        );
+      } else {
+        const first = currentPage ? options.rows * (page - 1) : 0;
+        setFirst(first);
+        setPageInputTooltip("Nhấn phím 'Enter' để đi tới trang này.");
+        props.onPageChange({ page: page - 1, rows });
+      }
+    }
+  };
+
+  const onPageInputChange = (event) => {
+    const inputedPage = event.target.value;
+    setCurrentPage(inputedPage);
+  };
+
+  const onPaginatorChange = (options) => {
+    setRows(options.rows);
+    props.onPageChange(options);
+  };
+
+  const paginatorTemplate = {
+    layout:
+      "PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport",
+    PrevPageLink: (options) => {
+      return (
+        <button
+          type="button"
+          className={options.className}
+          onClick={options.onClick}
+          disabled={options.disabled}
+        >
+          <span className="p-3">Previous</span>
+          <Ripple />
+        </button>
+      );
+    },
+    NextPageLink: (options) => {
+      return (
+        <button
+          type="button"
+          className={options.className}
+          onClick={options.onClick}
+          disabled={options.disabled}
+        >
+          <span className="p-3">Next</span>
+          <Ripple />
+        </button>
+      );
+    },
+    PageLinks: (options) => {
+      if (
+        (options.view.startPage === options.page &&
+          options.view.startPage !== 0) ||
+        (options.view.endPage === options.page &&
+          options.page + 1 !== options.totalPages)
+      ) {
+        const className = classNames(options.className, { "p-disabled": true });
+
+        return (
+          <span className={className} style={{ userSelect: "none" }}>
+            ...
+          </span>
+        );
+      }
+
+      return (
+        <button
+          type="button"
+          className={options.className}
+          onClick={options.onClick}
+        >
+          {options.page + 1}
+          <Ripple />
+        </button>
+      );
+    },
+    RowsPerPageDropdown: (options) => {
+      const dropdownOptions = [
+        { label: 10, value: 10 },
+        { label: 20, value: 20 },
+        { label: 50, value: 50 },
+      ];
+
+      return (
+        <Dropdown
+          value={options.value}
+          options={dropdownOptions}
+          onChange={options.onChange}
+        />
+      );
+    },
+    CurrentPageReport: (options) => {
+      return (
+        <Fragment>
+          <span
+            className="mx-3"
+            style={{ color: "var(--text-color)", userSelect: "none" }}
+          >
+            Go to
+            <InputText
+              size="3"
+              className="ml-1"
+              value={currentPage}
+              tooltip={pageInputTooltip}
+              onKeyDown={(e) => onPageInputKeyDown(e, options)}
+              onChange={onPageInputChange}
+            />
+          </span>
+          <span style={{ color: "var(--text-color)" }}>of {TotalPage}</span>
+        </Fragment>
+      );
+    },
+  };
+
   return (
     <Fragment>
       <div className="card">
         <DataTable
           value={props.data}
           dataKey={props.dataKey}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} items"
           globalFilter={globalFilter}
           header={header}
           responsiveLayout="scroll"
@@ -181,6 +319,14 @@ const AppDataTable = (props) => {
             style={{ minWidth: "8rem" }}
           ></Column>
         </DataTable>
+        <Paginator
+          ref={paginatorRef}
+          template={paginatorTemplate}
+          first={first}
+          rows={rows}
+          totalRecords={TotalRow}
+          onPageChange={onPaginatorChange}
+        ></Paginator>
       </div>
 
       <Dialog
