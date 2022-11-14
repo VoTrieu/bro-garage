@@ -14,8 +14,8 @@ const CustomersPage = () => {
     getData();
   }, []);
 
-  const getData = (pageSize, pageIndex) => {
-    getCustomers(pageSize, pageIndex).then((response) => {
+  const getData = (pageSize, pageIndex, keyword) => {
+    getCustomers(pageSize, pageIndex, keyword).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
       setPaginatorOptions(paginatorOptions);
       setCustomers(Data);
@@ -25,7 +25,8 @@ const CustomersPage = () => {
   const onPageChange = (options) => {
     const pageIndex = options.page + 1;
     const pageSize = options.rows;
-    getData(pageSize, pageIndex);
+    const keyword = options.keyword;
+    getData(pageSize, pageIndex, keyword);
   };
 
   const columns = [

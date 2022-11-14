@@ -1,8 +1,16 @@
 import axios from "axios";
 
-export async function getSparePart(pageSize, pageIndex) {
+export async function getSparePart(
+  pageSize = 10,
+  pageIndex = 1,
+  keyword = null
+) {
   return axios.get("/product/get-pagination", {
-    params: { pageSize: pageSize || 10, pageIndex: pageIndex || 1 },
+    params: {
+      pageSize,
+      pageIndex,
+      keyword,
+    },
   });
 }
 

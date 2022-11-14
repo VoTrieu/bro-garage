@@ -38,8 +38,8 @@ const SparePartPage = () => {
     getData();
   }, []);
 
-  const getData = (pageSize, pageIndex) => {
-    getSparePart(pageSize, pageIndex).then((response) => {
+  const getData = (pageSize, pageIndex, keyword) => {
+    getSparePart(pageSize, pageIndex, keyword).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
       setPaginatorOptions(paginatorOptions);
       setSpareParts(Data);
@@ -165,7 +165,8 @@ const SparePartPage = () => {
   const onPageChange = (options) => {
     const pageIndex = options.page + 1;
     const pageSize = options.rows;
-    getData(pageSize, pageIndex);
+    const keyword = options.keyword;
+    getData(pageSize, pageIndex, keyword);
   };
 
   return (

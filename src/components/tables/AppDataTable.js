@@ -10,10 +10,11 @@ import { Dropdown } from "primereact/dropdown";
 import { Paginator } from "primereact/paginator";
 
 const AppDataTable = (props) => {
-  const [globalFilter, setGlobalFilter] = useState(null);
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [expandedRows, setExpandedRows] = useState(null);
+  const [searchText, setSearchText] = useState(null);
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const { TotalPage, PageIndex, PageSize, TotalRow } =
     props.paginatorOptions || {
       TotalPage: 0,
@@ -29,10 +30,27 @@ const AppDataTable = (props) => {
   const [rows, setRows] = useState(PageSize);
   const paginatorRef = useRef();
 
+  //update page size
   useEffect(() => {
     const _first = (PageIndex - 1) * PageSize;
     setFirst(_first);
   }, [PageIndex, PageSize]);
+
+  //search data from backend
+  useEffect(() => {
+    if (isFirstRender) {
+      //prevent from getting data twice at beginning
+      return setIsFirstRender(false);
+    }
+
+    let timer = setTimeout(() => {
+      props.onPageChange({ page: 0, rows, keyword: searchText });
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchText]);
 
   const deleteSelectedItem = () => {
     props.deleteSelectedItem(selectedItem);
@@ -97,7 +115,7 @@ const AppDataTable = (props) => {
           <i className="pi pi-search" />
           <InputText
             type="search"
-            onInput={(e) => setGlobalFilter(e.target.value)}
+            onInput={(e) => setSearchText(e.target.value)}
             placeholder="Tìm kiếm..."
           />
         </span>
@@ -184,7 +202,7 @@ const AppDataTable = (props) => {
 
   const onPaginatorChange = (options) => {
     setRows(options.rows);
-    props.onPageChange(options);
+    props.onPageChange({ ...options, keyword: searchText });
   };
 
   const paginatorTemplate = {
@@ -287,8 +305,8 @@ const AppDataTable = (props) => {
         <DataTable
           value={props.data}
           dataKey={props.dataKey}
-          globalFilter={globalFilter}
           header={header}
+          stripedRows
           responsiveLayout="scroll"
           expandedRows={expandedRows}
           onRowToggle={(e) => setExpandedRows(e.data)}

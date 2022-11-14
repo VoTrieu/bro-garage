@@ -1,8 +1,16 @@
 import axios from "axios";
 
-export async function getCustomers(pageSize, pageIndex) {
+export async function getCustomers(
+  pageSize = 10,
+  pageIndex = 1,
+  keyword = null
+) {
   return axios.get("/customer/get-pagination", {
-    params: { pageSize: pageSize || 10, pageIndex: pageIndex || 1 },
+    params: {
+      pageSize,
+      pageIndex,
+      keyword,
+    },
   });
 }
 
