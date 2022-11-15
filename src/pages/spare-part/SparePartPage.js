@@ -41,8 +41,16 @@ const SparePartPage = () => {
   const getData = (pageSize, pageIndex, keyword) => {
     getSparePart(pageSize, pageIndex, keyword).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
+      paginatorOptions.keyword = keyword;
       setPaginatorOptions(paginatorOptions);
       setSpareParts(Data);
+    });
+  };
+
+  const refreshData = () => {
+    getSparePart(paginatorOptions.PageSize, paginatorOptions.PageIndex, paginatorOptions.keyword).then((response) => {
+      const data = response.data.Result.Data;
+      setSpareParts(data);
     });
   };
 
@@ -99,7 +107,7 @@ const SparePartPage = () => {
   const saveSparePart = () => {
     setSubmitted(true);
     for (const key in selectedSparePart) {
-      if (!trim(selectedSparePart[key])) {
+      if (!trim(selectedSparePart[key]) && key !== "Remark") {
         return;
       }
     }
@@ -127,17 +135,14 @@ const SparePartPage = () => {
         data: { IsSuccess },
       } = response;
       if (IsSuccess) {
-        setSpareParts((exsitedSparePart) => [
-          ...exsitedSparePart,
-          selectedSparePart,
-        ]);
+        refreshData();
         setShowSparePartDetailDialog(false);
       }
     });
   };
 
-  const onInputChange = (e, field) => {
-    const val = (e.target && e.target.value) || "";
+  const onInputChange = (e, field, defaultValue ) => {
+    const val = (e.target && e.target.value) || defaultValue;
     let _selectedSparePart = { ...selectedSparePart };
     _selectedSparePart[`${field}`] = val;
     setSelectSparePart(_selectedSparePart);
@@ -203,7 +208,7 @@ const SparePartPage = () => {
           <InputText
             id="txtProductCode"
             value={selectedSparePart.ProductCode}
-            onChange={(e) => onInputChange(e, "ProductCode")}
+            onChange={(e) => onInputChange(e, "ProductCode", "")}
             required
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.ProductCode,
@@ -221,7 +226,7 @@ const SparePartPage = () => {
           <InputText
             id="txtProductName"
             value={selectedSparePart.ProductName}
-            onChange={(e) => onInputChange(e, "ProductName")}
+            onChange={(e) => onInputChange(e, "ProductName", "")}
             required
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.ProductName,
@@ -234,20 +239,19 @@ const SparePartPage = () => {
 
         <div className="field">
           <label htmlFor="txtUnitPrice">
-            Đơn giá <b className="p-error">*</b>
+            Đơn giá
           </label>
           <InputNumber
             inputId="txtUnitPrice"
             value={selectedSparePart.UnitPrice}
-            onValueChange={(e) => onInputChange(e, "UnitPrice")}
-            required
+            onValueChange={(e) => onInputChange(e, "UnitPrice", 0)}
+            mode="currency"
+            min={0}
+            currency="VND"
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.UnitPrice,
             })}
           />
-          {submitted && !selectedSparePart.UnitPrice && (
-            <small className="p-error">Đơn giá không được để trống.</small>
-          )}
         </div>
 
         <div className="field">
@@ -275,7 +279,8 @@ const SparePartPage = () => {
           <InputNumber
             inputId="txtQuantity"
             value={selectedSparePart.Quantity}
-            onValueChange={(e) => onInputChange(e, "Quantity")}
+            min={0}
+            onValueChange={(e) => onInputChange(e, "Quantity", 0)}
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.Quantity,
             })}
@@ -289,7 +294,7 @@ const SparePartPage = () => {
             cols={30}
             id="txtRemark"
             value={selectedSparePart.Remark}
-            onChange={(e) => onInputChange(e, "Remark")}
+            onChange={(e) => onInputChange(e, "Remark", "")}
           />
         </div>
       </Dialog>
