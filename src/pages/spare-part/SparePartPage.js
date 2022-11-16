@@ -34,10 +34,6 @@ const SparePartPage = () => {
   };
   const [selectedSparePart, setSelectSparePart] = useState(emptySparePart);
 
-  useEffect(() => {
-    getData();
-  }, []);
-
   const getData = (pageSize, pageIndex, keyword) => {
     getSparePart(pageSize, pageIndex, keyword).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
@@ -167,13 +163,6 @@ const SparePartPage = () => {
     </Fragment>
   );
 
-  const onPageChange = (options) => {
-    const pageIndex = options.page + 1;
-    const pageSize = options.rows;
-    const keyword = options.keyword;
-    getData(pageSize, pageIndex, keyword);
-  };
-
   return (
     <Fragment>
       <AppDataTable
@@ -187,7 +176,7 @@ const SparePartPage = () => {
         excelExportable={true}
         excelFileName="Phụ tùng"
         paginatorOptions={paginatorOptions}
-        onPageChange={onPageChange}
+        fnGetData={getData}
       />
 
       <Dialog

@@ -30,6 +30,10 @@ const AppDataTable = (props) => {
   const [rows, setRows] = useState(PageSize);
   const paginatorRef = useRef();
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   //update page size
   useEffect(() => {
     const _first = (PageIndex - 1) * PageSize;
@@ -44,13 +48,17 @@ const AppDataTable = (props) => {
     }
 
     let timer = setTimeout(() => {
-      props.onPageChange({ page: 0, rows, keyword: searchText });
+      fetchData(rows, 1, searchText);
     }, 500);
 
     return () => {
       clearTimeout(timer);
     };
   }, [searchText]);
+
+  const fetchData = (pageSize, pageIndex, searchText) => {
+    props.fnGetData(pageSize, pageIndex, searchText);
+  };
 
   const deleteSelectedItem = () => {
     props.deleteSelectedItem(selectedItem);
@@ -190,7 +198,7 @@ const AppDataTable = (props) => {
         const first = currentPage ? options.rows * (page - 1) : 0;
         setFirst(first);
         setPageInputTooltip("Nhấn phím 'Enter' để đi tới trang này.");
-        props.onPageChange({ page: page - 1, rows });
+        fetchData(rows, page - 1);
       }
     }
   };
@@ -202,7 +210,7 @@ const AppDataTable = (props) => {
 
   const onPaginatorChange = (options) => {
     setRows(options.rows);
-    props.onPageChange({ ...options, keyword: searchText });
+    fetchData(options.rows, options.page + 1, searchText);
   };
 
   const paginatorTemplate = {

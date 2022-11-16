@@ -10,9 +10,6 @@ const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState(null);
   const [paginatorOptions, setPaginatorOptions] = useState();
-  useEffect(() => {
-    getData();
-  }, []);
 
   const getData = (pageSize, pageIndex, keyword) => {
     getCustomers(pageSize, pageIndex, keyword).then((response) => {
@@ -20,13 +17,6 @@ const CustomersPage = () => {
       setPaginatorOptions(paginatorOptions);
       setCustomers(Data);
     });
-  };
-
-  const onPageChange = (options) => {
-    const pageIndex = options.page + 1;
-    const pageSize = options.rows;
-    const keyword = options.keyword;
-    getData(pageSize, pageIndex, keyword);
   };
 
   const columns = [
@@ -99,7 +89,7 @@ const CustomersPage = () => {
         createNewItem={createNewCustomer}
         updateItem={updateCustomer}
         paginatorOptions={paginatorOptions}
-        onPageChange={onPageChange}
+        fnGetData={getData}
       />
     </Fragment>
   );
