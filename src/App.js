@@ -10,6 +10,7 @@ import CustomerDetailPage from "./pages/customers/CustomerDetailPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import LoginPage from "./pages/login/LoginPage";
 import SparePartPage from "./pages/spare-part/SparePartPage";
+import MaintainanceCycle from "./pages/maintainance-cycle/MaintainanceCyclePage";
 
 function App() {
   const toastContent = useSelector((state) => state.ui.toastContent);
@@ -40,6 +41,7 @@ function App() {
             <Route path=":id" element={<CustomerDetailPage />} />
           </Route>
           <Route path="spare-part" element={<SparePartPage />} />
+          <Route path="maintainance-cycle" element={<MaintainanceCycle />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

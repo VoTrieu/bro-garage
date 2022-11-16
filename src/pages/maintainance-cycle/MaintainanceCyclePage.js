@@ -4,41 +4,37 @@ import { Column } from "primereact/column";
 
 import AppDataTable from "../../components/tables/AppDataTable";
 import { useNavigate } from "react-router-dom";
-import { deleteCustomer, getCustomers } from "../../services/customer-service";
+import { deleteMaintainanceCycle , getMaintainanceCycle } from "../../services/maintainance-cycle-service";
 
-const CustomersPage = () => {
+const MaintainanceCyclePage = () => {
   const navigate = useNavigate();
-  const [customers, setCustomers] = useState(null);
+  const [maintainanceCycles, setMaintainanceCycles] = useState(null);
   const [paginatorOptions, setPaginatorOptions] = useState();
 
   const getData = (pageSize, pageIndex, keyword) => {
-    getCustomers(pageSize, pageIndex, keyword).then((response) => {
+    getMaintainanceCycle(pageSize, pageIndex, keyword).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
       setPaginatorOptions(paginatorOptions);
-      setCustomers(Data);
+      setMaintainanceCycles(Data);
     });
   };
 
   const columns = [
     {
-      field: "FullName",
-      header: "Tên khách hàng",
+      field: "ManufacturerName",
+      header: "Hãng xe",
     },
     {
-      field: "PhoneNumber",
-      header: "Số điện thoại",
+      field: "CarTypeName",
+      header: "Dòng xe",
     },
     {
-      field: "Address",
-      header: "Địa chỉ",
+      field: "YearOfManufactureFrom",
+      header: "Năm sản xuất từ",
     },
     {
-      field: "Email",
-      header: "Email",
-    },
-    {
-      field: "TaxCode",
-      header: "Mã số thuế",
+      field: "YearOfManufactureTo",
+      header: "Năm sản xuất đến",
     },
     {
       field: "Note",
@@ -47,11 +43,11 @@ const CustomersPage = () => {
   ];
 
   const deletedSelectedCustomer = (selectedCustomer) => {
-    deleteCustomer(selectedCustomer.CustomerId).then(() => {
-      const updatedCustomerList = customers.filter(
+    deleteMaintainanceCycle(selectedCustomer.CustomerId).then(() => {
+      const updatedCustomerList = maintainanceCycles.filter(
         (customer) => customer.CustomerId !== selectedCustomer.CustomerId
       );
-      setCustomers(updatedCustomerList);
+      setMaintainanceCycles(updatedCustomerList);
     });
   };
 
@@ -63,15 +59,15 @@ const CustomersPage = () => {
     navigate("/app/customer-detail/new");
   };
 
-  const rowExpansionTemplate = (customer) => {
+  const rowExpansionTemplate = (maintainanceCycle) => {
     return (
       <div className="orders-subtable ml-8">
-        <DataTable value={customer.Cars} responsiveLayout="scroll">
-          <Column field="LicensePlate" header="Biển số"></Column>
-          <Column field="CarTypeName" header="Dòng xe"></Column>
-          <Column field="ManufactureName" header="Nhà sản xuất"></Column>
-          <Column field="YearOfManufacture" header="Năm sản xuất"></Column>
-          <Column field="VIN" header="VIN"></Column>
+        <DataTable value={maintainanceCycle.TemplateDetails} responsiveLayout="scroll">
+          <Column field="ProductCode" header="Mã phụ tùng"></Column>
+          <Column field="ProductName" header="Mô tả"></Column>
+          <Column field="Quantity" header="Số lượng"></Column>
+          <Column field="UnitName" header="Đơn vị tính"></Column>
+          <Column field="UnitPrice" header="Đơn giá"></Column>
         </DataTable>
       </div>
     );
@@ -80,10 +76,10 @@ const CustomersPage = () => {
   return (
     <Fragment>
       <AppDataTable
-        data={customers}
+        data={maintainanceCycles}
         columns={columns}
-        dataKey="CustomerId"
-        title="Khách hàng"
+        dataKey="TemplateId"
+        title="Chu kỳ bảo dưỡng"
         deleteSelectedItem={deletedSelectedCustomer}
         rowExpansionTemplate={rowExpansionTemplate}
         createNewItem={createNewCustomer}
@@ -95,4 +91,5 @@ const CustomersPage = () => {
   );
 };
 
-export default CustomersPage;
+export default MaintainanceCyclePage;
+

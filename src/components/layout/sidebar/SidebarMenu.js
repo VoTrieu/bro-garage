@@ -26,6 +26,13 @@ const SidebarMenu = () => {
         navigate("/app/spare-part");
       },
     },
+    {
+      label: "Chu kỳ bảo dưỡng",
+      icon: "pi pi-fw pi-car",
+      command: () => {
+        navigate("/app/maintainance-cycle");
+      },
+    },
   ];
 
   return (
