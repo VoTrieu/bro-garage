@@ -27,3 +27,11 @@ export const createMaintainanceCycle = (maintainanceCycle) => {
 export const updateMaintainanceCycle = (maintainanceCycle) => {
   return axios.put("/template/edit", maintainanceCycle);
 };
+
+export function getMaintainanceCycleDetail(maintainanceCycleId) {
+  return axios.get("/template/get-by-id", {
+    params: {
+      id: maintainanceCycleId,
+    },
+  });
+}

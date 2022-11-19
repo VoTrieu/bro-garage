@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
-import CarTable from "../../components/car-table/CarTable";
+import CarTable from "../../components/tables/CarTable";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";

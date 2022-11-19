@@ -21,7 +21,9 @@ const currentAuthorization = JSON.parse(
   localStorage.getItem("currentAuthorization")
 );
 
-currentAuthorization.isTokenValid = false;
+if(currentAuthorization){
+  currentAuthorization.isTokenValid = false;
+}
 
 var requestNumber = 0;
 var finishedRequestNumber = 0;
@@ -68,19 +70,19 @@ axios.interceptors.response.use(
   (error) => {
     const {
       status,
-      data: { message },
+      data: { Message },
     } = error.response;
 
     finishedRequestNumber++;
 
-    if ((status === 401) & (message === "Unauthorized")) {
+    if ((status === 401) & (Message === "Unauthorized")) {
       window.location.href = "/";
     } else {
       store.dispatch(
         uiActions.setToastContent({
           severity: "error",
           summary: "Error Message!",
-          detail: message,
+          detail: Message,
         })
       );
     }

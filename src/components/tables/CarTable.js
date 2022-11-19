@@ -6,7 +6,7 @@ import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import axios from "axios";
+import { getCarTypes, getManufacturers } from "../../services/car-service";
 import { trim } from "lodash";
 
 const CarTable = (props) => {
@@ -38,24 +38,16 @@ const CarTable = (props) => {
 
   //get carTypes
   useEffect(() => {
-    const fetchCarType = async () => {
-      const response = await axios.get("car-type/get-all");
-      const _carTypes = response.data.Result;
-      setCarTypes(_carTypes);
-    };
-
-    fetchCarType();
+    getCarTypes().then((response) => {
+      setCarTypes(response.data.Result);
+    });
   }, []);
 
   //get Manufacturers
   useEffect(() => {
-    const fetchManufacturers = async () => {
-      const response = await axios.get("manufacturer/get-all");
-      const _manufacturers = response.data.Result;
-      setManufacturers(_manufacturers);
-    };
-
-    fetchManufacturers();
+    getManufacturers().then((response) => {
+      setManufacturers(response.data.Result);
+    });
   }, []);
 
   const hideDeleteCarDialog = () => {
@@ -289,7 +281,7 @@ const CarTable = (props) => {
             <small className="p-error">Dòng xe không được để trống.</small>
           )}
         </div>
-        
+
         <div className="field">
           <label htmlFor="txtLicensePlate">
             Biển số xe <b className="p-error">*</b>

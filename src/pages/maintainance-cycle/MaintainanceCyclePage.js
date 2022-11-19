@@ -42,21 +42,21 @@ const MaintainanceCyclePage = () => {
     },
   ];
 
-  const deletedSelectedCustomer = (selectedCustomer) => {
-    deleteMaintainanceCycle(selectedCustomer.CustomerId).then(() => {
-      const updatedCustomerList = maintainanceCycles.filter(
-        (customer) => customer.CustomerId !== selectedCustomer.CustomerId
+  const deletedSelectedMaintainanceCycle = (maintainanceCycle) => {
+    deleteMaintainanceCycle(maintainanceCycle.TemplateId).then(() => {
+      const updatedList = maintainanceCycles.filter(
+        (item) => item.TemplateId !== maintainanceCycle.TemplateId
       );
-      setMaintainanceCycles(updatedCustomerList);
+      setMaintainanceCycles(updatedList);
     });
   };
 
-  const updateCustomer = (selectedCustomer) => {
-    navigate(`/app/customer-detail/${selectedCustomer.CustomerId}`);
+  const updateMaintainanceCycle = (maintainanceCycle) => {
+    navigate(`/app/maintainance-cycle-detail/${maintainanceCycle.TemplateId}`);
   };
 
-  const createNewCustomer = () => {
-    navigate("/app/customer-detail/new");
+  const createMaintainanceCycle = () => {
+    navigate("/app/maintainance-cycle-detail/new");
   };
 
   const rowExpansionTemplate = (maintainanceCycle) => {
@@ -80,10 +80,10 @@ const MaintainanceCyclePage = () => {
         columns={columns}
         dataKey="TemplateId"
         title="Chu kỳ bảo dưỡng"
-        deleteSelectedItem={deletedSelectedCustomer}
+        deleteSelectedItem={deletedSelectedMaintainanceCycle}
         rowExpansionTemplate={rowExpansionTemplate}
-        createNewItem={createNewCustomer}
-        updateItem={updateCustomer}
+        createNewItem={createMaintainanceCycle}
+        updateItem={updateMaintainanceCycle}
         paginatorOptions={paginatorOptions}
         fnGetData={getData}
       />

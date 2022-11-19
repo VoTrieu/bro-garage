@@ -30,7 +30,7 @@ const SidebarMenu = () => {
       label: "Chu kỳ bảo dưỡng",
       icon: "pi pi-fw pi-car",
       command: () => {
-        navigate("/app/maintainance-cycle");
+        navigate("/app/maintainance-cycles");
       },
     },
   ];
