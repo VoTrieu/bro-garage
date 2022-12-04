@@ -3,12 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { Calendar } from "primereact/calendar";
-import { InputNumber } from "primereact/inputnumber";
-import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
 import Footer from "../../components/layout/footer/Footer";
+import SparePartTable from "../../components/tables/SparePartTable";
 import {
   getMaintainanceCycleDetail,
   createMaintainanceCycle,
@@ -51,7 +50,7 @@ const MaintainanceCycleDetailPage = () => {
 
   const {
     control,
-    formState: { errors, isDirty, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
     trigger,
@@ -62,6 +61,13 @@ const MaintainanceCycleDetailPage = () => {
       getMaintainanceCycleDetail(selectedMaintainanceCycleId).then(
         (response) => {
           const maintainanceCycle = response.data.Result;
+          //Convert year to date to display on the calendars
+          maintainanceCycle.YearOfManufactureFrom = new Date(
+            `1/1/${maintainanceCycle.YearOfManufactureFrom}`
+          );
+          maintainanceCycle.YearOfManufactureTo = new Date(
+            `1/1/${maintainanceCycle.YearOfManufactureTo}`
+          );
           setExistedSpareParts(maintainanceCycle.TemplateDetails);
           reset(maintainanceCycle);
           setFormValue(maintainanceCycle);
@@ -84,18 +90,26 @@ const MaintainanceCycleDetailPage = () => {
     },
   ];
 
-  // const handleCarsChange = (cars) => {
-  //   setFormValue((values) => ({ ...values, Cars: cars }));
-  // };
+  const onHandleSparePartsChange = (templateDetails) => {
+    setFormValue((values) => ({ ...values, TemplateDetails: templateDetails }));
+  };
 
   const onSubmit = (formData, e) => {
     e.nativeEvent.preventDefault();
-    if (formValue.CustomerId) {
-      updateMaintainanceCycle({ ...formValue, ...formData });
+    const submitData = {...formData, TemplateDetails: formValue.TemplateDetails};
+
+    //get year only
+    submitData.YearOfManufactureFrom =
+      submitData.YearOfManufactureFrom.getFullYear();
+    submitData.YearOfManufactureTo =
+      submitData.YearOfManufactureTo.getFullYear();
+
+    if (formValue.TemplateId) {
+      updateMaintainanceCycle(submitData);
     } else {
-      createMaintainanceCycle({ ...formValue, ...formData });
+      createMaintainanceCycle(submitData);
     }
-    setFormValue((values) => ({ ...values, ...formData }));
+    setFormValue(submitData);
   };
 
   const getFormErrorMessage = (name) => {
@@ -228,11 +242,12 @@ const MaintainanceCycleDetailPage = () => {
           </div>
         </form>
       </ToggleablePanel>
-      <ToggleablePanel
-        header="Phụ tùng"
-        className="pb-2"
-        toggleable
-      ></ToggleablePanel>
+      <ToggleablePanel header="Phụ tùng" className="pb-2" toggleable>
+        <SparePartTable
+          existedSpareParts={existedSpareParts}
+          handleSparePartsChange={onHandleSparePartsChange}
+        />
+      </ToggleablePanel>
       <Footer items={functionButtons} />
     </div>
   );

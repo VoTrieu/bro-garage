@@ -9,14 +9,15 @@ import { classNames } from "primereact/utils";
 import { getCarTypes, getManufacturers } from "../../services/car-service";
 import { trim } from "lodash";
 
+let emptyCar = {
+  CarTypeId: "",
+  ManufaturerId: "",
+  LicensePlate: "",
+  YearOfManufacture: "",
+  VIN: "",
+};
+
 const CarTable = (props) => {
-  let emptyCar = {
-    CarTypeId: "",
-    ManufaturerId: "",
-    LicensePlate: "",
-    YearOfManufacture: "",
-    VIN: "",
-  };
   const { handleCarsChange } = props;
   const [cars, setCars] = useState(props.cars || []);
   const [selectedCar, setSelectedCar] = useState(emptyCar);

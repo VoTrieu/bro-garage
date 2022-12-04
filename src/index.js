@@ -68,6 +68,11 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
+    if (axios.isCancel(error)) {
+      store.dispatch(uiActions.showSpinner(false));
+      return;
+    }
+
     const {
       status,
       data: { Message },
