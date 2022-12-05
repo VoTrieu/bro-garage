@@ -68,6 +68,7 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
+    finishedRequestNumber++;
     if (axios.isCancel(error)) {
       store.dispatch(uiActions.showSpinner(false));
       return;

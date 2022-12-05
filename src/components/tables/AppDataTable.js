@@ -333,6 +333,7 @@ const AppDataTable = (props) => {
             <Column
               key={item.field}
               field={item.field}
+              body={item.body}
               header={item.header}
               sortable
               style={{ minWidth: "12rem" }}

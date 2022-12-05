@@ -217,12 +217,6 @@ const SparePartTable = (props) => {
     }
   };
 
-  const onSparePartCodeSelect = (sparePart) => {
-    setSelectedSparePart((oldValue) => {
-      return { ...sparePart, Quantity: oldValue.Quantity };
-    });
-  };
-
   const onQuantityChange = (quantity) => {
     setSelectedSparePart((oldValue) => {
       return {
@@ -298,8 +292,6 @@ const SparePartTable = (props) => {
             forceSelection
             itemTemplate={itemTemplate}
             onChange={(e) => onSparePartCodeChange(e.value)}
-            onSelect={(e) => onSparePartCodeSelect(e.value)}
-            aria-label="Countries"
             placeholder="Nhập từ khoá"
             dropdownarialabel="Select SparePart"
             className={classNames({

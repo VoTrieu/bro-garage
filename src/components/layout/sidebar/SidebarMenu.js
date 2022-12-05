@@ -33,6 +33,13 @@ const SidebarMenu = () => {
         navigate("/app/maintainance-cycles");
       },
     },
+    {
+      label: "Phiếu bão dưỡng / sửa chữa",
+      icon: "pi pi-fw pi-cog",
+      command: () => {
+        navigate("/app/repair");
+      },
+    },
   ];
 
   return (
@@ -42,7 +49,7 @@ const SidebarMenu = () => {
           <SlideMenu
             model={items}
             className="h-full w-full"
-            menuWidth={286}
+            menuWidth={318}
             viewportHeight={800}
           ></SlideMenu>
         </div>
