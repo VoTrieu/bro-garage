@@ -39,3 +39,7 @@ export const getRepairFormDetail = (RepairFormId) => {
 export const getRepairStatus = () => {
   return axios.get("/order-status/get-all");
 };
+
+export const getRepairTypes = () => {
+  return axios.get("/order-type/get-all");
+};

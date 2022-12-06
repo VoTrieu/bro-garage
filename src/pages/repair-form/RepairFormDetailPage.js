@@ -6,31 +6,34 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { AutoComplete } from "primereact/autocomplete";
 import { classNames } from "primereact/utils";
-import { getRepairStatus } from "../../services/repair-service";
+import { getRepairStatus, getRepairTypes } from "../../services/repair-service";
 import { getCars } from "../../services/car-service";
-import { getCurrentDate } from "../../utils/Utils";
+import { getCurrentDate, getExpiredDate } from "../../utils/Utils";
+import { Calendar } from "primereact/calendar";
+import { isNumber } from "lodash";
 import axios from "axios";
 import classes from "./RepairForm.module.scss";
-
-
 
 const RepairFormDetailPage = () => {
   const formRef = useRef();
   const [repairStatus, setRepairStatus] = useState(null);
+  const [repairTypes, setRepairTypes] = useState(null);
   const [filteredCars, setFilteredCars] = useState([]);
   const [searchText, setSearchText] = useState(null);
 
   const defaultValues = {
     CarId: null,
     StatusId: 1,
+    OrderCode: "",
     OrderDate: getCurrentDate(),
     DateIn: getCurrentDate(),
     DateOutEstimated: "",
-    ODOCurrent: null,
-    ODONext: null,
-    ExpiredInDate: "",
+    ODOCurrent: 0,
+    ODONext: 5000,
+    ODOUnit: "Km",
+    ExpiredInDate: getExpiredDate(15),
     IsInvoice: true,
-    AdvancePayment: null,
+    AdvancePayment: 0,
     PaymentMethod: "",
     Diagnosis: "",
     CustomerNote: "",
@@ -42,12 +45,15 @@ const RepairFormDetailPage = () => {
     control,
     formState: { errors },
     handleSubmit,
+    setValue,
+    getValues,
     reset,
   } = useForm({ defaultValues });
 
   //get nesscessary data
   useEffect(() => {
     getStatus();
+    getTypes();
   }, []);
 
   //search car
@@ -73,6 +79,27 @@ const RepairFormDetailPage = () => {
       const status = res.data.Result;
       setRepairStatus(status);
     });
+  };
+
+  const getTypes = () => {
+    getRepairTypes().then((res) => {
+      const types = res.data.Result;
+      setRepairTypes(types);
+    });
+  };
+
+  const updateNextODO = (value) => {
+    if (value === null) {
+      setValue("ODONext", 0);
+      return;
+    }
+    const unit = getValues("ODOUnit");
+    const currentODO = getValues("ODOCurrent");
+    if (unit === "Km") {
+      setValue("ODONext", currentODO + 5000);
+    } else {
+      setValue("ODONext", currentODO + 3100);
+    }
   };
 
   const onSearchCar = (event) => {
@@ -102,9 +129,9 @@ const RepairFormDetailPage = () => {
         <ToggleablePanel header="Thông tin phiếu" className="pb-2" toggleable>
           <div className="formgrid grid">
             <div className="field col-12 md:col-4">
-              <label htmlFor="Representative">Số phiếu</label>
+              <label htmlFor="OrderCode">Số phiếu</label>
               <Controller
-                name="Representative"
+                name="OrderCode"
                 control={control}
                 render={({ field }) => (
                   <InputText id={field.name} {...field} className="w-full" />
@@ -129,15 +156,17 @@ const RepairFormDetailPage = () => {
               />
             </div>
             <div className="field col-12 md:col-4">
-              <label htmlFor="StatusName">Tình trạng phiếu</label>
+              <label htmlFor="StatusName">
+                Tình trạng phiếu <b className="p-error">*</b>
+              </label>
               <Controller
                 name="StatusName"
                 control={control}
+                rules={{ required: "Tình trạng không được để trống!" }}
                 render={({ field, fieldState }) => (
                   <Dropdown
                     id={field.name}
                     {...field}
-                    rules={{ required: "Tình trạng không được để trống!" }}
                     options={repairStatus}
                     optionLabel="StatusName"
                     optionValue="StatusId"
@@ -148,9 +177,95 @@ const RepairFormDetailPage = () => {
                   />
                 )}
               />
+              {getFormErrorMessage("StatusName")}
             </div>
             <div className="field col-12 md:col-4">
-              <label htmlFor="DateIn">Ngày vào</label>
+              <label htmlFor="TypeName">
+                Loại phiếu <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="TypeName"
+                control={control}
+                rules={{ required: "Loại phiếu không được để trống!" }}
+                render={({ field, fieldState }) => (
+                  <Dropdown
+                    id={field.name}
+                    {...field}
+                    options={repairTypes}
+                    optionLabel="TypeName"
+                    optionValue="TypeId"
+                    placeholder="Chọn loại phiếu"
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("TypeName")}
+            </div>
+            <div className="field col-12 md:col-4">
+              <label htmlFor="ODOCurrent">
+                Số ODO hiện tại <b className="p-error">*</b>
+              </label>
+
+              <Controller
+                name="ODOCurrent"
+                control={control}
+                rules={{
+                  required: "Số ODO hiện tại không được để trống!",
+                  min: 0,
+                }}
+                render={({ field, fieldState }) => (
+                  <InputNumber
+                    id={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onValueChange={(e) => {
+                      field.onChange(e);
+                      updateNextODO(e.value)
+                    }}
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("ODOCurrent")}
+            </div>
+            <div className="field col-12 md:col-4">
+              <label htmlFor="ODOUnit">
+                Đơn vị ODO <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="ODOUnit"
+                control={control}
+                rules={{ required: "Đơn vị ODO không được để trống!" }}
+                render={({ field, fieldState }) => (
+                  <Dropdown
+                    id={field.name}
+                    {...field}
+                    optionLabel="value"
+                    optionValue="id"
+                    options={[
+                      { id: "Km", value: "Km" },
+                      { id: "Miles", value: "Miles" },
+                    ]}
+                    placeholder="Chọn đơn vị ODO"
+                    onSelect={(e) => updateNextODO(e.value)}
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("ODOUnit")}
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="DateIn">
+                Ngày vào <b className="p-error">*</b>
+              </label>
               <Controller
                 name="DateIn"
                 control={control}
@@ -166,6 +281,112 @@ const RepairFormDetailPage = () => {
                 )}
               />
             </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="ODONext">
+                Số ODO lần bảo dưỡng kế tiếp <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="ODONext"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <InputNumber
+                    id={field.name}
+                    {...field}
+                    mode="decimal"
+                    disabled
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="DateOutEstimated">
+                Ngày dự kiến giao xe <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="DateOutEstimated"
+                control={control}
+                rules={{
+                  required: "Ngày dự kiến giao xe không được để trống!",
+                }}
+                render={({ field, fieldState }) => (
+                  <Calendar
+                    id={field.name}
+                    {...field}
+                    showIcon
+                    dateFormat="yy/mm/dd"
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("DateOutEstimated")}
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="ExpiredInDate">Thời hạn báo giá</label>
+              <Controller
+                name="ExpiredInDate"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <InputText
+                    id={field.name}
+                    {...field}
+                    disabled
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="AdvancePayment">Tạm ứng</label>
+              <Controller
+                name="AdvancePayment"
+                control={control}
+                render={({ field }) => (
+                  <InputNumber
+                    id={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onValueChange={(e) => field.onChange(e)}
+                    mode="currency"
+                    currency="VND"
+                    currencyDisplay="code"
+                    locale="vi-VN"
+                    className="w-full"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="DateOutActual">Ngày giao xe thực tế</label>
+              <Controller
+                name="DateOutActual"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Calendar
+                    id={field.name}
+                    {...field}
+                    showIcon
+                    dateFormat="yy/mm/dd"
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+            </div>
+            
           </div>
         </ToggleablePanel>
         <ToggleablePanel header="Thông tin xe" className="pb-2" toggleable>
