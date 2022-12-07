@@ -4,42 +4,42 @@ import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
-import { AutoComplete } from "primereact/autocomplete";
 import { classNames } from "primereact/utils";
 import { getRepairStatus, getRepairTypes } from "../../services/repair-service";
-import { getCars } from "../../services/car-service";
 import { getCurrentDate, getExpiredDate } from "../../utils/Utils";
 import { Calendar } from "primereact/calendar";
-import { isNumber } from "lodash";
-import axios from "axios";
-import classes from "./RepairForm.module.scss";
+import { Checkbox } from "primereact/checkbox";
+import { InputTextarea } from "primereact/inputtextarea";
+import CarAutoComplete from "../../components/auto-complete/CarAutoComplete";
+import MaintainanceCycleAutoComplete from "../../components/auto-complete/MaintainanceCycleAutoComplete";
+import SparePartTable from "../../components/tables/SparePartTable";
+
+const defaultValues = {
+  CarId: null,
+  StatusId: 1,
+  OrderCode: "",
+  OrderDate: getCurrentDate(),
+  DateIn: getCurrentDate(),
+  DateOutEstimated: "",
+  ODOCurrent: 0,
+  ODONext: 5000,
+  ODOUnit: "Km",
+  ExpiredInDate: getExpiredDate(15),
+  IsInvoice: true,
+  AdvancePayment: 0,
+  PaymentMethod: "Tiền mặt",
+  Diagnosis: "",
+  CustomerNote: "",
+  InternalNote: "",
+  OrderDetails: [],
+};
 
 const RepairFormDetailPage = () => {
   const formRef = useRef();
   const [repairStatus, setRepairStatus] = useState(null);
   const [repairTypes, setRepairTypes] = useState(null);
-  const [filteredCars, setFilteredCars] = useState([]);
-  const [searchText, setSearchText] = useState(null);
-
-  const defaultValues = {
-    CarId: null,
-    StatusId: 1,
-    OrderCode: "",
-    OrderDate: getCurrentDate(),
-    DateIn: getCurrentDate(),
-    DateOutEstimated: "",
-    ODOCurrent: 0,
-    ODONext: 5000,
-    ODOUnit: "Km",
-    ExpiredInDate: getExpiredDate(15),
-    IsInvoice: true,
-    AdvancePayment: 0,
-    PaymentMethod: "",
-    Diagnosis: "",
-    CustomerNote: "",
-    InternalNote: "",
-    OrderDetails: [],
-  };
+  const [selectedCar, setSelectedCar] = useState({});
+  const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
 
   const {
     control,
@@ -55,18 +55,6 @@ const RepairFormDetailPage = () => {
     getStatus();
     getTypes();
   }, []);
-
-  //search car
-  useEffect(() => {
-    const source = axios.CancelToken.source();
-    getCars(20, 1, searchText, source.token).then((res) => {
-      const data = res?.data.Result.Data;
-      setFilteredCars(data);
-    });
-    return () => {
-      source.cancel();
-    };
-  }, [searchText]);
 
   const getFormErrorMessage = (name) => {
     return (
@@ -102,26 +90,15 @@ const RepairFormDetailPage = () => {
     }
   };
 
-  const onSearchCar = (event) => {
-    let query = event.query.trim();
-    if (query === searchText?.trim()) {
-      return setFilteredCars([...filteredCars]);
-    }
-    setSearchText(query);
-  };
+  const onMaintainanceCycleSelect = (maintainanceCycle) => {
+    const sparePartList = maintainanceCycle.TemplateDetails;
+    setSparePartFromTemplate(sparePartList);
+    setValue('OrderDetails', sparePartList);
+  }
+
+  const onHandleSparePartsChange = () => {}
 
   const onSubmit = () => {};
-
-  const itemLicensePlateTemplate = (item) => {
-    return (
-      <div className="grid">
-        <div className="col-3">{item.LicensePlate}</div>
-        <div className="col-3 pl-4">{item.TypeName}</div>
-        <div className="col-3 pl-4">{item.ManufacturerName}</div>
-        <div className="col-3 pl-4">{item.CustomerName}</div>
-      </div>
-    );
-  };
 
   return (
     <Fragment>
@@ -223,7 +200,7 @@ const RepairFormDetailPage = () => {
                     onBlur={field.onBlur}
                     onValueChange={(e) => {
                       field.onChange(e);
-                      updateNextODO(e.value)
+                      updateNextODO(e.value);
                     }}
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
@@ -233,6 +210,7 @@ const RepairFormDetailPage = () => {
               />
               {getFormErrorMessage("ODOCurrent")}
             </div>
+
             <div className="field col-12 md:col-4">
               <label htmlFor="ODOUnit">
                 Đơn vị ODO <b className="p-error">*</b>
@@ -245,12 +223,7 @@ const RepairFormDetailPage = () => {
                   <Dropdown
                     id={field.name}
                     {...field}
-                    optionLabel="value"
-                    optionValue="id"
-                    options={[
-                      { id: "Km", value: "Km" },
-                      { id: "Miles", value: "Miles" },
-                    ]}
+                    options={["Km", "Miles"]}
                     placeholder="Chọn đơn vị ODO"
                     onSelect={(e) => updateNextODO(e.value)}
                     className={classNames("w-full", {
@@ -263,9 +236,7 @@ const RepairFormDetailPage = () => {
             </div>
 
             <div className="field col-12 md:col-4">
-              <label htmlFor="DateIn">
-                Ngày vào <b className="p-error">*</b>
-              </label>
+              <label htmlFor="DateIn">Ngày vào</label>
               <Controller
                 name="DateIn"
                 control={control}
@@ -283,9 +254,7 @@ const RepairFormDetailPage = () => {
             </div>
 
             <div className="field col-12 md:col-4">
-              <label htmlFor="ODONext">
-                Số ODO lần bảo dưỡng kế tiếp <b className="p-error">*</b>
-              </label>
+              <label htmlFor="ODONext">Số ODO lần bảo dưỡng kế tiếp</label>
               <Controller
                 name="ODONext"
                 control={control}
@@ -386,10 +355,105 @@ const RepairFormDetailPage = () => {
                 )}
               />
             </div>
-            
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="PaymentMethod">
+                Hình thanh toán <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="PaymentMethod"
+                control={control}
+                rules={{ required: "Hình thanh toán không được để trống!" }}
+                render={({ field, fieldState }) => (
+                  <Dropdown
+                    id={field.name}
+                    {...field}
+                    options={["Tiền mặt", "Chuyển khoản"]}
+                    placeholder="Chọn Hình thanh toán"
+                    onSelect={(e) => updateNextODO(e.value)}
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("PaymentMethod")}
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="IsInvoice">Xuất hóa đơn GTGT </label>
+              <Controller
+                name="IsInvoice"
+                control={control}
+                render={({ field }) => (
+                  <div className="w-full py-2">
+                    <Checkbox
+                      inputId={field.name}
+                      onChange={(e) => field.onChange(e.checked)}
+                      checked={field.value}
+                    />
+                  </div>
+                )}
+              />
+            </div>
+
+            <div className="field col-12 md:col-4"></div>
+            <div className="field col-12 md:col-4">
+              <label htmlFor="Diagnosis">
+                Chuẩn đoán/tình trạng khi vào xưởng <b className="p-error">*</b>
+              </label>
+              <Controller
+                name="Diagnosis"
+                control={control}
+                rules={{ required: "Chuẩn đoán không được để trống!" }}
+                render={({ field, fieldState }) => (
+                  <InputTextarea
+                    id={field.name}
+                    {...field}
+                    rows={5}
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                  />
+                )}
+              />
+              {getFormErrorMessage("Diagnosis")}
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="CustomerNote">Ghi chú khách hàng</label>
+              <Controller
+                name="CustomerNote"
+                control={control}
+                render={({ field }) => (
+                  <InputTextarea
+                    id={field.name}
+                    {...field}
+                    rows={5}
+                    className="w-full"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="InternalNote">Ghi chú nội bộ</label>
+              <Controller
+                name="InternalNote"
+                control={control}
+                render={({ field }) => (
+                  <InputTextarea
+                    id={field.name}
+                    rows={5}
+                    {...field}
+                    className="w-full"
+                  />
+                )}
+              />
+            </div>
           </div>
         </ToggleablePanel>
-        <ToggleablePanel header="Thông tin xe" className="pb-2" toggleable>
+        <ToggleablePanel header="Thông tin xe và khách hàng" className="pb-2" toggleable>
           <div className="formgrid grid">
             <div className="field col-12 md:col-4">
               <label htmlFor="LicensePlate">
@@ -400,88 +464,119 @@ const RepairFormDetailPage = () => {
                 control={control}
                 rules={{ required: "Biển số xe không được để trống!" }}
                 render={({ field, fieldState }) => (
-                  <AutoComplete
-                    id={field.name}
-                    {...field}
-                    suggestions={filteredCars}
-                    completeMethod={onSearchCar}
-                    field="LicensePlate"
-                    dropdown
-                    forceSelection
-                    itemTemplate={itemLicensePlateTemplate}
-                    // onChange={(e) => onSparePartCodeChange(e.value)}
-                    placeholder="Nhập từ khoá"
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                  />
+                  <CarAutoComplete field={field} fieldState={fieldState} setValue={setValue} onSelectCar={setSelectedCar}/>
                 )}
               />
               {getFormErrorMessage("LicensePlate")}
             </div>
 
             <div className="field col-12 md:col-4">
+              <label htmlFor="MaintainCycle">Chu kỳ bảo dưỡng</label>
+                  <MaintainanceCycleAutoComplete id="MaintainCycle" onSelect={onMaintainanceCycleSelect}/>
+            </div>
+
+            <div className="field col-12 md:col-4">
               <label htmlFor="ManufacturerName">Hãng xe</label>
-              <Controller
-                name="ManufacturerName"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <InputText
-                    id={field.name}
-                    {...field}
-                    disabled
-                    className={classNames("block w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                  />
-                )}
+              <InputText
+                id="ManufacturerName"
+                value={selectedCar.ManufacturerName || ""}
+                disabled
+                className="w-full"
               />
             </div>
             <div className="field col-12 md:col-4">
               <label htmlFor="TypeName">Dòng xe</label>
-              <Controller
-                name="TypeName"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <InputText
-                    id={field.name}
-                    {...field}
-                    disabled
-                    className={classNames("block w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                  />
-                )}
+              <InputText
+                id="TypeName"
+                value={selectedCar.TypeName || ""}
+                disabled
+                className="w-full"
               />
             </div>
-            <div className="field col-12 md:col-6">
-              <label htmlFor="LicensePlate">Chu kỳ bảo dưỡng</label>
-              <Controller
-                name="LicensePlate"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <AutoComplete
-                    id={field.name}
-                    {...field}
-                    // value={selectedSparePart.ProductCode}
-                    // suggestions={filteredSparePart}
-                    // completeMethod={onSearchSparePart}
-                    field="LicensePlate"
-                    dropdown
-                    forceSelection
-                    // itemTemplate={itemLicensePlateTemplate}
-                    // onChange={(e) => onSparePartCodeChange(e.value)}
-                    // onSelect={(e) => onSparePartCodeSelect(e.value)}
-                    placeholder="Nhập từ khoá"
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                  />
-                )}
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="YearOfManufacture">Năm sản xuất</label>
+              <InputText
+                id="YearOfManufacture"
+                value={selectedCar.YearOfManufacture || ""}
+                disabled
+                className="w-full"
               />
-              {getFormErrorMessage("LicensePlate")}
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="VIN">VIN</label>
+              <InputText
+                id="VIN"
+                value={selectedCar.VIN || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="PhoneNumber">Số điện thoại</label>
+              <InputText
+                id="PhoneNumber"
+                value={selectedCar.Customer?.PhoneNumber || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="FullName">Khách hàng</label>
+              <InputText
+                id="FullName"
+                value={selectedCar.Customer?.FullName || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="Email">Email</label>
+              <InputText
+                id="Email"
+                value={selectedCar.Customer?.Email || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="Address">Địa chỉ</label>
+              <InputText
+                id="Address"
+                value={selectedCar.Customer?.Address || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="CustomerTypeName">Loại khách hàng</label>
+              <InputText
+                id="CustomerTypeName"
+                value={selectedCar.Customer?.TypeName || ""}
+                disabled
+                className="w-full"
+              />
+            </div>
+
+            <div className="field col-12 md:col-4">
+              <label htmlFor="CustomerTaxCode">Mã số thuế</label>
+              <InputText
+                id="CustomerTaxCode"
+                value={selectedCar.Customer?.TaxCode || ""}
+                disabled
+                className="w-full"
+              />
             </div>
           </div>
+        </ToggleablePanel>
+        <ToggleablePanel header="Chi phí phụ tùng sửa chữa" className="pb-2" toggleable>
+           <SparePartTable existedSpareParts={sparePartFromTemplate} handleSparePartsChange={onHandleSparePartsChange}/>
         </ToggleablePanel>
       </form>
     </Fragment>
