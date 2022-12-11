@@ -8,15 +8,8 @@ import { InputNumber } from "primereact/inputnumber";
 import { AutoComplete } from "primereact/autocomplete";
 import { classNames } from "primereact/utils";
 import axios from "axios";
+import { sumBy } from "lodash";
 import { getSparePart } from "../../services/spare-part-service";
-
-const emptySparePart = {
-  ProductCode: "",
-  ProductName: "",
-  Quantity: "",
-  UnitName: "",
-  UnitPrice: "",
-};
 
 const SparePartTable = (props) => {
   const [spareParts, setSpareParts] = useState([]);
@@ -28,6 +21,14 @@ const SparePartTable = (props) => {
   const [searchText, setSearchText] = useState(null);
   const { handleSparePartsChange } = props;
   const existedSpareParts = props.existedSpareParts;
+
+  const emptySparePart = {
+    ProductCode: "",
+    ProductName: "",
+    Quantity: "",
+    UnitName: "",
+    UnitPrice: "",
+  };
 
   const [selectedSparePart, setSelectedSparePart] = useState(emptySparePart);
 
@@ -200,7 +201,7 @@ const SparePartTable = (props) => {
   };
 
   const onSparePartCodeChange = (searchTextOrSparePart) => {
-    if (typeof searchTextOrSparePart === 'object') {
+    if (typeof searchTextOrSparePart === "object") {
       setSelectedSparePart((oldValue) => {
         return { ...searchTextOrSparePart, Quantity: oldValue.Quantity };
       });
@@ -226,6 +227,47 @@ const SparePartTable = (props) => {
     });
   };
 
+  const totalFooterTemplate = () => {
+    const total = sumBy(spareParts, (item) => item.Quantity * item.UnitPrice);
+    const totalIncludedTax = total * 1.08;
+    const finalAmount = totalIncludedTax - props.advancePayment;
+    const totalElement = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(total);
+    const totalIncludedTaxElement = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(totalIncludedTax);
+    const advancePaymentElement = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(props.advancePayment);
+    const finalAmountElement = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(finalAmount);
+    return (
+      <Fragment>
+        <div className="py-2">{totalElement}</div>
+        <div className="py-2">{totalIncludedTaxElement}</div>
+        <div className="py-2">{advancePaymentElement}</div>
+        <div className="py-2">{finalAmountElement}</div>
+      </Fragment>
+    );
+  };
+
+  const titleFooterTemplate = () => {
+    return (
+      <Fragment>
+        <div className="py-2">Cộng (A)</div>
+        <div className="py-2">Thuế GTGT (8%) (B)</div>
+        <div className="py-2">Tạm ứng (C)</div>
+        <div className="py-2">Tổng cộng ((A+B)-C)</div>
+      </Fragment>
+    );
+  };
+
   return (
     <Fragment>
       <DataTable
@@ -234,6 +276,7 @@ const SparePartTable = (props) => {
         header={header}
         responsiveLayout="scroll"
         editMode="row"
+        stripedRows
       >
         <Column field="ProductCode" header="Mã phụ tùng"></Column>
         <Column field="ProductName" header="Mô tả"></Column>
@@ -243,8 +286,13 @@ const SparePartTable = (props) => {
           field="UnitPrice"
           header="Đơn giá"
           body={priceBodyTemplate}
+          footer={titleFooterTemplate}
         ></Column>
-        <Column header="Tổng" body={totalPriceBodyTemplate}></Column>
+        <Column
+          header="Tổng"
+          body={totalPriceBodyTemplate}
+          footer={totalFooterTemplate}
+        ></Column>
         <Column body={actionBodyTemplate} exportable={false}></Column>
       </DataTable>
 
@@ -284,12 +332,13 @@ const SparePartTable = (props) => {
           </label>
           <AutoComplete
             id="aucpProductCode"
-            value={selectedSparePart.ProductCode}
+            value={selectedSparePart.ProductCode || ""}
             suggestions={filteredSparePart}
             completeMethod={onSearchSparePart}
             field="ProductCode"
             dropdown
             forceSelection
+            autoFocus
             itemTemplate={itemTemplate}
             onChange={(e) => onSparePartCodeChange(e.value)}
             placeholder="Nhập từ khoá"
@@ -308,7 +357,7 @@ const SparePartTable = (props) => {
           <label htmlFor="txtProductName">Mô tả</label>
           <InputText
             id="txtProductName"
-            value={selectedSparePart.ProductName}
+            value={selectedSparePart.ProductName || ""}
             disabled
           />
         </div>
@@ -319,7 +368,7 @@ const SparePartTable = (props) => {
           </label>
           <InputNumber
             id="txtQuantity"
-            value={selectedSparePart.Quantity}
+            value={selectedSparePart.Quantity || 0}
             onValueChange={(e) => onQuantityChange(e.value)}
             required
             className={classNames({
@@ -334,7 +383,7 @@ const SparePartTable = (props) => {
           <label htmlFor="txtUnitName">Đơn vị tính</label>
           <InputText
             id="txtUnitName"
-            value={selectedSparePart.UnitName}
+            value={selectedSparePart.UnitName || ""}
             disabled
           />
         </div>
@@ -342,7 +391,7 @@ const SparePartTable = (props) => {
           <label htmlFor="txtUnitPrice">Đơn giá</label>
           <InputText
             id="txtUnitPrice"
-            value={selectedSparePart.UnitPrice}
+            value={selectedSparePart.UnitPrice || ""}
             disabled
           />
         </div>

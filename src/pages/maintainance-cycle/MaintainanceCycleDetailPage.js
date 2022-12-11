@@ -246,6 +246,7 @@ const MaintainanceCycleDetailPage = () => {
         <SparePartTable
           existedSpareParts={existedSpareParts}
           handleSparePartsChange={onHandleSparePartsChange}
+          advancePayment = {0}
         />
       </ToggleablePanel>
       <Footer items={functionButtons} />
