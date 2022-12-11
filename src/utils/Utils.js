@@ -6,7 +6,7 @@ export const getCurrentDate = () => {
   return getDateWithFormat(date);
 };
 
-const getDateWithFormat = (date) => {
+export const getDateWithFormat = (date) => {
   let day = date.getDate();
   let month = date.getMonth() + 1;
   const year = date.getFullYear();

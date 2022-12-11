@@ -6,6 +6,8 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { AutoComplete } from "primereact/autocomplete";
+import { Checkbox } from "primereact/checkbox";
+import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
 import axios from "axios";
 import { sumBy } from "lodash";
@@ -28,6 +30,8 @@ const SparePartTable = (props) => {
     Quantity: "",
     UnitName: "",
     UnitPrice: "",
+    HideProduct: false,
+    Comment: "",
   };
 
   const [selectedSparePart, setSelectedSparePart] = useState(emptySparePart);
@@ -193,6 +197,10 @@ const SparePartTable = (props) => {
     }).format(rowData.UnitPrice);
   };
 
+  const hideProductBodyTemplate = (rowData) => {
+    return <Checkbox checked={rowData.HideProduct} disabled></Checkbox>;
+  };
+
   const totalPriceBodyTemplate = (rowData) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -218,11 +226,13 @@ const SparePartTable = (props) => {
     }
   };
 
-  const onQuantityChange = (quantity) => {
+  const onDialogInput = (field, value) => {
+    const fieldValue = {};
+    fieldValue[field] = value;
     setSelectedSparePart((oldValue) => {
       return {
         ...oldValue,
-        Quantity: quantity,
+        ...fieldValue,
       };
     });
   };
@@ -282,6 +292,13 @@ const SparePartTable = (props) => {
         <Column field="ProductName" header="Mô tả"></Column>
         <Column field="Quantity" header="Số lượng"></Column>
         <Column field="UnitName" header="Đơn vị tính"></Column>
+        {props.isRepairForm && (
+          <Column
+            field="HideProduct"
+            body={hideProductBodyTemplate}
+            header="Ẩn"
+          ></Column>
+        )}
         <Column
           field="UnitPrice"
           header="Đơn giá"
@@ -293,6 +310,9 @@ const SparePartTable = (props) => {
           body={totalPriceBodyTemplate}
           footer={totalFooterTemplate}
         ></Column>
+        {props.isRepairForm && (
+          <Column field="Comment" header="Ghi Chú"></Column>
+        )}
         <Column body={actionBodyTemplate} exportable={false}></Column>
       </DataTable>
 
@@ -369,7 +389,7 @@ const SparePartTable = (props) => {
           <InputNumber
             id="txtQuantity"
             value={selectedSparePart.Quantity || 0}
-            onValueChange={(e) => onQuantityChange(e.value)}
+            onValueChange={(e) => onDialogInput("Quantity", e.value)}
             required
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.Quantity,
@@ -395,6 +415,28 @@ const SparePartTable = (props) => {
             disabled
           />
         </div>
+        {props.isRepairForm && (
+          <Fragment>
+            <div className="field">
+              <label htmlFor="txtHideProduct">Ẩn</label>
+              <Checkbox
+                id="txtHideProduct"
+                className="block"
+                checked={selectedSparePart.HideProduct}
+                onChange={(e) => onDialogInput("HideProduct", e.checked)}
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="txtComment">Ghi Chú</label>
+              <InputTextarea
+                id="txtComment"
+                row={5}
+                value={selectedSparePart.Comment || ""}
+                onChange={(e) => onDialogInput("Comment", e.target.value)}
+              />
+            </div>
+          </Fragment>
+        )}
       </Dialog>
     </Fragment>
   );

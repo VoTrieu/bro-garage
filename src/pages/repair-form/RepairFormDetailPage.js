@@ -5,8 +5,16 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import { getRepairStatus, getRepairTypes } from "../../services/repair-service";
-import { getCurrentDate, getExpiredDate } from "../../utils/Utils";
+import {
+  getRepairStatus,
+  getRepairTypes,
+  createRepairForm,
+} from "../../services/repair-service";
+import {
+  getCurrentDate,
+  getExpiredDate,
+  getDateWithFormat,
+} from "../../utils/Utils";
 import { Calendar } from "primereact/calendar";
 import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -119,12 +127,18 @@ const RepairFormDetailPage = () => {
   ];
 
   const onSubmit = (formValue) => {
-    console.log(formValue);
+    const { LicensePlate, DateOutEstimated, DateOutActual, ...data } =
+      formValue;
+    data.DateOutEstimated = getDateWithFormat(DateOutEstimated);
+    if (DateOutActual) {
+      data.DateOutActual = getDateWithFormat(DateOutActual);
+    }
+    createRepairForm(data);
   };
 
   return (
     <Fragment>
-      <div  className="relative h-full pb-8">
+      <div className="relative h-full pb-8">
         <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
           <ToggleablePanel header="Thông tin phiếu" className="pb-2" toggleable>
             <div className="formgrid grid">
@@ -156,11 +170,11 @@ const RepairFormDetailPage = () => {
                 />
               </div>
               <div className="field col-12 md:col-4">
-                <label htmlFor="StatusName">
+                <label htmlFor="StatusId">
                   Tình trạng phiếu <b className="p-error">*</b>
                 </label>
                 <Controller
-                  name="StatusName"
+                  name="StatusId"
                   control={control}
                   rules={{ required: "Tình trạng không được để trống!" }}
                   render={({ field, fieldState }) => (
@@ -180,11 +194,11 @@ const RepairFormDetailPage = () => {
                 {getFormErrorMessage("StatusName")}
               </div>
               <div className="field col-12 md:col-4">
-                <label htmlFor="TypeName">
+                <label htmlFor="TypeId">
                   Loại phiếu <b className="p-error">*</b>
                 </label>
                 <Controller
-                  name="TypeName"
+                  name="TypeId"
                   control={control}
                   rules={{ required: "Loại phiếu không được để trống!" }}
                   render={({ field, fieldState }) => (
@@ -394,7 +408,12 @@ const RepairFormDetailPage = () => {
                     <Dropdown
                       id={field.name}
                       {...field}
-                      options={["Tiền mặt", "Chuyển khoản"]}
+                      optionLabel="label"
+                      optionValue="id"
+                      options={[
+                        { id: "CASH", label: "Tiền mặt" },
+                        { id: "TRANSFER", label: "Chuyển khoản" },
+                      ]}
                       placeholder="Chọn Hình thanh toán"
                       onSelect={(e) => updateNextODO(e.value)}
                       className={classNames("w-full", {
@@ -624,6 +643,7 @@ const RepairFormDetailPage = () => {
             existedSpareParts={sparePartFromTemplate}
             handleSparePartsChange={onHandleSparePartsChange}
             advancePayment={advancePayment}
+            isRepairForm={true}
           />
         </ToggleablePanel>
         <Footer items={functionButtons} />
