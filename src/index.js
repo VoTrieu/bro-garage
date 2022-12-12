@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import { authActions } from "./store/auth-slice";
+import { includes } from "lodash";
 import store from "./store/index";
 import "./index.css";
 import App from "./App";
@@ -41,7 +42,7 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (response) => {
     finishedRequestNumber++;
-    if (response.data.IsSuccess) {
+    if (response.data.IsSuccess || includes(response.config.url, 'export')) {
       if(response.config.method !== 'get'){
         store.dispatch(
           uiActions.setToastContent({

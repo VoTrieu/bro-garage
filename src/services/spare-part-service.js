@@ -29,3 +29,11 @@ export const createNewSparePart = (sparePart) => {
 export const updateSparePart = (sparePart) => {
   return axios.put("/product/edit", sparePart);
 };
+
+export const getAllSparePart = () => {
+  return axios({
+    url: "/product/export",
+    method: "Get",
+    responseType: "blob"
+  });
+}

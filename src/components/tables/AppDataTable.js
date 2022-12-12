@@ -83,34 +83,17 @@ const AppDataTable = (props) => {
     props.updateItem(rowData);
   };
 
-  const exportExcel = () => {
-    import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(props.data);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      saveAsExcelFile(excelBuffer, props.excelFileName);
+  const exportExcel = async () => {
+    const file = await props.fnGetAllDataForExport();
+    var blob = new Blob([file.data], {
+      type: file.headers["content-type"],
     });
-  };
-
-  const saveAsExcelFile = (buffer, fileName) => {
-    import("file-saver").then((module) => {
-      if (module && module.default) {
-        let EXCEL_TYPE =
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-        let EXCEL_EXTENSION = ".xlsx";
-        const data = new Blob([buffer], {
-          type: EXCEL_TYPE,
-        });
-
-        module.default.saveAs(
-          data,
-          fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
-        );
-      }
-    });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Phụ Tùng_export_${new Date().getTime()}.xlsx`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
   };
 
   const header = (

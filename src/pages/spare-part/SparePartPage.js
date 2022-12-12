@@ -12,6 +12,7 @@ import {
   deleteSparePart,
   createNewSparePart,
   updateSparePart,
+  getAllSparePart
 } from "../../services/spare-part-service";
 
 import AppDataTable from "../../components/tables/AppDataTable";
@@ -177,6 +178,7 @@ const SparePartPage = () => {
         excelFileName="Phụ tùng"
         paginatorOptions={paginatorOptions}
         fnGetData={getData}
+        fnGetAllDataForExport={getAllSparePart}
       />
 
       <Dialog
