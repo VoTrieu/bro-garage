@@ -37,7 +37,7 @@ const RepairingFormPage = () => {
   };
 
   const updateRepairForm = (repairForm) => {
-    navigate(`/app/repair-form-detail/${repairForm.OrderId}`);
+    navigate(`/app/repair-detail/${repairForm.OrderId}`);
   };
 
   const statusBodyTemplate = (rowData) => {

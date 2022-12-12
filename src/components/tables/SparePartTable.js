@@ -30,7 +30,7 @@ const SparePartTable = (props) => {
     Quantity: "",
     UnitName: "",
     UnitPrice: "",
-    HideProduct: false,
+    IsHideProduct: false,
     Comment: "",
   };
 
@@ -198,7 +198,7 @@ const SparePartTable = (props) => {
   };
 
   const hideProductBodyTemplate = (rowData) => {
-    return <Checkbox checked={rowData.HideProduct} disabled></Checkbox>;
+    return <Checkbox checked={rowData.IsHideProduct} disabled></Checkbox>;
   };
 
   const totalPriceBodyTemplate = (rowData) => {
@@ -239,8 +239,8 @@ const SparePartTable = (props) => {
 
   const totalFooterTemplate = () => {
     const total = sumBy(spareParts, (item) => item.Quantity * item.UnitPrice);
-    const totalIncludedTax = total * 1.08;
-    const finalAmount = totalIncludedTax - props.advancePayment;
+    const tax = total * 0.08;
+    const finalAmount = total + tax - props.advancePayment;
     const totalElement = new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
@@ -248,7 +248,7 @@ const SparePartTable = (props) => {
     const totalIncludedTaxElement = new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(totalIncludedTax);
+    }).format(tax);
     const advancePaymentElement = new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
@@ -422,8 +422,8 @@ const SparePartTable = (props) => {
               <Checkbox
                 id="txtHideProduct"
                 className="block"
-                checked={selectedSparePart.HideProduct}
-                onChange={(e) => onDialogInput("HideProduct", e.checked)}
+                checked={selectedSparePart.IsHideProduct}
+                onChange={(e) => onDialogInput("IsHideProduct", e.checked)}
               />
             </div>
             <div className="field">

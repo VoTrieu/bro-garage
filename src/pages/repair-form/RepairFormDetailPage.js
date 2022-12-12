@@ -1,5 +1,6 @@
 import { Fragment, useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
@@ -9,6 +10,8 @@ import {
   getRepairStatus,
   getRepairTypes,
   createRepairForm,
+  getRepairFormDetail,
+  updateRepairForm,
 } from "../../services/repair-service";
 import {
   getCurrentDate,
@@ -40,6 +43,9 @@ const defaultValues = {
   Diagnosis: "",
   CustomerNote: "",
   InternalNote: "",
+  Car: {
+    LicensePlate: "",
+  },
   OrderDetails: [],
 };
 
@@ -50,6 +56,9 @@ const RepairFormDetailPage = () => {
   const [selectedCar, setSelectedCar] = useState({});
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
+
+  const params = useParams();
+  const selectedRepairFormId = params?.id;
 
   const {
     control,
@@ -66,6 +75,24 @@ const RepairFormDetailPage = () => {
     getStatus();
     getTypes();
   }, []);
+
+  //get repairForm Detail
+  useEffect(() => {
+    if (selectedRepairFormId) {
+      getRepairFormDetail(selectedRepairFormId).then((response) => {
+        const data = response.data.Result;
+        setSparePartFromTemplate(data.OrderDetails);
+        setSelectedCar(data.Car);
+
+        //convert date to IsoDateTime
+        data.DateOutEstimated = new Date(data.DateOutEstimated);
+        if (data.DateOutActual) {
+          data.DateOutActual = new Date(data.DateOutActual);
+        }
+        reset(data);
+      });
+    }
+  }, [reset, selectedRepairFormId]);
 
   const getFormErrorMessage = (name) => {
     return (
@@ -106,6 +133,7 @@ const RepairFormDetailPage = () => {
     const existedSpareParts = getValues("OrderDetails");
     const updatedSparePartList = [...existedSpareParts, ...sparePartList];
     setSparePartFromTemplate(updatedSparePartList);
+    setValue("TemplateId", maintainanceCycle.TemplateId);
   };
 
   const onHandleSparePartsChange = (spareParts) => {
@@ -133,7 +161,14 @@ const RepairFormDetailPage = () => {
     if (DateOutActual) {
       data.DateOutActual = getDateWithFormat(DateOutActual);
     }
-    createRepairForm(data);
+    if (data.OrderId) {
+      updateRepairForm(data);
+      return;
+    }
+    createRepairForm(data).then((res) => {
+      const orderId = res.data.Result;
+      setValue('OrderId', orderId);
+    });
   };
 
   return (
@@ -510,7 +545,7 @@ const RepairFormDetailPage = () => {
                   Biển số xe <b className="p-error">*</b>
                 </label>
                 <Controller
-                  name="LicensePlate"
+                  name="Car.LicensePlate"
                   control={control}
                   rules={{ required: "Biển số xe không được để trống!" }}
                   render={({ field, fieldState }) => (

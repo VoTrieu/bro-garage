@@ -42,14 +42,15 @@ axios.interceptors.response.use(
   (response) => {
     finishedRequestNumber++;
     if (response.data.IsSuccess) {
-      response.data.Message &&
+      if(response.config.method !== 'get'){
         store.dispatch(
           uiActions.setToastContent({
             severity: "success",
             summary: "Success Message",
-            detail: response.data.Message,
+            detail: "Lưu thành công!",
           })
         );
+      }
     } else {
       store.dispatch(
         uiActions.setToastContent({
