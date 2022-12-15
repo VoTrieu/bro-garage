@@ -48,7 +48,7 @@ const defaultValues = {
   Car: {
     LicensePlate: "",
   },
-  OrderDetails: [],
+  OrderDetails: null,
 };
 
 const RepairFormDetailPage = () => {
@@ -60,12 +60,16 @@ const RepairFormDetailPage = () => {
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
   const [printData, setPrintData] = useState(null);
+  const [isProcessing, setIsProcessing] = useState({
+    printing: false,
+    saving: false,
+  });
   const params = useParams();
   const [selectedRepairFormId, setSelectedRepairFormId] = useState(params?.id);
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     setValue,
     getValues,
@@ -140,7 +144,7 @@ const RepairFormDetailPage = () => {
   };
 
   const onHandleSparePartsChange = (spareParts) => {
-    setValue("OrderDetails", spareParts);
+    setValue("OrderDetails", spareParts, { shouldDirty: true });
   };
 
   const handlePrint = useReactToPrint({
@@ -152,13 +156,16 @@ const RepairFormDetailPage = () => {
       label: "In Pdf",
       icon: "pi pi-check",
       className: "p-button-success",
+      disabled: isProcessing.printing,
       action: async () => {
+        setIsProcessing({ ...isProcessing, printing: true });
         const res = await getRepairFormDetail(selectedRepairFormId);
         const data = res.data.Result;
         setPrintData(data);
         //wait for printData updated
         setTimeout(() => {
           handlePrint();
+          setIsProcessing({ ...isProcessing, printing: false });
         }, 100);
       },
     },
@@ -166,9 +173,11 @@ const RepairFormDetailPage = () => {
       label: "Lưu",
       icon: "pi pi-check",
       className: "p-button-success",
+      disabled: !isDirty || isProcessing.saving,
       action: async () => {
         const isFormValid = await trigger();
         if (isFormValid) {
+          setIsProcessing({ ...isProcessing, saving: true });
           formRef.current.requestSubmit();
         }
       },
@@ -183,14 +192,20 @@ const RepairFormDetailPage = () => {
       data.DateOutActual = getDateWithFormat(DateOutActual);
     }
     if (data.OrderId) {
-      updateRepairForm(data);
+      updateRepairForm(data).finally(() => {
+        setIsProcessing({ ...isProcessing, saving: false });
+      });
       return;
     }
-    createRepairForm(data).then((res) => {
-      const orderId = res.data.Result;
-      setSelectedRepairFormId(orderId);
-      setValue("OrderId", orderId);
-    });
+    createRepairForm(data)
+      .then((res) => {
+        const orderId = res.data.Result;
+        setSelectedRepairFormId(orderId);
+        setValue("OrderId", orderId);
+      })
+      .finally(() => {
+        setIsProcessing({ ...isProcessing, saving: false });
+      });
   };
 
   return (

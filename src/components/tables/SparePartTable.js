@@ -56,7 +56,7 @@ const SparePartTable = (props) => {
     return () => {
       source.cancel();
     };
-  }, [searchText, selectedSparePart.ProductCode]);
+  }, [searchText]);
 
   const showDeletesparePartsDialog = (sparePart) => {
     setSelectedSparePart({ ...sparePart });

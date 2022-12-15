@@ -9,6 +9,7 @@ const Footer = (props) => {
           label={item.label}
           icon={item.icon}
           className={`${item.className} mx-2`}
+          disabled={item.disabled}
           onClick={item.action}
         />
       ))}
