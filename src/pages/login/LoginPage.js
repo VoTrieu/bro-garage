@@ -15,7 +15,7 @@ import { Card } from "primereact/card";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { errorMessage, loginSuccess, refreshToken, isTokenValid } =
+  const { errorMessage, loginSuccess, isTokenValid } =
     useSelector((state) => state.auth);
 
   const defaultValues = {
@@ -29,13 +29,6 @@ const LoginPage = () => {
       navigate("/app/home");
     }
   }, [loginSuccess, isTokenValid, navigate]);
-
-  //refresh Token
-  useEffect(() => {
-    if (refreshToken) {
-      dispatch(fnRefreshToken(refreshToken));
-    }
-  }, []);
 
   const {
     control,

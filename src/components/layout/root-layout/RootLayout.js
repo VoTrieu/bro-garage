@@ -1,7 +1,8 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
+import { fnRefreshToken } from "../../../store/auth-actions";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { classNames } from "primereact/utils";
 import MainNavigation from "../main-navigation/MainNavigation";
@@ -10,7 +11,23 @@ import SideBarMenu from "../sidebar/SidebarMenu";
 import classes from "./RootLayout.module.scss";
 
 function RootLayout() {
+  const dispatch = useDispatch();
   const isShowSpinner = useSelector((state) => state.ui.isShowSpinner);
+  const { refreshToken } = useSelector((state) => state.auth);
+
+  //refresh Token
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (refreshToken) {
+        dispatch(fnRefreshToken(refreshToken));
+      }
+    }, 60000 * 45);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <Fragment>
       <MainNavigation />

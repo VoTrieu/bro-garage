@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import { authActions } from "./store/auth-slice";
-import { includes } from "lodash";
+import { includes, endsWith } from "lodash";
 import store from "./store/index";
 import "./index.css";
 import App from "./App";
@@ -42,8 +42,9 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (response) => {
     finishedRequestNumber++;
+    //Export request return a file, so it does not have IsSuccess value
     if (response.data.IsSuccess || includes(response.config.url, 'export')) {
-      if(response.config.method !== 'get'){
+      if(response.config.method !== 'get' && endsWith(response.config.url, 'refresh-token')){
         store.dispatch(
           uiActions.setToastContent({
             severity: "success",
