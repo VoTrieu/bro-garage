@@ -1,0 +1,21 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  .pdf_container {
+    font-size: 0.9em;
+    color: #1e2a28;
+    width: 740px;
+    margin: 0;
+    padding: 0;
+    textarea {
+      resize: none;
+    }
+  }
+
+  table tfoot {
+    display: table-row-group;
+  }
+}

@@ -5,6 +5,7 @@ import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
+import { useReactToPrint } from "react-to-print";
 import { classNames } from "primereact/utils";
 import {
   getRepairStatus,
@@ -25,6 +26,7 @@ import Footer from "../../components/layout/footer/Footer";
 import CarAutoComplete from "../../components/auto-complete/CarAutoComplete";
 import MaintainanceCycleAutoComplete from "../../components/auto-complete/MaintainanceCycleAutoComplete";
 import SparePartTable from "../../components/tables/SparePartTable";
+import RepairFormPdf from "../repair-form/RepairFormPdf";
 
 const defaultValues = {
   CarId: null,
@@ -51,14 +53,15 @@ const defaultValues = {
 
 const RepairFormDetailPage = () => {
   const formRef = useRef();
+  const printComponentRef = useRef();
   const [repairStatus, setRepairStatus] = useState(null);
   const [repairTypes, setRepairTypes] = useState(null);
   const [selectedCar, setSelectedCar] = useState({});
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
-
+  const [printData, setPrintData] = useState(null);
   const params = useParams();
-  const selectedRepairFormId = params?.id;
+  const [selectedRepairFormId, setSelectedRepairFormId] = useState(params?.id);
 
   const {
     control,
@@ -140,7 +143,25 @@ const RepairFormDetailPage = () => {
     setValue("OrderDetails", spareParts);
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => printComponentRef.current,
+  });
+
   const functionButtons = [
+    {
+      label: "In Pdf",
+      icon: "pi pi-check",
+      className: "p-button-success",
+      action: async () => {
+        const res = await getRepairFormDetail(selectedRepairFormId);
+        const data = res.data.Result;
+        setPrintData(data);
+        //wait for printData updated
+        setTimeout(() => {
+          handlePrint();
+        }, 100);
+      },
+    },
     {
       label: "Lưu",
       icon: "pi pi-check",
@@ -167,7 +188,8 @@ const RepairFormDetailPage = () => {
     }
     createRepairForm(data).then((res) => {
       const orderId = res.data.Result;
-      setValue('OrderId', orderId);
+      setSelectedRepairFormId(orderId);
+      setValue("OrderId", orderId);
     });
   };
 
@@ -682,6 +704,9 @@ const RepairFormDetailPage = () => {
           />
         </ToggleablePanel>
         <Footer items={functionButtons} />
+      </div>
+      <div style={{ display: "none" }}>
+        <RepairFormPdf ref={printComponentRef} data={printData} />
       </div>
     </Fragment>
   );
