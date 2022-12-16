@@ -1,14 +1,20 @@
 import { useSelector } from "react-redux";
 import { SlideMenu } from "primereact/slidemenu";
-import { useNavigate, useMatch } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  useMatch,
+  matchRoutes,
+} from "react-router-dom";
 const SidebarMenu = () => {
   const isShowSlidebar = useSelector((state) => state.ui.slidebarIsVisible);
   const navigate = useNavigate();
+  const location = useLocation();
   const items = [
     {
       label: "Trang Chủ",
       icon: "pi pi-fw pi-home",
-      className: useMatch('/app/home') ? 'surface-hover' : '',
+      className: useMatch("/app/home") ? "surface-hover" : "",
       command: () => {
         navigate("/app/home");
       },
@@ -16,7 +22,16 @@ const SidebarMenu = () => {
     {
       label: "Khách Hàng",
       icon: "pi pi-fw pi-user",
-      className: useMatch('/app/customers') ? 'surface-hover' : '',
+      className: matchRoutes(
+        [
+          { path: "/app/customers" },
+          { path: "/app/customer-detail/new" },
+          { path: "/app/customer-detail/:id" },
+        ],
+        location
+      )
+        ? "surface-hover"
+        : "",
       command: () => {
         navigate("/app/customers");
       },
@@ -24,7 +39,9 @@ const SidebarMenu = () => {
     {
       label: "Phụ tùng",
       icon: "pi pi-fw pi-box",
-      className: useMatch('/app/spare-part') ? 'surface-hover' : '',
+      className: matchRoutes([{ path: "/app/spare-part" }], location)
+        ? "surface-hover"
+        : "",
       command: () => {
         navigate("/app/spare-part");
       },
@@ -32,7 +49,16 @@ const SidebarMenu = () => {
     {
       label: "Chu kỳ bảo dưỡng",
       icon: "pi pi-fw pi-car",
-      className: useMatch('/app/maintainance-cycles') ? 'surface-hover' : '',
+      className: matchRoutes(
+        [
+          { path: "/app/maintainance-cycles" },
+          { path: "/app/maintainance-cycle-detail/new" },
+          { path: "/app/maintainance-cycle-detail/:id" },
+        ],
+        location
+      )
+        ? "surface-hover"
+        : "",
       command: () => {
         navigate("/app/maintainance-cycles");
       },
@@ -40,7 +66,16 @@ const SidebarMenu = () => {
     {
       label: "Phiếu bão dưỡng / sửa chữa",
       icon: "pi pi-fw pi-cog",
-      className: useMatch('/app/repair') ? 'surface-hover' : '',
+      className: matchRoutes(
+        [
+          { path: "/app/repair" },
+          { path: "/app/repair-detail/new" },
+          { path: "/app/repair-detail/:id" },
+        ],
+        location
+      )
+        ? "surface-hover"
+        : "",
       command: () => {
         navigate("/app/repair");
       },
