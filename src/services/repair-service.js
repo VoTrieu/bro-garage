@@ -3,13 +3,15 @@ import axios from "axios";
 export async function getRepairForms(
   pageSize = 10,
   pageIndex = 1,
-  keyword = null
+  keyword = null,
+  searchParameters = {}
 ) {
   return axios.get("/order/get-pagination", {
     params: {
       pageSize,
       pageIndex,
       keyword,
+      ...searchParameters
     },
   });
 }

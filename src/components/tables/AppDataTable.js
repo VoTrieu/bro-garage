@@ -47,6 +47,7 @@ const AppDataTable = (props) => {
       return setIsFirstRender(false);
     }
 
+    //Timeout to wait for user finish typing 
     let timer = setTimeout(() => {
       fetchData(rows, 1, searchText);
     }, 500);
@@ -306,11 +307,6 @@ const AppDataTable = (props) => {
           {props.rowExpansionTemplate && (
             <Column expander={true} style={{ width: "3em" }} />
           )}
-          {/* <Column
-            selectionMode="multiple"
-            headerStyle={{ width: "3rem" }}
-            exportable={false}
-          ></Column> */}
 
           {props.columns.map((item) => (
             <Column
@@ -323,11 +319,13 @@ const AppDataTable = (props) => {
             ></Column>
           ))}
 
-          <Column
-            body={actionBodyTemplate}
-            exportable={false}
-            style={{ minWidth: "8rem" }}
-          ></Column>
+          {!props.isHideBodyActions && (
+            <Column
+              body={actionBodyTemplate}
+              exportable={false}
+              style={{ minWidth: "8rem" }}
+            ></Column>
+          )}
         </DataTable>
         <Paginator
           ref={paginatorRef}

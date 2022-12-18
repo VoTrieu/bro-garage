@@ -1,13 +1,15 @@
 import { Fragment, useState } from "react";
 import { Fieldset } from "primereact/fieldset";
 import { Calendar } from "primereact/calendar";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { useForm, Controller } from "react-hook-form";
 import CarAutoComplete from "../../components/auto-complete/CarAutoComplete";
 import CustomerAutoComplete from "../../components/auto-complete/CustomerAutoComplete";
 import StatusDropdown from "../../components/dropdown/StatusDropdown";
+import AppDataTable from "../../components/tables/AppDataTable";
+import classes from "../repair-form/RepairForm.module.scss";
+import { getRepairForms } from "../../services/repair-service"
 
 const defaultValues = {
   // CarId: null,
@@ -33,6 +35,9 @@ const defaultValues = {
 };
 
 const ReportPage = () => {
+  const [repairForms, setRepairForms] = useState([]);
+  const [paginatorOptions, setPaginatorOptions] = useState();
+
   const {
     control,
     formState: { errors, isDirty, isValid },
@@ -71,12 +76,70 @@ const ReportPage = () => {
     }
   };
 
+  const statusBodyTemplate = (rowData) => {
+    return (
+      <span
+        className={classNames(
+          classes.status_badge,
+          classes[`status_${rowData.StatusId}`]
+        )}
+      >
+        {rowData.StatusName}
+      </span>
+    );
+  };
+
+  const columns = [
+    {
+      field: "Car.LicensePlate",
+      header: "Biển số",
+    },
+    {
+      field: "Car.ManufacturerName",
+      header: "Hãng xe",
+    },
+    {
+      field: "Car.TypeName",
+      header: "Dòng xe",
+    },
+    {
+      field: "Car.Customer.FullName",
+      header: "Tên khách hàng",
+    },
+    {
+      field: "StatusName",
+      header: "Trạng thái",
+      body: statusBodyTemplate,
+    },
+    {
+      field: "OrderDate",
+      header: "Ngày lập phiếu",
+    },
+  ];
+
+  const getData = (pageSize, pageIndex, keyword) => {
+    const { FullName, LicensePlate, ...searchParameters} = getValues();
+    console.log('searchParameters: ', searchParameters);
+    getRepairForms(pageSize, pageIndex, keyword, searchParameters).then((response) => {
+      const { Data, ...paginatorOptions } = response.data.Result;
+      setPaginatorOptions(paginatorOptions);
+      setRepairForms(Data);
+    });
+  };
+
   const onSubmit = (data) => {
-    console.log(data);
+    console.log('data: ', data);
+    const { pageSize, pageIndex } = paginatorOptions;
+    const { FullName, LicensePlate, ...searchParameters} = data;
+    getRepairForms(pageSize, pageIndex, '', searchParameters).then((response) => {
+      const { Data, ...paginatorOptions } = response.data.Result;
+      setPaginatorOptions(paginatorOptions);
+      setRepairForms(Data);
+    });
   };
   return (
     <Fragment>
-      <Fieldset legend="Thông tin tìm kiếm" toggleable>
+      <Fieldset className="mb-4" legend="Thông tin tìm kiếm" toggleable>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="formgrid grid">
             <div className="field col-12 md:col-4">
@@ -325,6 +388,20 @@ const ReportPage = () => {
           </div>
         </form>
       </Fieldset>
+
+      <AppDataTable
+        data={repairForms}
+        columns={columns}
+        dataKey="TemplateId"
+        title="Phiếu bảo dưỡng / sửa chữa"
+        isHideBodyActions={true}
+        isHideCreateButton={true}
+        excelExportable={true}
+        excelFileName="Phiếu bảo dưỡng và sửa chữa"
+        paginatorOptions={paginatorOptions}
+        fnGetData={getData}
+        // fnGetAllDataForExport={getAllSparePart}
+      />
     </Fragment>
   );
 };
