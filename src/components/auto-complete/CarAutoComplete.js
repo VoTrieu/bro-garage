@@ -30,8 +30,8 @@ const CarAutoComplete = (props) => {
 
   const onLicensePlateChange = (car) => {
     if (car) {
-      props.setValue("CarId", car.CarId);
-      props.onSelectCar(car);
+      props.setValue && props.setValue("CarId", car.CarId);
+      props.onSelectCar && props.onSelectCar(car);
     }
   };
 
@@ -48,7 +48,7 @@ const CarAutoComplete = (props) => {
 
   return (
     <AutoComplete
-      id={props.field.name}
+      id={props.field?.name}
       {...props.field}
       suggestions={filteredCars}
       completeMethod={onSearchCar}
@@ -59,7 +59,7 @@ const CarAutoComplete = (props) => {
       onSelect={(e) => onLicensePlateChange(e.value)}
       placeholder="Nhập từ khoá"
       className={classNames("w-full", {
-        "p-invalid": props.fieldState.error,
+        "p-invalid": props.fieldState?.error,
       })}
     />
   );
