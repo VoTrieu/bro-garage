@@ -14,6 +14,7 @@ import MaintainanceCyclePage from "./pages/maintainance-cycle/MaintainanceCycleP
 import MaintainanceCycleDetailPage from "./pages/maintainance-cycle/MaintainanceCycleDetailPage";
 import RepairFormPage from "./pages/repair-form/RepairFormPage";
 import RepairFormDetailPage from "./pages/repair-form/RepairFormDetailPage";
+import ReportPage from "./pages/report/ReportPage";
 
 function App() {
   const toastContent = useSelector((state) => state.ui.toastContent);
@@ -44,22 +45,31 @@ function App() {
             <Route path=":id" element={<CustomerDetailPage />} />
           </Route>
           <Route path="spare-part" element={<SparePartPage />} />
+
           <Route
             path="maintainance-cycles"
             element={<MaintainanceCyclePage />}
           />
+
           <Route path="maintainance-cycle-detail">
             <Route path="new" element={<MaintainanceCycleDetailPage />} />
             <Route path=":id" element={<MaintainanceCycleDetailPage />} />
           </Route>
+
           <Route
             path="repair"
             element={<RepairFormPage />}
           />
+
           <Route path="repair-detail">
             <Route path="new" element={<RepairFormDetailPage />} />
             <Route path=":id" element={<RepairFormDetailPage />} />
           </Route>
+
+          <Route
+            path="report"
+            element={<ReportPage/>}
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

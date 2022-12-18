@@ -16,7 +16,8 @@ const StatusDropdown = (props) => {
   return (
     <Dropdown
       id={props.field?.name}
-      {...props.field}
+      value={props.field.value}
+      onChange={(date) => props.field.onChange(date)}
       options={repairStatus}
       optionLabel="StatusName"
       optionValue="StatusId"

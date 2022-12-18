@@ -8,8 +8,6 @@ import { InputText } from "primereact/inputtext";
 import { useReactToPrint } from "react-to-print";
 import { classNames } from "primereact/utils";
 import {
-  getRepairStatus,
-  getRepairTypes,
   createRepairForm,
   getRepairFormDetail,
   updateRepairForm,
@@ -25,6 +23,8 @@ import { InputTextarea } from "primereact/inputtextarea";
 import Footer from "../../components/layout/footer/Footer";
 import CarAutoComplete from "../../components/auto-complete/CarAutoComplete";
 import MaintainanceCycleAutoComplete from "../../components/auto-complete/MaintainanceCycleAutoComplete";
+import StatusDropdown from "../../components/dropdown/StatusDropdown";
+import RepairTypeDropdown from "../../components/dropdown/RepairTypeDropdown";
 import SparePartTable from "../../components/tables/SparePartTable";
 import RepairFormPdf from "../repair-form/RepairFormPdf";
 
@@ -54,8 +54,6 @@ const defaultValues = {
 const RepairFormDetailPage = () => {
   const formRef = useRef();
   const printComponentRef = useRef();
-  const [repairStatus, setRepairStatus] = useState(null);
-  const [repairTypes, setRepairTypes] = useState(null);
   const [selectedCar, setSelectedCar] = useState({});
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
@@ -76,12 +74,6 @@ const RepairFormDetailPage = () => {
     trigger,
     reset,
   } = useForm({ defaultValues });
-
-  //get nesscessary data
-  useEffect(() => {
-    getStatus();
-    getTypes();
-  }, []);
 
   //get repairForm Detail
   useEffect(() => {
@@ -105,20 +97,6 @@ const RepairFormDetailPage = () => {
     return (
       errors[name] && <small className="p-error">{errors[name].message}</small>
     );
-  };
-
-  const getStatus = () => {
-    getRepairStatus().then((res) => {
-      const status = res.data.Result;
-      setRepairStatus(status);
-    });
-  };
-
-  const getTypes = () => {
-    getRepairTypes().then((res) => {
-      const types = res.data.Result;
-      setRepairTypes(types);
-    });
   };
 
   const updateNextODO = (value) => {
@@ -250,17 +228,7 @@ const RepairFormDetailPage = () => {
                   control={control}
                   rules={{ required: "Tình trạng không được để trống!" }}
                   render={({ field, fieldState }) => (
-                    <Dropdown
-                      id={field.name}
-                      {...field}
-                      options={repairStatus}
-                      optionLabel="StatusName"
-                      optionValue="StatusId"
-                      placeholder="Chọn tình trạng"
-                      className={classNames("w-full", {
-                        "p-invalid": fieldState.error,
-                      })}
-                    />
+                    <StatusDropdown field={field} fieldState={fieldState}/>
                   )}
                 />
                 {getFormErrorMessage("StatusName")}
@@ -274,17 +242,7 @@ const RepairFormDetailPage = () => {
                   control={control}
                   rules={{ required: "Loại phiếu không được để trống!" }}
                   render={({ field, fieldState }) => (
-                    <Dropdown
-                      id={field.name}
-                      {...field}
-                      options={repairTypes}
-                      optionLabel="TypeName"
-                      optionValue="TypeId"
-                      placeholder="Chọn loại phiếu"
-                      className={classNames("w-full", {
-                        "p-invalid": fieldState.error,
-                      })}
-                    />
+                    <RepairTypeDropdown field={field} fieldState={fieldState}/>
                   )}
                 />
                 {getFormErrorMessage("TypeName")}
