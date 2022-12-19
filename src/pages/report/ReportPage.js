@@ -10,28 +10,20 @@ import StatusDropdown from "../../components/dropdown/StatusDropdown";
 import AppDataTable from "../../components/tables/AppDataTable";
 import classes from "../repair-form/RepairForm.module.scss";
 import { getRepairForms } from "../../services/repair-service"
+import { includes } from "lodash";
+import { getDateWithFormat } from "../../utils/Utils"; 
 
 const defaultValues = {
-  // CarId: null,
-  // StatusId: 1,
-  // OrderCode: "",
-  // OrderDate: getCurrentDate(),
-  // DateIn: getCurrentDate(),
-  // DateOutEstimated: "",
-  // ODOCurrent: 0,
-  // ODONext: 5000,
-  // ODOUnit: "Km",
-  // ExpiredInDate: getExpiredDate(15),
-  // IsInvoice: true,
-  // AdvancePayment: 0,
-  // PaymentMethod: "Tiền mặt",
-  // Diagnosis: "",
-  // CustomerNote: "",
-  // InternalNote: "",
-  // Car: {
-  //   LicensePlate: "",
-  // },
-  // OrderDetails: null,
+  customerId: null,
+  carId: null,
+  createdFromDate: undefined,
+  createdToDate: undefined,
+  statusId: null,
+  typeId: null,
+  dateInFrom: undefined,
+  dateInTo: undefined,
+  dateOutFrom: undefined,
+  dateOutTo: undefined
 };
 
 const ReportPage = () => {
@@ -44,6 +36,7 @@ const ReportPage = () => {
     handleSubmit,
     setValue,
     getValues,
+    reset
   } = useForm({ defaultValues });
 
   const getFormErrorMessage = (name) => {
@@ -119,7 +112,6 @@ const ReportPage = () => {
 
   const getData = (pageSize, pageIndex, keyword) => {
     const { FullName, LicensePlate, ...searchParameters} = getValues();
-    console.log('searchParameters: ', searchParameters);
     getRepairForms(pageSize, pageIndex, keyword, searchParameters).then((response) => {
       const { Data, ...paginatorOptions } = response.data.Result;
       setPaginatorOptions(paginatorOptions);
@@ -128,10 +120,12 @@ const ReportPage = () => {
   };
 
   const onSubmit = (data) => {
-    console.log('data: ', data);
     const { pageSize, pageIndex } = paginatorOptions;
     const { FullName, LicensePlate, ...searchParameters} = data;
     getRepairForms(pageSize, pageIndex, '', searchParameters).then((response) => {
+      if(!response.data.IsSuccess){
+        return;
+      }
       const { Data, ...paginatorOptions } = response.data.Result;
       setPaginatorOptions(paginatorOptions);
       setRepairForms(Data);
@@ -201,8 +195,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -233,8 +227,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -266,8 +260,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -298,8 +292,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -331,8 +325,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -363,8 +357,8 @@ const ReportPage = () => {
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    value={field.value}
+                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -379,10 +373,19 @@ const ReportPage = () => {
           </div>
 
           <div className="text-right">
+          <Button
+              disabled={!isDirty}
+              type="button"
+              label="Xoá"
+              icon="pi pi-refresh"
+              className="mt-2 mr-4"
+              onClick={() => reset(defaultValues)}
+            />
             <Button
               disabled={!isValid || !isDirty}
               type="submit"
               label="Tìm kiếm"
+              icon="pi pi-search"
               className="mt-2"
             />
           </div>

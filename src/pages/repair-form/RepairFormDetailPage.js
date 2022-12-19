@@ -41,7 +41,7 @@ const defaultValues = {
   ExpiredInDate: getExpiredDate(15),
   IsInvoice: true,
   AdvancePayment: 0,
-  PaymentMethod: "Tiền mặt",
+  PaymentMethod: "CASH",
   Diagnosis: "",
   CustomerNote: "",
   InternalNote: "",
@@ -57,6 +57,7 @@ const RepairFormDetailPage = () => {
   const [selectedCar, setSelectedCar] = useState({});
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
+  const [discountPercent, setDiscountPercent] = useState();
   const [printData, setPrintData] = useState(null);
   const [isProcessing, setIsProcessing] = useState({
     printing: false,
@@ -134,7 +135,7 @@ const RepairFormDetailPage = () => {
       label: "In Pdf",
       icon: "pi pi-check",
       className: "p-button-success",
-      disabled: isProcessing.printing,
+      disabled: !selectedRepairFormId || isProcessing.printing,
       action: async () => {
         setIsProcessing({ ...isProcessing, printing: true });
         const res = await getRepairFormDetail(selectedRepairFormId);
@@ -354,7 +355,7 @@ const RepairFormDetailPage = () => {
                       id={field.name}
                       {...field}
                       showIcon
-                      dateFormat="yy/mm/dd"
+                      dateFormat="dd/mm/yy"
                       className={classNames("w-full", {
                         "p-invalid": fieldState.error,
                       })}
@@ -408,6 +409,29 @@ const RepairFormDetailPage = () => {
               </div>
 
               <div className="field col-12 md:col-4">
+                <label htmlFor="Discount">Chiết khấu</label>
+                <Controller
+                  name="Discount"
+                  control={control}
+                  render={({ field }) => (
+                    <InputNumber
+                      id={field.name}
+                      ref={field.ref}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        setDiscountPercent(e.value);
+                      }}
+                      suffix=" %"
+                      mode="decimal" min={0} max={100}
+                      className="w-full"
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="field col-12 md:col-4">
                 <label htmlFor="DateOutActual">Ngày giao xe thực tế</label>
                 <Controller
                   name="DateOutActual"
@@ -417,7 +441,7 @@ const RepairFormDetailPage = () => {
                       id={field.name}
                       {...field}
                       showIcon
-                      dateFormat="yy/mm/dd"
+                      dateFormat="dd/mm/yy"
                       className={classNames("w-full", {
                         "p-invalid": fieldState.error,
                       })}
@@ -472,7 +496,6 @@ const RepairFormDetailPage = () => {
                 />
               </div>
 
-              <div className="field col-12 md:col-4"></div>
               <div className="field col-12 md:col-4">
                 <label htmlFor="Diagnosis">
                   Chuẩn đoán/tình trạng khi vào xưởng{" "}
@@ -673,6 +696,7 @@ const RepairFormDetailPage = () => {
             existedSpareParts={sparePartFromTemplate}
             handleSparePartsChange={onHandleSparePartsChange}
             advancePayment={advancePayment}
+            discountPercent={discountPercent}
             isRepairForm={true}
           />
         </ToggleablePanel>

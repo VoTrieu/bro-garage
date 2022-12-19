@@ -47,7 +47,7 @@ const AppDataTable = (props) => {
       return setIsFirstRender(false);
     }
 
-    //Timeout to wait for user finish typing 
+    //Timeout to wait for user finish typing
     let timer = setTimeout(() => {
       fetchData(rows, 1, searchText);
     }, 500);
@@ -111,25 +111,23 @@ const AppDataTable = (props) => {
             placeholder="Tìm kiếm..."
           />
         </span>
-        <span className="p-input-icon-left ml-4">
-          <i className="pi pi-search" />
+        
+        {!props.isHideCreateButton && (
           <Button
             label="Thêm mới"
             icon="pi pi-plus"
-            className="p-button-success"
+            className="p-button-success ml-4"
             onClick={createNewItem}
           />
-        </span>
+        )}
+
         {props.excelExportable && (
-          <span className="p-input-icon-left ml-4">
-            <i className="pi pi-search" />
-            <Button
-              label="Xuất Excel File"
-              icon="pi pi-file-excel"
-              className="p-button-success"
-              onClick={exportExcel}
-            />
-          </span>
+          <Button
+            label="Xuất Excel File"
+            icon="pi pi-file-excel"
+            className="p-button-success ml-4"
+            onClick={exportExcel}
+          />
         )}
       </div>
     </div>

@@ -117,6 +117,13 @@ const SparePartTable = (props) => {
     setIsShowDetailDialog(false);
   };
 
+  const formatAmount = (number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(number);
+  };
+
   const header = (
     <div className="table-header flex justify-content-end">
       <span className="p-input-icon-left">
@@ -191,10 +198,7 @@ const SparePartTable = (props) => {
   };
 
   const priceBodyTemplate = (rowData) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(rowData.UnitPrice);
+    return formatAmount(rowData.UnitPrice);
   };
 
   const hideProductBodyTemplate = (rowData) => {
@@ -202,10 +206,7 @@ const SparePartTable = (props) => {
   };
 
   const totalPriceBodyTemplate = (rowData) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(rowData.Quantity * rowData.UnitPrice);
+    return formatAmount(rowData.Quantity * rowData.UnitPrice);
   };
 
   const onSparePartCodeChange = (searchTextOrSparePart) => {
@@ -239,27 +240,18 @@ const SparePartTable = (props) => {
 
   const totalFooterTemplate = () => {
     const total = sumBy(spareParts, (item) => item.Quantity * item.UnitPrice);
-    const tax = total * 0.08;
+    const discount = props.discountPercent > 0 ? total * (props.discountPercent / 100) : 0 ;
+    const tax = (total - discount) * 0.08;
     const finalAmount = total + tax - props.advancePayment;
-    const totalElement = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(total);
-    const totalIncludedTaxElement = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(tax);
-    const advancePaymentElement = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(props.advancePayment);
-    const finalAmountElement = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(finalAmount);
+    const totalElement = formatAmount(total);
+    const discountElement = formatAmount(discount);
+    const totalIncludedTaxElement = formatAmount(tax);
+    const advancePaymentElement = formatAmount(props.advancePayment);
+    const finalAmountElement = formatAmount(finalAmount);
     return (
       <Fragment>
         <div className="py-2">{totalElement}</div>
+        <div className="py-2">{discountElement}</div>
         <div className="py-2">{totalIncludedTaxElement}</div>
         <div className="py-2">{advancePaymentElement}</div>
         <div className="py-2">{finalAmountElement}</div>
@@ -271,9 +263,10 @@ const SparePartTable = (props) => {
     return (
       <Fragment>
         <div className="py-2">Cộng (A)</div>
-        <div className="py-2">Thuế GTGT (8%) (B)</div>
-        <div className="py-2">Tạm ứng (C)</div>
-        <div className="py-2">Tổng cộng ((A+B)-C)</div>
+        <div className="py-2">Chiếc khấu {props.discountPercent || 0}% (B)</div>
+        <div className="py-2">Thuế GTGT (8%) (C)</div>
+        <div className="py-2">Tạm ứng (D)</div>
+        <div className="py-2">Tổng cộng (A-B+C-D)</div>
       </Fragment>
     );
   };

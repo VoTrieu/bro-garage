@@ -17,7 +17,7 @@ export const getDateWithFormat = (date) => {
   if (month < 10) {
     month = `0${month}`;
   }
-  return `${year}/${month}/${day}`;
+  return `${day}/${month}/${year}`;
 };
 
 export const getExpiredDate = (expiredDate) => {

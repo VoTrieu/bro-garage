@@ -84,7 +84,7 @@ axios.interceptors.response.use(
 
     finishedRequestNumber++;
 
-    if ((status === 401) & (Message === "Unauthorized")) {
+    if ((status === 401) && (Message === "Unauthorized")) {
       window.location.href = "/";
     } else {
       store.dispatch(
