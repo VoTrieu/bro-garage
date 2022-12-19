@@ -133,7 +133,7 @@ const RepairFormDetailPage = () => {
   const functionButtons = [
     {
       label: "In Pdf",
-      icon: "pi pi-check",
+      icon: "pi pi-print",
       className: "p-button-success",
       disabled: !selectedRepairFormId || isProcessing.printing,
       action: async () => {
