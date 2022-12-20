@@ -5,7 +5,6 @@ import { Toast } from "primereact/toast";
 import "./App.css";
 
 import RootLayout from "./components/layout/root-layout/RootLayout";
-import HomePage from "./pages/home/Home";
 import CustomerDetailPage from "./pages/customers/CustomerDetailPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import LoginPage from "./pages/login/LoginPage";
@@ -38,7 +37,7 @@ function App() {
           }
         />
         <Route path="/app" element={<RootLayout />}>
-          <Route index path="home" element={<HomePage />} />
+          <Route index path="home" element={<ReportPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customer-detail">
             <Route path="new" element={<CustomerDetailPage />} />
@@ -56,20 +55,12 @@ function App() {
             <Route path=":id" element={<MaintainanceCycleDetailPage />} />
           </Route>
 
-          <Route
-            path="repair"
-            element={<RepairFormPage />}
-          />
+          <Route path="repair" element={<RepairFormPage />} />
 
           <Route path="repair-detail">
             <Route path="new" element={<RepairFormDetailPage />} />
             <Route path=":id" element={<RepairFormDetailPage />} />
           </Route>
-
-          <Route
-            path="report"
-            element={<ReportPage/>}
-          />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { Fieldset } from "primereact/fieldset";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
+import { Link } from "react-router-dom";
 import { classNames } from "primereact/utils";
 import { useForm, Controller } from "react-hook-form";
 import CarAutoComplete from "../../components/auto-complete/CarAutoComplete";
@@ -9,8 +10,11 @@ import CustomerAutoComplete from "../../components/auto-complete/CustomerAutoCom
 import StatusDropdown from "../../components/dropdown/StatusDropdown";
 import AppDataTable from "../../components/tables/AppDataTable";
 import classes from "../repair-form/RepairForm.module.scss";
-import { getRepairForms, getRepairFormsExport } from "../../services/repair-service"
-import { getDateWithFormat } from "../../utils/Utils"; 
+import {
+  getRepairForms,
+  getRepairFormsExport,
+} from "../../services/repair-service";
+import { getDateWithFormat } from "../../utils/Utils";
 
 const defaultValues = {
   customerId: null,
@@ -22,7 +26,7 @@ const defaultValues = {
   dateInFrom: undefined,
   dateInTo: undefined,
   dateOutFrom: undefined,
-  dateOutTo: undefined
+  dateOutTo: undefined,
 };
 
 const ReportPage = () => {
@@ -35,7 +39,7 @@ const ReportPage = () => {
     handleSubmit,
     setValue,
     getValues,
-    reset
+    reset,
   } = useForm({ defaultValues });
 
   const getFormErrorMessage = (name) => {
@@ -64,7 +68,7 @@ const ReportPage = () => {
     }
 
     if (!isFromDate && value < compareDate) {
-      return `${fieldLabel} đến không thể nhỏ hơn ${fieldLabel} từ!`
+      return `${fieldLabel} đến không thể nhỏ hơn ${fieldLabel} từ!`;
     }
   };
 
@@ -83,6 +87,17 @@ const ReportPage = () => {
 
   const columns = [
     {
+      field: "OrderId",
+      header: "Mã phiếu",
+      body: (rowData) => {
+        return (
+          <Link to={`/app/repair-detail/${rowData.OrderId}`}>
+            {rowData.OrderId}
+          </Link>
+        );
+      },
+    },
+    {
       field: "Car.LicensePlate",
       header: "Biển số",
     },
@@ -97,6 +112,13 @@ const ReportPage = () => {
     {
       field: "Car.Customer.FullName",
       header: "Tên khách hàng",
+      body: (rowData) => {
+        return (
+          <Link to={`/app/customer-detail/${rowData.Car.Customer.CustomerId}`}>
+            {rowData.Car.Customer.FullName}
+          </Link>
+        );
+      },
     },
     {
       field: "StatusName",
@@ -110,30 +132,34 @@ const ReportPage = () => {
   ];
 
   const exportReport = (keyword) => {
-    const { FullName, LicensePlate, ...searchParameters} = getValues();
+    const { FullName, LicensePlate, ...searchParameters } = getValues();
     return getRepairFormsExport(keyword, searchParameters);
-  }
+  };
 
   const getData = (pageSize, pageIndex, keyword) => {
-    const { FullName, LicensePlate, ...searchParameters} = getValues();
-    getRepairForms(pageSize, pageIndex, keyword, searchParameters).then((response) => {
-      const { Data, ...paginatorOptions } = response.data.Result;
-      setPaginatorOptions(paginatorOptions);
-      setRepairForms(Data);
-    });
+    const { FullName, LicensePlate, ...searchParameters } = getValues();
+    getRepairForms(pageSize, pageIndex, keyword, searchParameters).then(
+      (response) => {
+        const { Data, ...paginatorOptions } = response.data.Result;
+        setPaginatorOptions(paginatorOptions);
+        setRepairForms(Data);
+      }
+    );
   };
 
   const onSubmit = (data) => {
     const { pageSize, pageIndex } = paginatorOptions;
-    const { FullName, LicensePlate, ...searchParameters} = data;
-    getRepairForms(pageSize, pageIndex, '', searchParameters).then((response) => {
-      if(!response.data.IsSuccess){
-        return;
+    const { FullName, LicensePlate, ...searchParameters } = data;
+    getRepairForms(pageSize, pageIndex, "", searchParameters).then(
+      (response) => {
+        if (!response.data.IsSuccess) {
+          return;
+        }
+        const { Data, ...paginatorOptions } = response.data.Result;
+        setPaginatorOptions(paginatorOptions);
+        setRepairForms(Data);
       }
-      const { Data, ...paginatorOptions } = response.data.Result;
-      setPaginatorOptions(paginatorOptions);
-      setRepairForms(Data);
-    });
+    );
   };
   return (
     <Fragment>
@@ -200,7 +226,9 @@ const ReportPage = () => {
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -232,7 +260,9 @@ const ReportPage = () => {
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -259,13 +289,15 @@ const ReportPage = () => {
                         "dateInTo",
                         true,
                         "Ngày vào"
-                      )
+                      ),
                   },
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -291,13 +323,15 @@ const ReportPage = () => {
                         "dateInFrom",
                         false,
                         "Ngày vào"
-                      )
+                      ),
                   },
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -324,13 +358,15 @@ const ReportPage = () => {
                         "dateOutTo",
                         true,
                         "Ngày ra"
-                      )
+                      ),
                   },
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     autoFocus
                     dateFormat="dd/mm/yy"
@@ -356,13 +392,15 @@ const ReportPage = () => {
                         "dateOutFrom",
                         false,
                         "Ngày ra"
-                      )
+                      ),
                   },
                 }}
                 render={({ field, fieldState }) => (
                   <Calendar
                     value={field.value}
-                    onChange={(date) => field.onChange(getDateWithFormat(date.value))}
+                    onChange={(date) =>
+                      field.onChange(getDateWithFormat(date.value))
+                    }
                     showIcon
                     dateFormat="dd/mm/yy"
                     className={classNames("w-full", {
@@ -373,11 +411,10 @@ const ReportPage = () => {
               />
               {getFormErrorMessage("dateOutTo")}
             </div>
-
           </div>
 
           <div className="text-right">
-          <Button
+            <Button
               disabled={!isDirty}
               type="button"
               label="Xoá"

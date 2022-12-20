@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,14 @@ import { Button } from "primereact/button";
 import { Password } from "primereact/password";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { loginRequest, fnRefreshToken } from "../../store/auth-actions";
+import { loginRequest } from "../../store/auth-actions";
 import classes from "./LoginPage.module.scss";
 import { Card } from "primereact/card";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { errorMessage, loginSuccess, isTokenValid } =
     useSelector((state) => state.auth);
 
@@ -25,6 +26,7 @@ const LoginPage = () => {
 
   //check if is new token
   useEffect(() => {
+    setIsSubmitting(false);
     if (isTokenValid && loginSuccess) {
       navigate("/app/home");
     }
@@ -32,13 +34,14 @@ const LoginPage = () => {
 
   const {
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     handleSubmit,
     // reset,
   } = useForm({ defaultValues });
 
   const onSubmitLogin = (formValue, e) => {
     e.nativeEvent.preventDefault();
+    setIsSubmitting(true);
     dispatch(loginRequest(formValue));
     // reset();
   };

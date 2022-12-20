@@ -80,21 +80,21 @@ const SidebarMenu = () => {
         navigate("/app/repair");
       },
     },
-    {
-      label: "Báo cáo",
-      icon: "pi pi-fw pi-book",
-      className: matchRoutes(
-        [
-          { path: "/app/report" },
-        ],
-        location
-      )
-        ? "surface-hover"
-        : "",
-      command: () => {
-        navigate("/app/report");
-      },
-    },
+    // {
+    //   label: "Báo cáo",
+    //   icon: "pi pi-fw pi-book",
+    //   className: matchRoutes(
+    //     [
+    //       { path: "/app/report" },
+    //     ],
+    //     location
+    //   )
+    //     ? "surface-hover"
+    //     : "",
+    //   command: () => {
+    //     navigate("/app/report");
+    //   },
+    // },
   ];
 
   return (
