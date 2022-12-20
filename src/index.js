@@ -44,7 +44,7 @@ axios.interceptors.response.use(
     finishedRequestNumber++;
     //Export request return a file, so it does not have IsSuccess value
     if (response.data.IsSuccess || includes(response.config.url, 'export')) {
-      if(response.config.method !== 'get' && endsWith(response.config.url, 'refresh-token')){
+      if(response.config.method !== 'get' && !endsWith(response.config.url, 'refresh-token')){
         store.dispatch(
           uiActions.setToastContent({
             severity: "success",

@@ -15,23 +15,26 @@ import {
 } from "../../services/maintainance-cycle-service";
 import { getCarTypes, getManufacturers } from "../../services/car-service";
 
+const defaultValues = {
+  TemplateId: "",
+  CarTypeId: "",
+  ManufaturerId: "",
+  YearOfManufactureFrom: "",
+  YearOfManufactureTo: "",
+  Note: "",
+  TemplateDetails: [],
+};
+
 const MaintainanceCycleDetailPage = () => {
   const [existedSpareParts, setExistedSpareParts] = useState([]);
   const [carTypes, setCarTypes] = useState();
   const [manufacturers, setManufacturers] = useState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formRef = useRef();
   const params = useParams();
   const selectedMaintainanceCycleId = params?.id;
 
-  const defaultValues = {
-    CarTypeId: "",
-    ManufaturerId: "",
-    YearOfManufactureFrom: "",
-    YearOfManufactureTo: "",
-    Note: "",
-    TemplateDetails: [],
-  };
   const [formValue, setFormValue] = useState(defaultValues);
 
   //get carTypes
@@ -50,8 +53,9 @@ const MaintainanceCycleDetailPage = () => {
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
+    setValue,
     reset,
     trigger,
   } = useForm({ defaultValues });
@@ -80,6 +84,7 @@ const MaintainanceCycleDetailPage = () => {
     {
       label: "Lưu",
       icon: "pi pi-check",
+      disabled: !isDirty || isSubmitting,
       className: "p-button-success",
       action: async () => {
         const isFormValid = await trigger();
@@ -95,8 +100,12 @@ const MaintainanceCycleDetailPage = () => {
   };
 
   const onSubmit = (formData, e) => {
+    setIsSubmitting(true);
     e.nativeEvent.preventDefault();
-    const submitData = {...formData, TemplateDetails: formValue.TemplateDetails};
+    const submitData = {
+      ...formData,
+      TemplateDetails: formValue.TemplateDetails,
+    };
 
     //get year only
     submitData.YearOfManufactureFrom =
@@ -105,9 +114,14 @@ const MaintainanceCycleDetailPage = () => {
       submitData.YearOfManufactureTo.getFullYear();
 
     if (formValue.TemplateId) {
-      updateMaintainanceCycle(submitData);
+      updateMaintainanceCycle(submitData).finally(() => setIsSubmitting(false));
     } else {
-      createMaintainanceCycle(submitData);
+      createMaintainanceCycle(submitData)
+        .then((res) => {
+          const id = res.data.Result;
+          setValue("TemplateId", id);
+        })
+        .finally(() => setIsSubmitting(false));
     }
     setFormValue(submitData);
   };
@@ -246,7 +260,7 @@ const MaintainanceCycleDetailPage = () => {
         <SparePartTable
           existedSpareParts={existedSpareParts}
           handleSparePartsChange={onHandleSparePartsChange}
-          advancePayment = {0}
+          advancePayment={0}
         />
       </ToggleablePanel>
       <Footer items={functionButtons} />
