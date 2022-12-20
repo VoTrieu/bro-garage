@@ -9,8 +9,7 @@ import CustomerAutoComplete from "../../components/auto-complete/CustomerAutoCom
 import StatusDropdown from "../../components/dropdown/StatusDropdown";
 import AppDataTable from "../../components/tables/AppDataTable";
 import classes from "../repair-form/RepairForm.module.scss";
-import { getRepairForms } from "../../services/repair-service"
-import { includes } from "lodash";
+import { getRepairForms, getRepairFormsExport } from "../../services/repair-service"
 import { getDateWithFormat } from "../../utils/Utils"; 
 
 const defaultValues = {
@@ -109,6 +108,11 @@ const ReportPage = () => {
       header: "Ngày lập phiếu",
     },
   ];
+
+  const exportReport = (keyword) => {
+    const { FullName, LicensePlate, ...searchParameters} = getValues();
+    return getRepairFormsExport(keyword, searchParameters);
+  }
 
   const getData = (pageSize, pageIndex, keyword) => {
     const { FullName, LicensePlate, ...searchParameters} = getValues();
@@ -400,10 +404,10 @@ const ReportPage = () => {
         isHideBodyActions={true}
         isHideCreateButton={true}
         excelExportable={true}
-        excelFileName="Phiếu bảo dưỡng và sửa chữa"
+        excelFileName="Báo cáo"
         paginatorOptions={paginatorOptions}
         fnGetData={getData}
-        // fnGetAllDataForExport={getAllSparePart}
+        fnGetAllDataForExport={exportReport}
       />
     </Fragment>
   );

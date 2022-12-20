@@ -21,6 +21,7 @@ const AppDataTable = (props) => {
       PageIndex: 1,
       PageSize: 10,
     };
+  const [isExporting, setIsExporting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInputTooltip, setPageInputTooltip] = useState(
     "Nhấn phím 'Enter' để đi tới trang này."
@@ -85,16 +86,19 @@ const AppDataTable = (props) => {
   };
 
   const exportExcel = async () => {
-    const file = await props.fnGetAllDataForExport();
+    setIsExporting(true);
+    const file = await props.fnGetAllDataForExport(searchText);
     var blob = new Blob([file.data], {
       type: file.headers["content-type"],
     });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `Phụ Tùng_export_${new Date().getTime()}.xlsx`;
+    a.download = `${props.excelFileName}_export_${new Date().getTime()}.xlsx`;
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();
+    setIsExporting(false);
+    a.remove();
   };
 
   const header = (
@@ -125,6 +129,7 @@ const AppDataTable = (props) => {
           <Button
             label="Xuất Excel File"
             icon="pi pi-file-excel"
+            disabled={isExporting}
             className="p-button-success ml-4"
             onClick={exportExcel}
           />

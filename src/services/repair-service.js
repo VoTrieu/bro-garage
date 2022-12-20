@@ -16,6 +16,19 @@ export async function getRepairForms(
   });
 }
 
+export const getRepairFormsExport = (
+  keyword = null,
+  searchParameters = {}
+) => {
+  return axios.get("/order/export", {
+    params: {
+      keyword,
+      ...searchParameters
+    },
+    responseType: "blob"
+  });
+}
+
 export const deleteRepairForm = (repairFormId) => {
   return axios.delete("/order/delete", {
     params: { id: repairFormId },
