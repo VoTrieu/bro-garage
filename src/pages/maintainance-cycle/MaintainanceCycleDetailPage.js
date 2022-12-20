@@ -35,8 +35,6 @@ const MaintainanceCycleDetailPage = () => {
   const params = useParams();
   const selectedMaintainanceCycleId = params?.id;
 
-  const [formValue, setFormValue] = useState(defaultValues);
-
   //get carTypes
   useEffect(() => {
     getCarTypes().then((response) => {
@@ -74,7 +72,6 @@ const MaintainanceCycleDetailPage = () => {
           );
           setExistedSpareParts(maintainanceCycle.TemplateDetails);
           reset(maintainanceCycle);
-          setFormValue(maintainanceCycle);
         }
       );
     }
@@ -96,34 +93,29 @@ const MaintainanceCycleDetailPage = () => {
   ];
 
   const onHandleSparePartsChange = (templateDetails) => {
-    setFormValue((values) => ({ ...values, TemplateDetails: templateDetails }));
+    setValue("TemplateDetails", templateDetails);
   };
 
   const onSubmit = (formData, e) => {
     setIsSubmitting(true);
     e.nativeEvent.preventDefault();
-    const submitData = {
-      ...formData,
-      TemplateDetails: formValue.TemplateDetails,
-    };
 
     //get year only
-    submitData.YearOfManufactureFrom =
-      submitData.YearOfManufactureFrom.getFullYear();
-    submitData.YearOfManufactureTo =
-      submitData.YearOfManufactureTo.getFullYear();
+    formData.YearOfManufactureFrom =
+      formData.YearOfManufactureFrom.getFullYear();
+    formData.YearOfManufactureTo =
+      formData.YearOfManufactureTo.getFullYear();
 
-    if (formValue.TemplateId) {
-      updateMaintainanceCycle(submitData).finally(() => setIsSubmitting(false));
+    if (formData.TemplateId) {
+      updateMaintainanceCycle(formData).finally(() => setIsSubmitting(false));
     } else {
-      createMaintainanceCycle(submitData)
+      createMaintainanceCycle(formData)
         .then((res) => {
           const id = res.data.Result;
           setValue("TemplateId", id);
         })
         .finally(() => setIsSubmitting(false));
     }
-    setFormValue(submitData);
   };
 
   const getFormErrorMessage = (name) => {
