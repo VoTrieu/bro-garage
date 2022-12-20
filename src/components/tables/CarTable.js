@@ -11,7 +11,7 @@ import { trim } from "lodash";
 
 let emptyCar = {
   CarTypeId: "",
-  ManufaturerId: "",
+  ManufacturerId: "",
   LicensePlate: "",
   YearOfManufacture: "",
   VIN: "",
@@ -79,6 +79,20 @@ const CarTable = (props) => {
     setIsShowDeleteCarDialog(false);
   };
 
+  const updateCarTypeAndManufactureName = (_selectedCar) => {
+    const selectedCarType = carTypes.find(
+      (car) => car.TypeId === _selectedCar.CarTypeId
+    );
+    _selectedCar.CarTypeName = selectedCarType.TypeName;
+
+    const selectedManufacturer = manufacturers.find(
+      (manufacturer) =>
+        manufacturer.ManufacturerId === _selectedCar.ManufacturerId
+    );
+    _selectedCar.ManufactureName = selectedManufacturer.ManufacturerName;
+    return _selectedCar;
+  }
+
   const saveCar = () => {
     setSubmitted(true);
     for (const key in selectedCar) {
@@ -92,30 +106,21 @@ const CarTable = (props) => {
       (car) => car.LicensePlate === updatedCar?.LicensePlate
     );
     if (_cars[index]) {
-      _cars[index] = { ...selectedCar };
+      const carWithName = updateCarTypeAndManufactureName(selectedCar);
+      _cars[index] = { ...carWithName };
       setCars(_cars);
     } else {
       //add new car
-      const selectedCarType = carTypes.find(
-        (car) => car.TypeId === selectedCar.CarTypeId
-      );
-      selectedCar.CarTypeName = selectedCarType.TypeName;
-
-      const selectedManufacturer = manufacturers.find(
-        (manufacturer) =>
-          manufacturer.ManufactureId === selectedCar.ManufactureId
-      );
-      selectedCar.ManufactureName = selectedManufacturer.ManufacturerName;
-      setCars((currentCars) => [...currentCars, selectedCar]);
+      const carWithName = updateCarTypeAndManufactureName(selectedCar);
+      setCars((currentCars) => [...currentCars, carWithName]);
     }
-    setSelectedCar(emptyCar);
     setIsShowCarDetailDialog(false);
   };
 
   const onInputChange = (e, field) => {
     const val = (e.target && e.target.value) || "";
     let _selectedCar = { ...selectedCar };
-    _selectedCar[`${field}`] = val;
+    _selectedCar[field] = val;
     setSelectedCar(_selectedCar);
   };
 
@@ -241,22 +246,22 @@ const CarTable = (props) => {
         onHide={hideCarDetailDialog}
       >
         <div className="field">
-          <label htmlFor="txtManufaturerId">
+          <label htmlFor="txtManufacturerId">
             Hãng xe <b className="p-error">*</b>
           </label>
           <Dropdown
-            id="txtManufaturerId"
-            value={selectedCar.ManufaturerId}
+            id="txtManufacturerId"
+            value={selectedCar.ManufacturerId}
             optionValue="ManufacturerId"
-            onChange={(e) => onInputChange(e, "ManufaturerId")}
+            onChange={(e) => onInputChange(e, "ManufacturerId")}
             optionLabel="ManufacturerName"
             options={manufacturers}
             className={classNames({
-              "p-invalid": submitted && !selectedCar.CarTypeId,
+              "p-invalid": submitted && !selectedCar.ManufacturerId,
             })}
             placeholder="Chọn nhà sản xuất"
           />
-          {submitted && !selectedCar.ManufaturerId && (
+          {(submitted && !selectedCar.ManufacturerId) && (
             <small className="p-error">Hãng xe không được để trống.</small>
           )}
         </div>
@@ -278,7 +283,7 @@ const CarTable = (props) => {
             })}
             placeholder="Chọn dòng xe"
           />
-          {submitted && !selectedCar.CarTypeId && (
+          {(submitted && !selectedCar.CarTypeId) && (
             <small className="p-error">Dòng xe không được để trống.</small>
           )}
         </div>
@@ -296,7 +301,7 @@ const CarTable = (props) => {
               "p-invalid": submitted && !selectedCar.LicensePlate,
             })}
           />
-          {submitted && !selectedCar.LicensePlate && (
+          {(submitted && !selectedCar.LicensePlate) && (
             <small className="p-error">Biển số xe không được để trống.</small>
           )}
         </div>
@@ -313,7 +318,7 @@ const CarTable = (props) => {
               "p-invalid": submitted && !selectedCar.YearOfManufacture,
             })}
           />
-          {submitted && !selectedCar.YearOfManufacture && (
+          {(submitted && !selectedCar.YearOfManufacture) && (
             <small className="p-error">Năm sản xuất không được để trống.</small>
           )}
         </div>
@@ -331,7 +336,7 @@ const CarTable = (props) => {
               "p-invalid": submitted && !selectedCar.VIN,
             })}
           />
-          {submitted && !selectedCar.VIN && (
+          {(submitted && !selectedCar.VIN) && (
             <small className="p-error">VIN không không được để trống.</small>
           )}
         </div>

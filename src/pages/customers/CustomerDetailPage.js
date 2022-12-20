@@ -14,26 +14,29 @@ import {
   updateCustomer,
 } from "../../services/customer-service";
 
+const defaultValues = {
+  CustomerId: "",
+  Email: "",
+  FullName: "",
+  PhoneNumber: "",
+  Remark: "",
+  Representative: "",
+  TaxCode: "",
+  TypeId: 0,
+};
+
 const CustomerDetailPage = () => {
   const [existedCars, setExistedCars] = useState([]);
   const formRef = useRef();
   const params = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedCustomerId = params?.id;
-
-  const defaultValues = {
-    Email: "",
-    FullName: "",
-    PhoneNumber: "",
-    Remark: "",
-    Representative: "",
-    TaxCode: "",
-    TypeId: 0,
-  };
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
+    setValue,
     reset,
   } = useForm({ defaultValues });
 
@@ -42,7 +45,6 @@ const CustomerDetailPage = () => {
       getCustomerDetail(selectedCustomerId).then((response) => {
         const customer = response.data.Result;
         setExistedCars(customer.Cars);
-        setFormValue(customer);
         reset(customer);
       });
     }
@@ -52,6 +54,7 @@ const CustomerDetailPage = () => {
     {
       label: "Lưu",
       icon: "pi pi-check",
+      disabled: !isDirty || isSubmitting,
       className: "p-button-success",
       action: () => {
         formRef.current.requestSubmit();
@@ -70,20 +73,22 @@ const CustomerDetailPage = () => {
     },
   ];
 
-  const [formValue, setFormValue] = useState(defaultValues);
 
   const handleCarsChange = (cars) => {
-    setFormValue((values) => ({ ...values, Cars: cars }));
+    setValue('Cars', cars);
   };
 
   const onSubmit = (formData, e) => {
     e.nativeEvent.preventDefault();
-    if (formValue.CustomerId) {
-      updateCustomer({ ...formValue, ...formData });
+    if (formData.CustomerId) {
+      updateCustomer(formData);
     } else {
-      createNewCustomer({ ...formValue, ...formData });
+      createNewCustomer(formData).then((res) => {
+        const id = res.data.Result;
+        setValue("CustomerId", id);
+      })
+      .finally(() => setIsSubmitting(false));;
     }
-    setFormValue((values) => ({ ...values, ...formData }));
   };
 
   const getFormErrorMessage = (name) => {
