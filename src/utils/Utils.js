@@ -25,3 +25,7 @@ export const getExpiredDate = (expiredDate) => {
   date.setDate(date.getDate() + expiredDate);
   return getDateWithFormat(date);
 };
+
+export const getTimestampInSeconds = () => {
+  return Math.floor(Date.now() / 1000)
+}

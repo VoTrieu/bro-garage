@@ -17,7 +17,7 @@ import ReportPage from "./pages/report/ReportPage";
 
 function App() {
   const toastContent = useSelector((state) => state.ui.toastContent);
-  const { isTokenValid } = useSelector((state) => state.ui);
+  const { isTokenValid } = useSelector((state) => state.auth);
   const toast = useRef();
 
   useEffect(() => {
@@ -33,10 +33,10 @@ function App() {
         <Route
           path="/"
           element={
-            isTokenValid ? <Navigate to="/app" replace /> : <LoginPage />
+             <LoginPage />
           }
         />
-        <Route path="/app" element={<RootLayout />}>
+        <Route path="/app" element={isTokenValid ? <RootLayout /> : <Navigate to="/" replace />}>
           <Route index path="home" element={<ReportPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customer-detail">

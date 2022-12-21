@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fnRefreshToken } from "../../../store/auth-actions";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { classNames } from "primereact/utils";
+import { getTimestampInSeconds } from "../../../utils/Utils";
 import MainNavigation from "../main-navigation/MainNavigation";
 import SideBarMenu from "../sidebar/SidebarMenu";
 
@@ -13,20 +14,21 @@ import classes from "./RootLayout.module.scss";
 function RootLayout() {
   const dispatch = useDispatch();
   const isShowSpinner = useSelector((state) => state.ui.isShowSpinner);
-  const { refreshToken } = useSelector((state) => state.auth);
+  const { refreshToken, expirationTime } = useSelector((state) => state.auth);
 
   //refresh Token
   useEffect(() => {
+    let remainTime = expirationTime - getTimestampInSeconds();
     const interval = setInterval(() => {
       if (refreshToken) {
         dispatch(fnRefreshToken(refreshToken));
       }
-    }, 60000 * 45);
+    }, (remainTime - 10) * 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [refreshToken, expirationTime]);
 
   return (
     <Fragment>

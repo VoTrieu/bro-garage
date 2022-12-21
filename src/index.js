@@ -22,10 +22,6 @@ const currentAuthorization = JSON.parse(
   localStorage.getItem("currentAuthorization")
 );
 
-if(currentAuthorization){
-  currentAuthorization.isTokenValid = false;
-}
-
 var requestNumber = 0;
 var finishedRequestNumber = 0;
 store.dispatch(authActions.setCurrentAuthorization(currentAuthorization));

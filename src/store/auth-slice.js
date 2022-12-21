@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getTimestampInSeconds } from "../utils/Utils";
 
 const authSlice = createSlice({
   name: "auth",
@@ -17,7 +18,15 @@ const authSlice = createSlice({
       state.refreshToken = action.payload?.Result?.RefreshToken || "";
       state.errorMessage = action.payload?.Message || "";
       state.loginSuccess = action.payload ? action.payload.IsSuccess : true;
-      state.isTokenValid = action.payload?.isTokenValid;
+      const expirationTime = action.payload?.Result?.ExpirationTime;
+      state.expirationTime = expirationTime;
+
+      const currentTimeStamp = getTimestampInSeconds();
+      if (currentTimeStamp < expirationTime) {
+        state.isTokenValid = true;
+      } else {
+        state.isTokenValid = false;
+      }
     },
   },
 });
