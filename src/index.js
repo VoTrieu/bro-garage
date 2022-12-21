@@ -39,8 +39,12 @@ axios.interceptors.response.use(
   (response) => {
     finishedRequestNumber++;
     //Export request return a file, so it does not have IsSuccess value
-    if (response.data.IsSuccess || includes(response.config.url, 'export')) {
-      if(response.config.method !== 'get' && !endsWith(response.config.url, 'refresh-token')){
+    if (response.data.IsSuccess || includes(response.config.url, "export")) {
+      if (
+        response.config.method !== "get" &&
+        !includes(response.config.url, "refresh-token") &&
+        !includes(response.config.url, "login")
+      ) {
         store.dispatch(
           uiActions.setToastContent({
             severity: "success",
@@ -80,7 +84,7 @@ axios.interceptors.response.use(
 
     finishedRequestNumber++;
 
-    if ((status === 401) && (Message === "Unauthorized")) {
+    if (status === 401 && Message === "Unauthorized") {
       window.location.href = "/";
     } else {
       store.dispatch(
