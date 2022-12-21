@@ -102,11 +102,11 @@ const AppDataTable = (props) => {
   };
 
   const header = (
-    <div className="table-header flex justify-content-between align-items-center">
+    <div className="table-header flex flex-column md:flex-row justify-content-between align-items-center">
       <div>
         <h3>{props.title}</h3>
       </div>
-      <div className="flex align-items-center">
+      <div className="flex flex-column md:flex-row align-items-center justify-content-center">
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText
@@ -120,7 +120,7 @@ const AppDataTable = (props) => {
           <Button
             label="Thêm mới"
             icon="pi pi-plus"
-            className="p-button-success ml-4"
+            className="p-button-success ml-4 mt-2 md:mt-0"
             onClick={createNewItem}
           />
         )}
@@ -130,7 +130,7 @@ const AppDataTable = (props) => {
             label="Xuất Excel File"
             icon="pi pi-file-excel"
             disabled={isExporting}
-            className="p-button-success ml-4"
+            className="p-button-success ml-4 mt-2 md:mt-0"
             onClick={exportExcel}
           />
         )}
@@ -302,7 +302,8 @@ const AppDataTable = (props) => {
           dataKey={props.dataKey}
           header={header}
           stripedRows
-          responsiveLayout="scroll"
+          responsiveLayout="stack"
+          breakpoint="960px"
           expandedRows={expandedRows}
           onRowToggle={(e) => setExpandedRows(e.data)}
           rowExpansionTemplate={props.rowExpansionTemplate}

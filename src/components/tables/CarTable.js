@@ -201,7 +201,8 @@ const CarTable = (props) => {
         value={cars}
         dataKey="CarTypeId"
         header={header}
-        responsiveLayout="scroll"
+        responsiveLayout="stack"
+        breakpoint="960px"
       >
         <Column field="LicensePlate" header="Biển số xe" sortable></Column>
         <Column field="ManufactureName" header="Hãng xe" sortable></Column>

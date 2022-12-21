@@ -65,8 +65,12 @@ const CustomersPage = () => {
 
   const rowExpansionTemplate = (customer) => {
     return (
-      <div className="orders-subtable ml-8">
-        <DataTable value={customer.Cars} responsiveLayout="scroll">
+      <div className="orders-subtable md:ml-8">
+        <DataTable
+          value={customer.Cars}
+          responsiveLayout="stack"
+          breakpoint="960px"
+        >
           <Column field="LicensePlate" header="Biển số"></Column>
           <Column field="CarTypeName" header="Dòng xe"></Column>
           <Column field="ManufactureName" header="Nhà sản xuất"></Column>

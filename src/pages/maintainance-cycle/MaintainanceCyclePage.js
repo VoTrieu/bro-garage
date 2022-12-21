@@ -4,7 +4,10 @@ import { Column } from "primereact/column";
 
 import AppDataTable from "../../components/tables/AppDataTable";
 import { useNavigate } from "react-router-dom";
-import { deleteMaintainanceCycle , getMaintainanceCycle } from "../../services/maintainance-cycle-service";
+import {
+  deleteMaintainanceCycle,
+  getMaintainanceCycle,
+} from "../../services/maintainance-cycle-service";
 
 const MaintainanceCyclePage = () => {
   const navigate = useNavigate();
@@ -61,8 +64,12 @@ const MaintainanceCyclePage = () => {
 
   const rowExpansionTemplate = (maintainanceCycle) => {
     return (
-      <div className="orders-subtable ml-8">
-        <DataTable value={maintainanceCycle.TemplateDetails} responsiveLayout="scroll">
+      <div className="orders-subtable md:ml-8">
+        <DataTable
+          value={maintainanceCycle.TemplateDetails}
+          responsiveLayout="stack"
+          breakpoint="960px"
+        >
           <Column field="ProductCode" header="Mã phụ tùng"></Column>
           <Column field="ProductName" header="Mô tả"></Column>
           <Column field="Quantity" header="Số lượng"></Column>
@@ -92,4 +99,3 @@ const MaintainanceCyclePage = () => {
 };
 
 export default MaintainanceCyclePage;
-

@@ -277,7 +277,8 @@ const SparePartTable = (props) => {
         value={spareParts}
         dataKey="TemplateDetailId"
         header={header}
-        responsiveLayout="scroll"
+        responsiveLayout="stack"
+        breakpoint="960px"
         editMode="row"
         stripedRows
       >
