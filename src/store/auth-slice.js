@@ -5,6 +5,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     loginSuccess: true,
+    changePasswordSuccess: true,
     errorMessage: "",
     fullName: "",
     accessToken: "",
@@ -28,6 +29,11 @@ const authSlice = createSlice({
         state.isTokenValid = false;
       }
     },
+    
+    setChangePasswordState(state, action) {
+      state.changePasswordSuccess = action.payload ? action.payload.IsSuccess : true;
+      state.errorMessage = action.payload?.Message || "";
+    }
   },
 });
 

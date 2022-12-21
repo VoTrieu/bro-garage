@@ -8,8 +8,19 @@ export const loginRequest = (account) => {
       const data = response.data;
       dispatch(authActions.setCurrentAuthorization(data));
       if (data.IsSuccess) {
-        dispatch(uiActions.showLoginDialog(false));
         localStorage.setItem("currentAuthorization", JSON.stringify(data));
+      }
+    });
+  };
+};
+
+export const changePasswordRequest = (account) => {
+  return async (dispatch) => {
+    axios.put("/user/change-password", account).then((response) => {
+      const data = response.data;
+      dispatch(authActions.setChangePasswordState(data));
+      if (data.IsSuccess) {
+        dispatch(uiActions.showChangePasswordDialog(false));
       }
     });
   };

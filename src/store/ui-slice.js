@@ -4,7 +4,7 @@ const uiSlice = createSlice({
   name: "ui",
   initialState: {
     slidebarIsVisible: true,
-    isShowLoginDialog: false,
+    isShowChangePasswordDialog: false,
     isShowSpinner: false,
     toastContent: {},
   },
@@ -12,8 +12,8 @@ const uiSlice = createSlice({
     toggleSlidebar(state) {
       state.slidebarIsVisible = !state.slidebarIsVisible;
     },
-    showLoginDialog(state, action) {
-      state.isShowLoginDialog = action.payload;
+    showChangePasswordDialog(state, action) {
+      state.isShowChangePasswordDialog = action.payload;
     },
     setToastContent(state, action) {
       state.toastContent = action.payload;

@@ -1,19 +1,37 @@
+import { useRef } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { Menubar } from "primereact/menubar";
+import { Menu } from 'primereact/menu';
 import { uiActions } from "../../../store/ui-slice";
-import Login from "../../login/Login";
+import ChangePassword from "../../account/ChangePassword";
 import { Button } from "primereact/button";
 
 // import classes from "./MainNavigation.module.css";
 import { Fragment } from "react";
 
 function MainNavigation() {
+  const menu = useRef(null);
   const dispatch = useDispatch();
   const fullName = useSelector((state) => state.auth.fullName);
 
   const toggleSlidebarMenu = () => {
     dispatch(uiActions.toggleSlidebar());
   };
+
+  const menuItems = [
+    {
+        label: 'Tài khoản',
+        items: [
+            {
+                label: 'Đổi mật khẩu',
+                icon: 'pi pi-user-edit',
+                command: () => {
+                    dispatch(uiActions.showChangePasswordDialog(true));
+                }
+            },
+        ]
+    },
+];
 
   const start = (
     <Fragment>
@@ -29,19 +47,15 @@ function MainNavigation() {
   const end = (
     <div className="flex align-items-center">
       <span className="mr-2">{fullName}</span>
-      {/* <Button
-        icon="pi pi-sign-in"
-        onClick={() => {
-          dispatch(uiActions.showLoginDialog(true));
-        }}
-      /> */}
+      <Button icon="pi pi-cog" onClick={(event) => menu.current.toggle(event)} aria-controls="popup_menu" aria-haspopup />
+      <Menu model={menuItems} popup ref={menu} id="popup_menu" />
     </div>
   );
 
   return (
     <header>
       <Menubar model={[]} start={start} end={end} />
-      <Login />
+      <ChangePassword />
     </header>
   );
 }
