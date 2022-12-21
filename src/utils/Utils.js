@@ -1,3 +1,5 @@
+import { isDate } from "lodash";
+
 export const getCurrentDate = () => {
   let date = new Date();
   // const offset = date.getTimezoneOffset();
@@ -7,6 +9,10 @@ export const getCurrentDate = () => {
 };
 
 export const getDateWithFormat = (date) => {
+  if(!isDate(date)){
+    return;
+  }
+  
   let day = date.getDate();
   let month = date.getMonth() + 1;
   const year = date.getFullYear();
