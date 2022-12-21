@@ -31,12 +31,6 @@ const ChangePassword = (props) => {
     getValues,
   } = useForm({ defaultValues });
 
-  useEffect(() => {
-    return () => {
-      reset(defaultValues);
-    };
-  }, []);
-
   const onHideChangePasswordForm = () => {
     dispatch(uiActions.showChangePasswordDialog(false));
   };
@@ -48,6 +42,7 @@ const ChangePassword = (props) => {
   const onSubmit = (formValue, e) => {
     e.nativeEvent.preventDefault();
     dispatch(changePasswordRequest(formValue));
+    reset(defaultValues);
   };
 
   const getFormErrorMessage = (name) => {
