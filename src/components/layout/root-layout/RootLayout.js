@@ -13,7 +13,7 @@ import classes from "./RootLayout.module.scss";
 
 function RootLayout() {
   const dispatch = useDispatch();
-  const isShowSpinner = useSelector((state) => state.ui.isShowSpinner);
+  const { isShowSpinner, slidebarIsVisible } = useSelector((state) => state.ui);
   const { refreshToken, expirationTime } = useSelector((state) => state.auth);
 
   //refresh Token
@@ -35,7 +35,15 @@ function RootLayout() {
       <MainNavigation />
       <div className={`flex ${classes.main_container}`}>
         <SideBarMenu />
-        <main className="w-full h-full px-4 pt-3 relative">
+        <main
+          className={classNames(
+            classes.side_bar_open,
+            "h-full px-4 pt-3 relative",
+            {
+              "w-full": !slidebarIsVisible,
+            }
+          )}
+        >
           <Outlet />
           <ProgressSpinner
             style={{ width: "50px", height: "50px" }}

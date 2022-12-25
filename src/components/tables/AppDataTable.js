@@ -8,6 +8,7 @@ import { Ripple } from "primereact/ripple";
 import { classNames } from "primereact/utils";
 import { Dropdown } from "primereact/dropdown";
 import { Paginator } from "primereact/paginator";
+import classes from "./Table.module.scss";
 
 const AppDataTable = (props) => {
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
@@ -115,7 +116,7 @@ const AppDataTable = (props) => {
             placeholder="Tìm kiếm..."
           />
         </span>
-        
+
         {!props.isHideCreateButton && (
           <Button
             label="Thêm mới"
@@ -298,10 +299,12 @@ const AppDataTable = (props) => {
     <Fragment>
       <div className="card">
         <DataTable
+          className={classes.app_table}
           value={props.data}
           dataKey={props.dataKey}
           header={header}
           stripedRows
+          resizeable="true"
           responsiveLayout="stack"
           breakpoint="960px"
           expandedRows={expandedRows}
