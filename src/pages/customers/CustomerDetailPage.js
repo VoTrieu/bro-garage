@@ -75,7 +75,7 @@ const CustomerDetailPage = () => {
 
 
   const handleCarsChange = (cars) => {
-    setValue('Cars', cars);
+    setValue('Cars', cars, { shouldDirty: true });
   };
 
   const onSubmit = (formData, e) => {

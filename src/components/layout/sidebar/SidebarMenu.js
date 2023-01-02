@@ -64,7 +64,7 @@ const SidebarMenu = () => {
       },
     },
     {
-      label: "Phiếu bão dưỡng / sửa chữa",
+      label: "Phiếu bảo dưỡng / sửa chữa",
       icon: "pi pi-fw pi-cog",
       className: matchRoutes(
         [

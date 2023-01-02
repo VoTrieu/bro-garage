@@ -257,6 +257,7 @@ const CarTable = (props) => {
             onChange={(e) => onInputChange(e, "ManufacturerId")}
             optionLabel="ManufacturerName"
             options={manufacturers}
+            autoFocus
             className={classNames({
               "p-invalid": submitted && !selectedCar.ManufacturerId,
             })}
@@ -278,7 +279,6 @@ const CarTable = (props) => {
             onChange={(e) => onInputChange(e, "CarTypeId")}
             optionLabel="TypeName"
             options={carTypes}
-            autoFocus
             className={classNames({
               "p-invalid": submitted && !selectedCar.CarTypeId,
             })}

@@ -38,10 +38,10 @@ const CarAutoComplete = (props) => {
   const itemLicensePlateTemplate = (item) => {
     return (
       <div className="grid">
-        <div className="col-6 md:col-3">{item.LicensePlate}</div>
-        <div className="col-6 md:col-3 pl-4">{item.TypeName}</div>
-        <div className="col-6 md:col-3 pl-4">{item.ManufacturerName}</div>
-        <div className="col-6 md:col-3 pl-4">{item.Customer.FullName}</div>
+        <div className="col-6">{item.LicensePlate}</div>
+        <div className="col-6 pl-4">{item.TypeName}</div>
+        {/* <div className="col-6 md:col-3 pl-4">{item.ManufacturerName}</div>
+        <div className="col-6 md:col-3 pl-4">{item.Customer.FullName}</div> */}
       </div>
     );
   };

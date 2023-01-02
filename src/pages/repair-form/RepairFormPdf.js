@@ -32,6 +32,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
   const formatAmount = (number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "decimal",
+      maximumFractionDigits: 0,
     }).format(number);
   };
 
@@ -176,7 +177,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
                 <span>{data.Car.TypeName}</span>
               </div>
               <div className="flex my-2">
-                <span className="w-4">Kỳ bão dưỡng kế</span>
+                <span className="w-4">Kỳ bảo dưỡng kế</span>
                 <span className="mx-2">:</span>
                 <span>{data.ODONext}</span>
               </div>
@@ -196,7 +197,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
         </section>
 
         <section className="my-2">
-          <DataTable headerClassName={classes.spare_part_pdf_table} value={orderDetails} footerColumnGroup={footerGroup}>
+          <DataTable headerclassname={classes.spare_part_pdf_table} value={orderDetails} footerColumnGroup={footerGroup}>
             <Column
               field="ProductName"
               header="Nội dung công việc / Tên phụ tùng"
