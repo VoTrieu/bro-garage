@@ -82,8 +82,6 @@ axios.interceptors.response.use(
       data: { Message },
     } = error.response;
 
-    finishedRequestNumber++;
-
     if (status === 401 && Message === "Unauthorized") {
       window.location.href = "/";
     } else {

@@ -132,6 +132,34 @@ const MaintainanceCycleDetailPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="formgrid grid"
         >
+           <div className="field col-12 md:col-6">
+            <label htmlFor="ManufaturerId">
+              Hãng xe <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="ManufaturerId"
+              control={control}
+              rules={{ required: "Hãng xe không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="ManufacturerName"
+                  optionValue="ManufacturerId"
+                  options={manufacturers}
+                  placeholder="Chọn hãng xe"
+                  filter
+                  filterBy="ManufacturerName"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("ManufaturerId")}
+          </div>
+          
           <div className="field col-12 md:col-6">
             <label htmlFor="CarTypeId">
               Dòng xe <b className="p-error">*</b>
@@ -158,34 +186,6 @@ const MaintainanceCycleDetailPage = () => {
               )}
             />
             {getFormErrorMessage("CarTypeId")}
-          </div>
-
-          <div className="field col-12 md:col-6">
-            <label htmlFor="ManufaturerId">
-              Hãng xe <b className="p-error">*</b>
-            </label>
-            <Controller
-              name="ManufaturerId"
-              control={control}
-              rules={{ required: "Hãng xe không được để trống!" }}
-              render={({ field, fieldState }) => (
-                <Dropdown
-                  id={field.name}
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.value)}
-                  optionLabel="ManufacturerName"
-                  optionValue="ManufacturerId"
-                  options={manufacturers}
-                  placeholder="Chọn hãng xe"
-                  filter
-                  filterBy="ManufacturerName"
-                  className={classNames("w-full", {
-                    "p-invalid": fieldState.error,
-                  })}
-                />
-              )}
-            />
-            {getFormErrorMessage("ManufaturerId")}
           </div>
 
           <div className="field col-12 md:col-6">

@@ -22,7 +22,7 @@ const defaultValues = {
   Remark: "",
   Representative: "",
   TaxCode: "",
-  TypeId: 0,
+  TypeId: 1,
 };
 
 const CustomerDetailPage = () => {
@@ -132,6 +132,7 @@ const CustomerDetailPage = () => {
             <Controller
               name="TypeId"
               control={control}
+              rules={{ required: "Loại khách hàng không được để trống!" }}
               render={({ field }) => (
                 <Dropdown
                   id={field.name}
@@ -174,53 +175,44 @@ const CustomerDetailPage = () => {
           </div>
           <div className="field col-12 md:col-6">
             <label htmlFor="Representative">
-              Người đại diện <b className="p-error">*</b>
+              Người đại diện
             </label>
             <Controller
               name="Representative"
               control={control}
-              rules={{ required: "Người đại diện không được để trống!" }}
               render={({ field, fieldState }) => (
                 <InputText
                   id={field.name}
                   {...field}
-                  className={classNames("block w-full", {
-                    "p-invalid": fieldState.error,
-                  })}
+                  className="block w-full"
                 />
               )}
             />
-            {getFormErrorMessage("Representative")}
           </div>
           <div className="field col-12 md:col-6">
             <label htmlFor="TaxCode">
-              Mã Số Thuế <b className="p-error">*</b>
+              Mã Số Thuế
             </label>
             <Controller
               name="TaxCode"
               control={control}
-              rules={{ required: "Mã số thuế không được để trống!" }}
               render={({ field, fieldState }) => (
                 <InputText
                   id={field.name}
                   {...field}
-                  className={classNames("block w-full", {
-                    "p-invalid": fieldState.error,
-                  })}
+                  className="block w-full"
                 />
               )}
             />
-            {getFormErrorMessage("TaxCode")}
           </div>
           <div className="field col-12 md:col-6">
             <label htmlFor="Email">
-              Email <b className="p-error">*</b>
+              Email
             </label>
             <Controller
               name="Email"
               control={control}
               rules={{
-                required: "Email không được để trống!",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                   message: "Email không hợp lệ. E.g. example@email.com",
@@ -240,25 +232,21 @@ const CustomerDetailPage = () => {
           </div>
           <div className="field col-12 md:col-6">
             <label htmlFor="Address">
-              Địa Chỉ <b className="p-error">*</b>
+              Địa Chỉ
             </label>
             <Controller
               name="Address"
               control={control}
-              rules={{ required: "Địa chỉ không được để trống!" }}
               render={({ field, fieldState }) => (
                 <InputTextarea
                   rows={5}
                   cols={30}
                   id={field.name}
                   {...field}
-                  className={classNames("block w-full", {
-                    "p-invalid": fieldState.error,
-                  })}
+                  className="block w-full"
                 />
               )}
             />
-            {getFormErrorMessage("Address")}
           </div>
           <div className="field col-12 md:col-6">
             <label htmlFor="Note">Ghi Chú</label>
