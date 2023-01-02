@@ -6,33 +6,34 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
-import { trim } from "lodash";
+import { trim, includes } from "lodash";
 import {
   getSparePart,
   deleteSparePart,
   createNewSparePart,
   updateSparePart,
-  getAllSparePart
+  getAllSparePart,
 } from "../../services/spare-part-service";
 
 import AppDataTable from "../../components/tables/AppDataTable";
+
+const emptySparePart = {
+  ProductCode: "",
+  ProductName: "",
+  UnitName: "",
+  UnitPrice: 0,
+  Quantity: 0,
+  Remark: "",
+};
 
 const SparePartPage = () => {
   const [spareParts, setSpareParts] = useState(null);
   const [showSparePartDetailDialog, setShowSparePartDetailDialog] =
     useState(false);
-
   const [submitted, setSubmitted] = useState(false);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [isShowCancelDialog, setIsShowCancelDialog] = useState(false);
   const [paginatorOptions, setPaginatorOptions] = useState();
-
-  const emptySparePart = {
-    ProductCode: "",
-    ProductName: "",
-    UnitName: "",
-    UnitPrice: 0,
-    Quantity: 0,
-    Remark: "",
-  };
   const [selectedSparePart, setSelectSparePart] = useState(emptySparePart);
 
   const getData = (pageSize, pageIndex, keyword) => {
@@ -45,7 +46,11 @@ const SparePartPage = () => {
   };
 
   const refreshData = () => {
-    getSparePart(paginatorOptions.PageSize, paginatorOptions.PageIndex, paginatorOptions.keyword).then((response) => {
+    getSparePart(
+      paginatorOptions.PageSize,
+      paginatorOptions.PageIndex,
+      paginatorOptions.keyword
+    ).then((response) => {
       const data = response.data.Result.Data;
       setSpareParts(data);
     });
@@ -103,11 +108,14 @@ const SparePartPage = () => {
 
   const saveSparePart = () => {
     setSubmitted(true);
+    const optionalFields = ["AvatarUrl", "Remark", "Quantity"];
     for (const key in selectedSparePart) {
-      if (!trim(selectedSparePart[key]) && key !== "Remark") {
+      const value = trim(selectedSparePart[key]);
+      if ((value === "" || value === "0") && !includes(optionalFields, key)) {
         return;
       }
     }
+    setIsFormDirty(false);
     //update existed spare part
     if (selectedSparePart.ProductId) {
       updateSparePart(selectedSparePart).then((response) => {
@@ -138,11 +146,20 @@ const SparePartPage = () => {
     });
   };
 
-  const onInputChange = (e, field, defaultValue ) => {
+  const onInputChange = (e, field, defaultValue) => {
+    setIsFormDirty(true);
     const val = (e.target && e.target.value) || defaultValue;
     let _selectedSparePart = { ...selectedSparePart };
     _selectedSparePart[`${field}`] = val;
     setSelectSparePart(_selectedSparePart);
+  };
+
+  const onSparePartCancel = () => {
+    if (isFormDirty) {
+      setIsShowCancelDialog(true);
+      return;
+    }
+    setShowSparePartDetailDialog(false);
   };
 
   const sparePartDialogFooter = (
@@ -151,15 +168,36 @@ const SparePartPage = () => {
         label="Huỷ"
         icon="pi pi-times"
         className="p-button-text"
-        onClick={() => {
-          setShowSparePartDetailDialog(false);
-        }}
+        onClick={onSparePartCancel}
       />
       <Button
         label="Lưu"
         icon="pi pi-check"
         className="p-button-text"
         onClick={saveSparePart}
+      />
+    </Fragment>
+  );
+
+  const cancelConfirmDialogFooter = (
+    <Fragment>
+      <Button
+        label="Huỷ"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={() => {
+          setIsShowCancelDialog(false);
+        }}
+      />
+      <Button
+        label="Thoát"
+        icon="pi pi-check"
+        className="p-button-text"
+        onClick={() => {
+          setIsShowCancelDialog(false);
+          setShowSparePartDetailDialog(false);
+          setIsFormDirty(false);
+        }}
       />
     </Fragment>
   );
@@ -188,9 +226,7 @@ const SparePartPage = () => {
         modal
         className="p-fluid"
         footer={sparePartDialogFooter}
-        onHide={() => {
-          setShowSparePartDetailDialog(false);
-        }}
+        onHide={onSparePartCancel}
       >
         <div className="field">
           <label htmlFor="txtProductCode">
@@ -230,7 +266,7 @@ const SparePartPage = () => {
 
         <div className="field">
           <label htmlFor="txtUnitPrice">
-            Đơn giá
+            Đơn giá <b className="p-error">*</b>
           </label>
           <InputNumber
             inputId="txtUnitPrice"
@@ -272,9 +308,6 @@ const SparePartPage = () => {
             value={selectedSparePart.Quantity}
             min={0}
             onValueChange={(e) => onInputChange(e, "Quantity", 0)}
-            className={classNames({
-              "p-invalid": submitted && !selectedSparePart.Quantity,
-            })}
           />
         </div>
 
@@ -287,6 +320,25 @@ const SparePartPage = () => {
             value={selectedSparePart.Remark}
             onChange={(e) => onInputChange(e, "Remark", "")}
           />
+        </div>
+      </Dialog>
+
+      <Dialog
+        visible={isShowCancelDialog}
+        style={{ width: "450px" }}
+        header="Xác nhận"
+        modal
+        footer={cancelConfirmDialogFooter}
+        onHide={() => {
+          setIsShowCancelDialog(false);
+        }}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          Dữ liệu đã nhập sẽ bị mất, bạn có thật sự muốn thoát?
         </div>
       </Dialog>
     </Fragment>
