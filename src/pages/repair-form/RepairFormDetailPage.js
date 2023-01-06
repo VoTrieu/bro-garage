@@ -52,20 +52,6 @@ const defaultValues = {
 };
 
 const RepairFormDetailPage = () => {
-  const formRef = useRef();
-  const printComponentRef = useRef();
-  const [selectedCar, setSelectedCar] = useState({});
-  const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
-  const [advancePayment, setAdvancePayment] = useState(0);
-  const [discountPercent, setDiscountPercent] = useState();
-  const [printData, setPrintData] = useState(null);
-  const [isProcessing, setIsProcessing] = useState({
-    printing: false,
-    saving: false,
-  });
-  const params = useParams();
-  const [selectedRepairFormId, setSelectedRepairFormId] = useState(params?.id);
-
   const {
     control,
     formState: { errors, isDirty },
@@ -75,6 +61,21 @@ const RepairFormDetailPage = () => {
     trigger,
     reset,
   } = useForm({ defaultValues });
+
+  const formRef = useRef();
+  const printComponentRef = useRef();
+  const [selectedCar, setSelectedCar] = useState({});
+  const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
+  const [advancePayment, setAdvancePayment] = useState(0);
+  const [isCountTax, setIsCountTax] = useState(getValues('IsInvoice'));
+  const [discountPercent, setDiscountPercent] = useState();
+  const [printData, setPrintData] = useState(null);
+  const [isProcessing, setIsProcessing] = useState({
+    printing: false,
+    saving: false,
+  });
+  const params = useParams();
+  const [selectedRepairFormId, setSelectedRepairFormId] = useState(params?.id);
 
   //get repairForm Detail
   useEffect(() => {
@@ -488,7 +489,10 @@ const RepairFormDetailPage = () => {
                     <div className="w-full py-2">
                       <Checkbox
                         inputId={field.name}
-                        onChange={(e) => field.onChange(e.checked)}
+                        onChange={(e) => {
+                          field.onChange(e.checked);
+                          setIsCountTax(e.checked);
+                        }}
                         checked={field.value}
                       />
                     </div>
@@ -698,6 +702,7 @@ const RepairFormDetailPage = () => {
             advancePayment={advancePayment}
             discountPercent={discountPercent}
             isRepairForm={true}
+            isCountTax={isCountTax}
           />
         </ToggleablePanel>
         <Footer items={functionButtons} />

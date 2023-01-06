@@ -21,8 +21,14 @@ const SparePartTable = (props) => {
   const [filteredSparePart, setFilteredSparePart] = useState([]);
   const [updatedsparePart, setUpdatedsparePart] = useState(null);
   const [searchText, setSearchText] = useState(null);
-  const { handleSparePartsChange } = props;
-  const existedSpareParts = props.existedSpareParts;
+  const {
+    handleSparePartsChange,
+    existedSpareParts,
+    discountPercent,
+    advancePayment,
+    isRepairForm,
+    isCountTax,
+  } = props;
 
   const emptySparePart = {
     ProductCode: "",
@@ -241,13 +247,13 @@ const SparePartTable = (props) => {
 
   const totalFooterTemplate = () => {
     const total = sumBy(spareParts, (item) => item.Quantity * item.UnitPrice);
-    const discount = props.discountPercent > 0 ? total * (props.discountPercent / 100) : 0 ;
-    const tax = (total - discount) * 0.08;
-    const finalAmount = total + tax - props.advancePayment;
+    const discount = discountPercent > 0 ? total * (discountPercent / 100) : 0;
+    const tax = isCountTax ? (total - discount) * 0.1 : 0;
+    const finalAmount = total + tax - advancePayment;
     const totalElement = formatAmount(total);
     const discountElement = formatAmount(discount);
     const totalIncludedTaxElement = formatAmount(tax);
-    const advancePaymentElement = formatAmount(props.advancePayment);
+    const advancePaymentElement = formatAmount(advancePayment);
     const finalAmountElement = formatAmount(finalAmount);
     return (
       <Fragment>
@@ -264,8 +270,8 @@ const SparePartTable = (props) => {
     return (
       <Fragment>
         <div className="py-2">Cộng (A)</div>
-        <div className="py-2">Chiếc khấu {props.discountPercent || 0}% (B)</div>
-        <div className="py-2">Thuế GTGT (8%) (C)</div>
+        <div className="py-2">Chiếc khấu {discountPercent || 0}% (B)</div>
+        <div className="py-2">Thuế GTGT (10%) (C)</div>
         <div className="py-2">Tạm ứng (D)</div>
         <div className="py-2">Tổng cộng (A-B+C-D)</div>
       </Fragment>
@@ -287,7 +293,7 @@ const SparePartTable = (props) => {
         <Column field="ProductName" header="Mô tả"></Column>
         <Column field="Quantity" header="Số lượng"></Column>
         <Column field="UnitName" header="Đơn vị tính"></Column>
-        {props.isRepairForm && (
+        {isRepairForm && (
           <Column
             field="HideProduct"
             body={hideProductBodyTemplate}
@@ -305,9 +311,7 @@ const SparePartTable = (props) => {
           body={totalPriceBodyTemplate}
           footer={totalFooterTemplate}
         ></Column>
-        {props.isRepairForm && (
-          <Column field="Comment" header="Ghi Chú"></Column>
-        )}
+        {isRepairForm && <Column field="Comment" header="Ghi Chú"></Column>}
         <Column body={actionBodyTemplate} exportable={false}></Column>
       </DataTable>
 
@@ -410,7 +414,7 @@ const SparePartTable = (props) => {
             disabled
           />
         </div>
-        {props.isRepairForm && (
+        {isRepairForm && (
           <Fragment>
             <div className="field">
               <label htmlFor="txtHideProduct">Ẩn</label>
