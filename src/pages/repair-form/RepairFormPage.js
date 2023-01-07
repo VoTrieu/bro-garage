@@ -89,7 +89,17 @@ const RepairingFormPage = () => {
           <Column field="ProductName" header="Mô tả"></Column>
           <Column field="Quantity" header="Số lượng"></Column>
           <Column field="UnitName" header="Đơn vị tính"></Column>
-          <Column field="UnitPrice" header="Đơn giá"></Column>
+          <Column
+            field="UnitPrice"
+            header="Đơn giá"
+            body={(rowData) => {
+              return new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                maximumFractionDigits: 0,
+              }).format(rowData.UnitPrice);
+            }}
+          ></Column>
         </DataTable>
       </div>
     );
