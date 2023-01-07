@@ -132,7 +132,7 @@ const MaintainanceCycleDetailPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="formgrid grid"
         >
-           <div className="field col-12 md:col-6">
+           <div className="field col-12 md:col-4">
             <label htmlFor="ManufaturerId">
               Hãng xe <b className="p-error">*</b>
             </label>
@@ -160,7 +160,7 @@ const MaintainanceCycleDetailPage = () => {
             {getFormErrorMessage("ManufaturerId")}
           </div>
           
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="CarTypeId">
               Dòng xe <b className="p-error">*</b>
             </label>
@@ -188,7 +188,7 @@ const MaintainanceCycleDetailPage = () => {
             {getFormErrorMessage("CarTypeId")}
           </div>
 
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="YearOfManufactureFrom">
               Năm sản xuất từ <b className="p-error">*</b>
             </label>
@@ -209,7 +209,7 @@ const MaintainanceCycleDetailPage = () => {
             {getFormErrorMessage("YearOfManufactureFrom")}
           </div>
 
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="YearOfManufactureTo">
               Năm sản xuất đến <b className="p-error">*</b>
             </label>
@@ -230,14 +230,14 @@ const MaintainanceCycleDetailPage = () => {
             {getFormErrorMessage("YearOfManufactureTo")}
           </div>
 
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="Note">Ghi Chú</label>
             <Controller
               name="Note"
               control={control}
               render={({ field }) => (
                 <InputTextarea
-                  rows={5}
+                  rows={1}
                   cols={30}
                   id={field.name}
                   {...field}

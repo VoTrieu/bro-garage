@@ -11,7 +11,7 @@ import { getCarTypes, getManufacturers } from "../../services/car-service";
 import { trim, forEach, isNumber } from "lodash";
 
 let emptyCar = {
-  TypeId: "",
+  CarTypeId: "",
   ManufacturerId: "",
   LicensePlate: "",
   YearOfManufacture: "",
@@ -189,7 +189,7 @@ const CarTable = (props) => {
     <Fragment>
       <DataTable
         value={cars}
-        dataKey="CarTypeId"
+        dataKey="CarId"
         header={header}
         responsiveLayout="stack"
         breakpoint="960px"
@@ -278,11 +278,11 @@ const CarTable = (props) => {
           </div>
 
           <div className="field">
-            <label htmlFor="TypeId">
+            <label htmlFor="CarTypeId">
               Dòng xe <b className="p-error">*</b>
             </label>
             <Controller
-              name="TypeId"
+              name="CarTypeId"
               control={control}
               rules={{ required: "Dòng xe không được để trống." }}
               render={({ field, fieldState }) => (
@@ -306,7 +306,7 @@ const CarTable = (props) => {
                 />
               )}
             />
-            {getFormErrorMessage("TypeId")}
+            {getFormErrorMessage("CarTypeId")}
           </div>
 
           <div className="field">

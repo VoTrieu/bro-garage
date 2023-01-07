@@ -105,7 +105,7 @@ const CustomerDetailPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="formgrid grid"
         >
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="FullName">
               Tên Khách Hàng <b className="p-error">*</b>
             </label>
@@ -125,7 +125,7 @@ const CustomerDetailPage = () => {
             />
             {getFormErrorMessage("FullName")}
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="TypeId">
               Loại Khách Hàng <b className="p-error">*</b>
             </label>
@@ -147,7 +147,7 @@ const CustomerDetailPage = () => {
             />
             {getFormErrorMessage("TypeId")}
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="PhoneNumber">
               Số điện thoại <b className="p-error">*</b>
             </label>
@@ -173,7 +173,7 @@ const CustomerDetailPage = () => {
             />
             {getFormErrorMessage("PhoneNumber")}
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="Representative">
               Người đại diện
             </label>
@@ -189,7 +189,7 @@ const CustomerDetailPage = () => {
               )}
             />
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="TaxCode">
               Mã Số Thuế
             </label>
@@ -205,7 +205,7 @@ const CustomerDetailPage = () => {
               )}
             />
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="Email">
               Email
             </label>
@@ -230,7 +230,7 @@ const CustomerDetailPage = () => {
             />
             {getFormErrorMessage("Email")}
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="Address">
               Địa Chỉ
             </label>
@@ -248,7 +248,7 @@ const CustomerDetailPage = () => {
               )}
             />
           </div>
-          <div className="field col-12 md:col-6">
+          <div className="field col-12 md:col-4">
             <label htmlFor="Note">Ghi Chú</label>
             <Controller
               name="Note"
