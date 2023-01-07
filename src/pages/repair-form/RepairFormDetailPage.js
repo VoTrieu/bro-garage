@@ -39,7 +39,7 @@ const defaultValues = {
   ODONext: 5000,
   ODOUnit: "Km",
   ExpiredInDate: getExpiredDate(15),
-  IsInvoice: true,
+  IsInvoice: false,
   AdvancePayment: 0,
   PaymentMethod: "CASH",
   Diagnosis: "",
@@ -83,6 +83,7 @@ const RepairFormDetailPage = () => {
       getRepairFormDetail(selectedRepairFormId).then((response) => {
         const data = response.data.Result;
         setSparePartFromTemplate(data.OrderDetails);
+        setIsCountTax(data.IsInvoice);
         setSelectedCar(data.Car);
 
         //convert date to IsoDateTime
