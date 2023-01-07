@@ -22,7 +22,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
       <Fragment>
         <div className="py-2">Cộng (A)</div>
         <div className="py-2">Chiết khấu ({data.Discount || 0}%) (B)</div>
-        <div className="py-2">Thuế GTGT (8%) (C)</div>
+        <div className="py-2">Thuế GTGT (10%) (C)</div>
         <div className="py-2">Tạm ứng (D)</div>
         <div className="py-2">Tổng cộng (A-B+C-D)</div>
       </Fragment>
@@ -39,7 +39,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
   const totalFooterTemplate = () => {
     const total = sumBy(orderDetails, (item) => item.Quantity * item.UnitPrice);
     const discount = total * (data.Discount / 100);
-    const tax = (total - discount ) * 0.08;
+    const tax = data.IsInvoice ? (total - discount ) * 0.1 : 0;
     const finalAmount = total + tax - data.AdvancePayment;
     const totalElement = formatAmount(total);
     const discountElement = formatAmount(discount);
@@ -193,7 +193,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
           <div className="surface-400 mt-0 p-1">
             <h4 className="my-0">Yêu cầu của khách hàng / Ghi chú</h4>
           </div>
-          <InputTextarea defaultValue={data.CustomerNote} className="border w-full px-3" rows={5} cols={30} />
+          <InputTextarea value={data.CustomerNote} className="border w-full px-3" rows={3} cols={30}/>
         </section>
 
         <section className="my-2">
