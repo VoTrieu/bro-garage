@@ -1,6 +1,6 @@
 import { Fragment, useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
@@ -53,6 +53,7 @@ const defaultValues = {
 };
 
 const RepairFormDetailPage = () => {
+  const navigate = useNavigate();
   const {
     control,
     formState: { errors, isDirty },
@@ -76,7 +77,7 @@ const RepairFormDetailPage = () => {
     saving: false,
   });
   const params = useParams();
-  const [selectedRepairFormId, setSelectedRepairFormId] = useState(params?.id);
+  const selectedRepairFormId  = params?.id;
 
   //get repairForm Detail
   useEffect(() => {
@@ -184,8 +185,7 @@ const RepairFormDetailPage = () => {
     createRepairForm(data)
       .then((res) => {
         const orderId = res.data.Result;
-        setSelectedRepairFormId(orderId);
-        setValue("OrderId", orderId);
+        navigate(`/app/repair-detail/${orderId}`);
       })
       .finally(() => {
         setIsProcessing({ ...isProcessing, saving: false });

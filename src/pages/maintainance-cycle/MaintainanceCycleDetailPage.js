@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -26,6 +26,7 @@ const defaultValues = {
 };
 
 const MaintainanceCycleDetailPage = () => {
+  const navigate = useNavigate();
   const [existedSpareParts, setExistedSpareParts] = useState([]);
   const [carTypes, setCarTypes] = useState();
   const [manufacturers, setManufacturers] = useState();
@@ -54,6 +55,7 @@ const MaintainanceCycleDetailPage = () => {
     formState: { errors, isDirty },
     handleSubmit,
     setValue,
+    getValues,
     reset,
     trigger,
   } = useForm({ defaultValues });
@@ -103,16 +105,15 @@ const MaintainanceCycleDetailPage = () => {
     //get year only
     formData.YearOfManufactureFrom =
       formData.YearOfManufactureFrom.getFullYear();
-    formData.YearOfManufactureTo =
-      formData.YearOfManufactureTo.getFullYear();
+    formData.YearOfManufactureTo = formData.YearOfManufactureTo.getFullYear();
 
     if (formData.TemplateId) {
       updateMaintainanceCycle(formData).finally(() => setIsSubmitting(false));
     } else {
       createMaintainanceCycle(formData)
         .then((res) => {
-          const id = res.data.Result;
-          setValue("TemplateId", id);
+          const templateId = res.data.Result;
+          navigate(`/app/maintainance-cycle-detail/${templateId}`);
         })
         .finally(() => setIsSubmitting(false));
     }
@@ -124,6 +125,30 @@ const MaintainanceCycleDetailPage = () => {
     );
   };
 
+  const validateFromDateToDate = (
+    value,
+    compareField,
+    isFromDate,
+    fieldLabel
+  ) => {
+    const compareDate = getValues()[compareField];
+    if (!value && !compareDate) {
+      return true;
+    }
+
+    if (!value && compareDate) {
+      return `${fieldLabel} không thể để trống`;
+    }
+
+    if (isFromDate && value > compareDate) {
+      return `${fieldLabel} từ không thể lớn hơn ${fieldLabel} đến!`;
+    }
+
+    if (!isFromDate && value < compareDate) {
+      return `${fieldLabel} đến không thể nhỏ hơn ${fieldLabel} từ!`;
+    }
+  };
+
   return (
     <div className="relative h-full pb-8">
       <ToggleablePanel header="Thông tin xe" className="pb-2" toggleable>
@@ -132,7 +157,7 @@ const MaintainanceCycleDetailPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="formgrid grid"
         >
-           <div className="field col-12 md:col-4">
+          <div className="field col-12 md:col-4">
             <label htmlFor="ManufaturerId">
               Hãng xe <b className="p-error">*</b>
             </label>
@@ -159,7 +184,7 @@ const MaintainanceCycleDetailPage = () => {
             />
             {getFormErrorMessage("ManufaturerId")}
           </div>
-          
+
           <div className="field col-12 md:col-4">
             <label htmlFor="CarTypeId">
               Dòng xe <b className="p-error">*</b>
@@ -189,13 +214,41 @@ const MaintainanceCycleDetailPage = () => {
           </div>
 
           <div className="field col-12 md:col-4">
+            <label htmlFor="Note">Ghi Chú</label>
+            <Controller
+              name="Note"
+              control={control}
+              render={({ field }) => (
+                <InputTextarea
+                  rows={1}
+                  cols={30}
+                  id={field.name}
+                  {...field}
+                  className="block w-full"
+                />
+              )}
+            />
+          </div>
+
+          <div className="field col-12 md:col-4">
             <label htmlFor="YearOfManufactureFrom">
               Năm sản xuất từ <b className="p-error">*</b>
             </label>
             <Controller
               name="YearOfManufactureFrom"
               control={control}
-              rules={{ required: "Năm sản xuất từ không được để trống!" }}
+              rules={{
+                required: "Năm sản xuất từ không được để trống!",
+                validate: {
+                  isDateValid: (value) =>
+                    validateFromDateToDate(
+                      value,
+                      "YearOfManufactureTo",
+                      true,
+                      "Năm sản xuất"
+                    ),
+                },
+              }}
               render={({ field }) => (
                 <Calendar
                   id={field.name}
@@ -216,7 +269,18 @@ const MaintainanceCycleDetailPage = () => {
             <Controller
               name="YearOfManufactureTo"
               control={control}
-              rules={{ required: "Năm sản xuất đến không được để trống!" }}
+              rules={{
+                required: "Năm sản xuất đến không được để trống!",
+                validate: {
+                  isDateValid: (value) =>
+                    validateFromDateToDate(
+                      value,
+                      "YearOfManufactureFrom",
+                      false,
+                      "Năm sản xuất"
+                    ),
+                },
+              }}
               render={({ field }) => (
                 <Calendar
                   id={field.name}
@@ -228,23 +292,6 @@ const MaintainanceCycleDetailPage = () => {
               )}
             />
             {getFormErrorMessage("YearOfManufactureTo")}
-          </div>
-
-          <div className="field col-12 md:col-4">
-            <label htmlFor="Note">Ghi Chú</label>
-            <Controller
-              name="Note"
-              control={control}
-              render={({ field }) => (
-                <InputTextarea
-                  rows={1}
-                  cols={30}
-                  id={field.name}
-                  {...field}
-                  className="block w-full"
-                />
-              )}
-            />
           </div>
         </form>
       </ToggleablePanel>
