@@ -72,10 +72,24 @@ const SparePartPage = () => {
     {
       field: "UnitPrice",
       header: "Đơn giá",
+      body: (rowData) => {
+        return (
+          <div className="text-right">
+            {new Intl.NumberFormat('vi-VN').format(rowData.UnitPrice)}
+          </div>
+        );
+      },
     },
     {
       field: "Quantity",
       header: "Số lượng tồn kho",
+      body: (rowData) => {
+        return (
+          <div className="text-right">
+            {new Intl.NumberFormat('vi-VN').format(rowData.Quantity)}
+          </div>
+        );
+      },
     },
     {
       field: "Remark",
@@ -272,9 +286,8 @@ const SparePartPage = () => {
             inputId="txtUnitPrice"
             value={selectedSparePart.UnitPrice}
             onValueChange={(e) => onInputChange(e, "UnitPrice", 0)}
-            mode="currency"
             min={0}
-            currency="VND"
+            locale="vi-VN"
             className={classNames({
               "p-invalid": submitted && !selectedSparePart.UnitPrice,
             })}

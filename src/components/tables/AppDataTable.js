@@ -322,7 +322,10 @@ const AppDataTable = (props) => {
               body={item.body}
               header={item.header}
               sortable
-              style={{ minWidth: "12rem" }}
+              style={{
+                minWidth: "12rem",
+                wordBreak: "break-word",
+              }}
             ></Column>
           ))}
 
