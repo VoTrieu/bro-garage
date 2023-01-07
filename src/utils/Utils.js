@@ -35,3 +35,7 @@ export const getExpiredDate = (expiredDate) => {
 export const getTimestampInSeconds = () => {
   return Math.floor(Date.now() / 1000)
 }
+
+export const convertDDMMYYY_To_MMDDYYYY = (stringDate) => {
+  return new Date(stringDate.replace( /(\d{2})\/(\d{2})\/(\d{4})/, "$2/$1/$3"));
+}

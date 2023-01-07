@@ -16,6 +16,7 @@ import {
   getCurrentDate,
   getExpiredDate,
   getDateWithFormat,
+  convertDDMMYYY_To_MMDDYYYY,
 } from "../../utils/Utils";
 import { Calendar } from "primereact/calendar";
 import { Checkbox } from "primereact/checkbox";
@@ -87,9 +88,9 @@ const RepairFormDetailPage = () => {
         setSelectedCar(data.Car);
 
         //convert date to IsoDateTime
-        data.DateOutEstimated = new Date(data.DateOutEstimated);
+        data.DateOutEstimated = convertDDMMYYY_To_MMDDYYYY(data.DateOutEstimated);
         if (data.DateOutActual) {
-          data.DateOutActual = new Date(data.DateOutActual);
+          data.DateOutActual = convertDDMMYYY_To_MMDDYYYY(data.DateOutActual);
         }
         reset(data);
       });
