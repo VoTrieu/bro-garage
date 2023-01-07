@@ -72,8 +72,8 @@ const CustomersPage = () => {
           breakpoint="960px"
         >
           <Column field="LicensePlate" header="Biển số"></Column>
-          <Column field="CarTypeName" header="Dòng xe"></Column>
-          <Column field="ManufactureName" header="Nhà sản xuất"></Column>
+          <Column field="TypeName" header="Dòng xe"></Column>
+          <Column field="ManufacturerName" header="Nhà sản xuất"></Column>
           <Column field="YearOfManufacture" header="Năm sản xuất"></Column>
           <Column field="VIN" header="VIN"></Column>
         </DataTable>

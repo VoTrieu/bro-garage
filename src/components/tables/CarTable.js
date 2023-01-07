@@ -1,5 +1,6 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
+import { useForm, Controller } from "react-hook-form";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
@@ -7,10 +8,10 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { getCarTypes, getManufacturers } from "../../services/car-service";
-import { trim } from "lodash";
+import { trim, forEach, isNumber } from "lodash";
 
 let emptyCar = {
-  CarTypeId: "",
+  CarId: "",
   ManufacturerId: "",
   LicensePlate: "",
   YearOfManufacture: "",
@@ -18,13 +19,19 @@ let emptyCar = {
 };
 
 const CarTable = (props) => {
+  const formRef = useRef();
   const { handleCarsChange } = props;
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+    reset,
+  } = useForm({ emptyCar });
   const [cars, setCars] = useState(props.cars || []);
   const [selectedCar, setSelectedCar] = useState(emptyCar);
-  const [updatedCar, setUpdatedCar] = useState();
   const [isShowDeleteCarDialog, setIsShowDeleteCarDialog] = useState(false);
   const [isShowCarDetailDialog, setIsShowCarDetailDialog] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [carTypes, setCarTypes] = useState();
   const [manufacturers, setManufacturers] = useState();
   const existedCars = props.existedCars;
@@ -66,7 +73,7 @@ const CarTable = (props) => {
 
   const onEditCard = (car) => {
     setSelectedCar(car);
-    setUpdatedCar(car);
+    reset(car);
     setIsShowCarDetailDialog(true);
   };
 
@@ -79,54 +86,31 @@ const CarTable = (props) => {
     setIsShowDeleteCarDialog(false);
   };
 
-  const updateCarTypeAndManufactureName = (_selectedCar) => {
-    const selectedCarType = carTypes.find(
-      (car) => car.TypeId === _selectedCar.CarTypeId
+  const onSubmit = (data) => {
+    const newCar = forEach(
+      data,
+      (value, key) => (data[key] = !isNumber(value) ? trim(value, '. ') : value)
     );
-    _selectedCar.CarTypeName = selectedCarType.TypeName;
-
-    const selectedManufacturer = manufacturers.find(
-      (manufacturer) =>
-        manufacturer.ManufacturerId === _selectedCar.ManufacturerId
-    );
-    _selectedCar.ManufactureName = selectedManufacturer.ManufacturerName;
-    return _selectedCar;
-  }
-
-  const saveCar = () => {
-    setSubmitted(true);
-    for (const key in selectedCar) {
-      if (!trim(selectedCar[key])) {
-        return;
-      }
-    }
-    //update existed car
     const _cars = [...cars];
-    const index = _cars.findIndex(
-      (car) => car.LicensePlate === updatedCar?.LicensePlate
-    );
-    if (_cars[index]) {
-      const carWithName = updateCarTypeAndManufactureName(selectedCar);
-      _cars[index] = { ...carWithName };
+    const index = _cars.findIndex((car) => {
+      if (newCar.CarId) {
+        return newCar.CarId === car.CarId;
+      }
+      return car.LicensePlate === selectedCar?.LicensePlate;
+    });
+    if (index > -1) {
+      _cars[index] = newCar;
       setCars(_cars);
     } else {
       //add new car
-      const carWithName = updateCarTypeAndManufactureName(selectedCar);
-      setCars((currentCars) => [...currentCars, carWithName]);
+      setCars((currentCars) => [...currentCars, newCar]);
     }
     setIsShowCarDetailDialog(false);
   };
 
-  const onInputChange = (e, field) => {
-    const val = (e.target && e.target.value) || "";
-    let _selectedCar = { ...selectedCar };
-    _selectedCar[field] = val;
-    setSelectedCar(_selectedCar);
-  };
-
   const openNew = () => {
+    reset(emptyCar);
     setSelectedCar(emptyCar);
-    setSubmitted(false);
     setIsShowCarDetailDialog(true);
   };
 
@@ -178,6 +162,12 @@ const CarTable = (props) => {
     </Fragment>
   );
 
+  const getFormErrorMessage = (name) => {
+    return (
+      errors[name] && <small className="p-error">{errors[name].message}</small>
+    );
+  };
+
   const carDialogFooter = (
     <Fragment>
       <Button
@@ -190,7 +180,7 @@ const CarTable = (props) => {
         label="Lưu"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={saveCar}
+        onClick={() => formRef.current.requestSubmit()}
       />
     </Fragment>
   );
@@ -205,8 +195,8 @@ const CarTable = (props) => {
         breakpoint="960px"
       >
         <Column field="LicensePlate" header="Biển số xe" sortable></Column>
-        <Column field="ManufactureName" header="Hãng xe" sortable></Column>
-        <Column field="CarTypeName" header="Dòng xe" sortable></Column>
+        <Column field="ManufacturerName" header="Hãng xe" sortable></Column>
+        <Column field="TypeName" header="Dòng xe" sortable></Column>
         <Column
           field="YearOfManufacture"
           header="Năm sản xuất"
@@ -246,101 +236,159 @@ const CarTable = (props) => {
         footer={carDialogFooter}
         onHide={hideCarDetailDialog}
       >
-        <div className="field">
-          <label htmlFor="txtManufacturerId">
-            Hãng xe <b className="p-error">*</b>
-          </label>
-          <Dropdown
-            id="txtManufacturerId"
-            value={selectedCar.ManufacturerId}
-            optionValue="ManufacturerId"
-            onChange={(e) => onInputChange(e, "ManufacturerId")}
-            optionLabel="ManufacturerName"
-            options={manufacturers}
-            autoFocus
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.ManufacturerId,
-            })}
-            placeholder="Chọn nhà sản xuất"
-          />
-          {(submitted && !selectedCar.ManufacturerId) && (
-            <small className="p-error">Hãng xe không được để trống.</small>
-          )}
-        </div>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-fluid"
+        >
+          <div className="field">
+            <label htmlFor="ManufacturerId">
+              Hãng xe <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="ManufacturerId"
+              control={control}
+              rules={{ required: "Hãng xe không được để trống." }}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    const selectedManufacturer = manufacturers.find(
+                      (item) => item.ManufacturerId === e.value
+                    );
+                    setValue(
+                      "ManufacturerName",
+                      selectedManufacturer.ManufacturerName
+                    );
+                  }}
+                  autoFocus
+                  optionValue="ManufacturerId"
+                  optionLabel="ManufacturerName"
+                  options={manufacturers}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                  placeholder="Chọn hãng xe"
+                />
+              )}
+            />
+            {getFormErrorMessage("ManufacturerId")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtCarTypeId">
-            Dòng xe <b className="p-error">*</b>
-          </label>
-          <Dropdown
-            id="txtCarTypeId"
-            value={selectedCar.CarTypeId}
-            optionValue="TypeId"
-            onChange={(e) => onInputChange(e, "CarTypeId")}
-            optionLabel="TypeName"
-            options={carTypes}
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.CarTypeId,
-            })}
-            placeholder="Chọn dòng xe"
-          />
-          {(submitted && !selectedCar.CarTypeId) && (
-            <small className="p-error">Dòng xe không được để trống.</small>
-          )}
-        </div>
+          <div className="field">
+            <label htmlFor="TypeId">
+              Dòng xe <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="TypeId"
+              control={control}
+              rules={{ required: "Dòng xe không được để trống." }}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    const selectedCarType = carTypes.find(
+                      (item) => item.TypeId === e.value
+                    );
+                    setValue("TypeName", selectedCarType.TypeName);
+                  }}
+                  optionValue="TypeId"
+                  optionLabel="TypeName"
+                  options={carTypes}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                  placeholder="Chọn dòng xe"
+                />
+              )}
+            />
+            {getFormErrorMessage("TypeId")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtLicensePlate">
-            Biển số xe <b className="p-error">*</b>
-          </label>
-          <InputText
-            id="txtLicensePlate"
-            value={selectedCar.LicensePlate}
-            onChange={(e) => onInputChange(e, "LicensePlate")}
-            required
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.LicensePlate,
-            })}
-          />
-          {(submitted && !selectedCar.LicensePlate) && (
-            <small className="p-error">Biển số xe không được để trống.</small>
-          )}
-        </div>
-        <div className="field">
-          <label htmlFor="txtYearOfManufacture">
-            Năm sản xuất <b className="p-error">*</b>
-          </label>
-          <InputText
-            id="txtYearOfManufacture"
-            value={selectedCar.YearOfManufacture}
-            onChange={(e) => onInputChange(e, "YearOfManufacture")}
-            required
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.YearOfManufacture,
-            })}
-          />
-          {(submitted && !selectedCar.YearOfManufacture) && (
-            <small className="p-error">Năm sản xuất không được để trống.</small>
-          )}
-        </div>
-        <div className="field">
-          <label htmlFor="txtVIN">
-            VIN <b className="p-error">*</b>
-          </label>
-          <InputText
-            id="txtVIN"
-            value={selectedCar.VIN}
-            onChange={(e) => onInputChange(e, "VIN")}
-            required
-            autoFocus
-            className={classNames({
-              "p-invalid": submitted && !selectedCar.VIN,
-            })}
-          />
-          {(submitted && !selectedCar.VIN) && (
-            <small className="p-error">VIN không không được để trống.</small>
-          )}
-        </div>
+          <div className="field">
+            <label htmlFor="LicensePlate">
+              Biển số xe <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="LicensePlate"
+              control={control}
+              rules={{
+                required: "Biển số xe không được để trống.",
+                validate: {
+                  isLicensePlateExist: (value) => {
+                    if (selectedCar.LicensePlate) {
+                      //if user is edit car, don't check license plate
+                      return true;
+                    }
+                    const index = cars.findIndex(
+                      (item) => item.LicensePlate === value
+                    );
+                    if (index > -1) {
+                      return "Biển số xe đã tồn tại.";
+                    }
+                    return true;
+                  },
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("LicensePlate")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="txtYearOfManufacture">
+              Năm sản xuất <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="YearOfManufacture"
+              control={control}
+              rules={{ required: "Năm sản xuất không được để trống." }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("YearOfManufacture")}
+          </div>
+
+          <div className="field">
+            <label htmlFor="VIN">
+              VIN <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="VIN"
+              control={control}
+              rules={{ required: "VIN không không được để trống." }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("VIN")}
+          </div>
+        </form>
       </Dialog>
     </Fragment>
   );
