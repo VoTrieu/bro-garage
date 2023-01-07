@@ -85,6 +85,8 @@ const RepairFormDetailPage = () => {
         const data = response.data.Result;
         setSparePartFromTemplate(data.OrderDetails);
         setIsCountTax(data.IsInvoice);
+        setDiscountPercent(data.Discount);
+        setAdvancePayment(data.AdvancePayment);
         setSelectedCar(data.Car);
 
         //convert date to IsoDateTime
