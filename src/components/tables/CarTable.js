@@ -11,7 +11,7 @@ import { getCarTypes, getManufacturers } from "../../services/car-service";
 import { trim, forEach, isNumber } from "lodash";
 
 let emptyCar = {
-  CarId: "",
+  TypeId: "",
   ManufacturerId: "",
   LicensePlate: "",
   YearOfManufacture: "",
