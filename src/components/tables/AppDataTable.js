@@ -82,10 +82,6 @@ const AppDataTable = (props) => {
     props.createNewItem();
   };
 
-  const updateItem = (rowData) => {
-    props.updateItem(rowData);
-  };
-
   const exportExcel = async () => {
     setIsExporting(true);
     const file = await props.fnGetAllDataForExport(searchText);
@@ -146,14 +142,21 @@ const AppDataTable = (props) => {
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success mr-2"
           onClick={() => {
-            updateItem(rowData);
+            props.updateItem(rowData);
           }}
         />
         <Button
           icon="pi pi-trash"
-          className="p-button-rounded p-button-warning"
+          className="p-button-rounded p-button-warning mr-2"
           onClick={() => showDeleteItemDialog(rowData)}
         />
+        {props.isPrintAble && (
+          <Button
+            icon="pi pi-print"
+            className="p-button-rounded p-button-secondary"
+            onClick={() => props.showPrintModal(rowData.OrderId)}
+          />
+        )}
       </Fragment>
     );
   };

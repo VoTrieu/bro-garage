@@ -1,19 +1,25 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import { classNames } from "primereact/utils";
 import AppDataTable from "../../components/tables/AppDataTable";
 import {
   getRepairForms,
   deleteRepairForm,
 } from "../../services/repair-service";
+import RepairFormPdf from "../repair-form/RepairFormPdf";
+import { getRepairFormDetail } from "../../services/repair-service";
 import classes from "./RepairForm.module.scss";
 
 const RepairingFormPage = () => {
   const [repairForms, setRepairForms] = useState([]);
+  const [selectedOrderId, setSelectedOrderId] = useState("");
   const [paginatorOptions, setPaginatorOptions] = useState();
   const navigate = useNavigate();
+  const printComponentRef = useRef();
+  const [printData, setPrintData] = useState(null);
 
   const getData = (pageSize, pageIndex, keyword) => {
     getRepairForms(pageSize, pageIndex, keyword).then((response) => {
@@ -52,6 +58,22 @@ const RepairingFormPage = () => {
       </span>
     );
   };
+
+  const showPrintModal = async (orderId) => {
+    setSelectedOrderId(orderId);
+    const res = await getRepairFormDetail(orderId);
+    const data = res.data.Result;
+    setPrintData(data);
+    //wait for printData updated
+    setTimeout(() => {
+      handlePrint();
+    }, 100);
+  };
+
+  const handlePrint = useReactToPrint({
+    content: () => printComponentRef.current,
+    documentTitle: selectedOrderId,
+  });
 
   const columns = [
     {
@@ -121,8 +143,13 @@ const RepairingFormPage = () => {
         createNewItem={createRepairForm}
         updateItem={updateRepairForm}
         paginatorOptions={paginatorOptions}
+        showPrintModal={showPrintModal}
         fnGetData={getData}
+        isPrintAble={true}
       />
+      <div style={{ display: "none" }}>
+        <RepairFormPdf ref={printComponentRef} data={printData} />
+      </div>
     </Fragment>
   );
 };
