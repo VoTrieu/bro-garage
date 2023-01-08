@@ -72,6 +72,9 @@ const SparePartPage = () => {
     {
       field: "UnitPrice",
       header: "Đơn giá",
+      style: {
+        width: "10rem",
+      },
       body: (rowData) => {
         return (
           <div className="text-right">
@@ -83,6 +86,9 @@ const SparePartPage = () => {
     {
       field: "Quantity",
       header: "Số lượng tồn kho",
+      style: {
+        width: "10rem",
+      },
       body: (rowData) => {
         return (
           <div className="text-right">

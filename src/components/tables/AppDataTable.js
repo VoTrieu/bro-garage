@@ -328,6 +328,7 @@ const AppDataTable = (props) => {
               style={{
                 minWidth: "12rem",
                 wordBreak: "break-word",
+                ...item.style
               }}
             ></Column>
           ))}
@@ -336,7 +337,10 @@ const AppDataTable = (props) => {
             <Column
               body={actionBodyTemplate}
               exportable={false}
-              style={{ minWidth: "8rem" }}
+              style={{ 
+                textAlign: "Center",
+                minWidth: "8rem"
+               }}
             ></Column>
           )}
         </DataTable>

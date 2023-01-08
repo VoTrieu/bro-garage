@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ToggleablePanel from "../../components/panels/ToogleablePanel";
 import CarTable from "../../components/tables/CarTable";
 import { InputText } from "primereact/inputtext";
@@ -29,6 +29,7 @@ const CustomerDetailPage = () => {
   const [existedCars, setExistedCars] = useState([]);
   const formRef = useRef();
   const params = useParams();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedCustomerId = params?.id;
 
@@ -73,22 +74,25 @@ const CustomerDetailPage = () => {
     },
   ];
 
-
   const handleCarsChange = (cars) => {
-    setValue('Cars', cars, { shouldDirty: true });
+    setValue("Cars", cars, { shouldDirty: true });
   };
 
   const onSubmit = (formData, e) => {
     e.nativeEvent.preventDefault();
     if (formData.CustomerId) {
       updateCustomer(formData);
-    } else {
-      createNewCustomer(formData).then((res) => {
-        const id = res.data.Result;
-        setValue("CustomerId", id);
-      })
-      .finally(() => setIsSubmitting(false));;
+      return;
     }
+
+    createNewCustomer(formData)
+      .then((res) => {
+        if (res.data.IsSuccess) {
+          const id = res.data.Result;
+          navigate(`/app/customer-detail/${id}`);
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   const getFormErrorMessage = (name) => {
@@ -174,9 +178,7 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("PhoneNumber")}
           </div>
           <div className="field col-12 md:col-4">
-            <label htmlFor="Representative">
-              Người đại diện
-            </label>
+            <label htmlFor="Representative">Người đại diện</label>
             <Controller
               name="Representative"
               control={control}
@@ -190,9 +192,7 @@ const CustomerDetailPage = () => {
             />
           </div>
           <div className="field col-12 md:col-4">
-            <label htmlFor="TaxCode">
-              Mã Số Thuế
-            </label>
+            <label htmlFor="TaxCode">Mã Số Thuế</label>
             <Controller
               name="TaxCode"
               control={control}
@@ -206,9 +206,7 @@ const CustomerDetailPage = () => {
             />
           </div>
           <div className="field col-12 md:col-4">
-            <label htmlFor="Email">
-              Email
-            </label>
+            <label htmlFor="Email">Email</label>
             <Controller
               name="Email"
               control={control}
@@ -231,9 +229,7 @@ const CustomerDetailPage = () => {
             {getFormErrorMessage("Email")}
           </div>
           <div className="field col-12 md:col-4">
-            <label htmlFor="Address">
-              Địa Chỉ
-            </label>
+            <label htmlFor="Address">Địa Chỉ</label>
             <Controller
               name="Address"
               control={control}
