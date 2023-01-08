@@ -55,6 +55,10 @@ const RepairingFormPage = () => {
 
   const columns = [
     {
+      field: "OrderId",
+      header: "Số phiếu",
+    },
+    {
       field: "Car.LicensePlate",
       header: "Biển số",
     },

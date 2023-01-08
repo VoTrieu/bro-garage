@@ -69,7 +69,7 @@ const RepairFormDetailPage = () => {
   const [selectedCar, setSelectedCar] = useState({});
   const [sparePartFromTemplate, setSparePartFromTemplate] = useState([]);
   const [advancePayment, setAdvancePayment] = useState(0);
-  const [isCountTax, setIsCountTax] = useState(getValues('IsInvoice'));
+  const [isCountTax, setIsCountTax] = useState(getValues("IsInvoice"));
   const [discountPercent, setDiscountPercent] = useState();
   const [printData, setPrintData] = useState(null);
   const [isProcessing, setIsProcessing] = useState({
@@ -77,13 +77,15 @@ const RepairFormDetailPage = () => {
     saving: false,
   });
   const params = useParams();
-  const selectedRepairFormId  = params?.id;
+  const selectedRepairFormId = params?.id;
+  const orderId = useRef("");
 
   //get repairForm Detail
   useEffect(() => {
     if (selectedRepairFormId) {
       getRepairFormDetail(selectedRepairFormId).then((response) => {
         const data = response.data.Result;
+        orderId.current = data.OrderId;
         setSparePartFromTemplate(data.OrderDetails);
         setIsCountTax(data.IsInvoice);
         setDiscountPercent(data.Discount);
@@ -91,7 +93,9 @@ const RepairFormDetailPage = () => {
         setSelectedCar(data.Car);
 
         //convert date to IsoDateTime
-        data.DateOutEstimated = convertDDMMYYY_To_MMDDYYYY(data.DateOutEstimated);
+        data.DateOutEstimated = convertDDMMYYY_To_MMDDYYYY(
+          data.DateOutEstimated
+        );
         if (data.DateOutActual) {
           data.DateOutActual = convertDDMMYYY_To_MMDDYYYY(data.DateOutActual);
         }
@@ -134,6 +138,7 @@ const RepairFormDetailPage = () => {
 
   const handlePrint = useReactToPrint({
     content: () => printComponentRef.current,
+    documentTitle: orderId.current
   });
 
   const functionButtons = [
@@ -199,13 +204,11 @@ const RepairFormDetailPage = () => {
           <ToggleablePanel header="Thông tin phiếu" className="pb-2" toggleable>
             <div className="formgrid grid">
               <div className="field col-12 md:col-4">
-                <label htmlFor="OrderCode">Số phiếu</label>
-                <Controller
-                  name="OrderCode"
-                  control={control}
-                  render={({ field }) => (
-                    <InputText id={field.name} {...field} className="w-full" />
-                  )}
+                <label htmlFor="OrderId">Số phiếu</label>
+                <InputText
+                  value={orderId.current}
+                  disabled
+                  className="w-full"
                 />
               </div>
               <div className="field col-12 md:col-4">
@@ -234,7 +237,7 @@ const RepairFormDetailPage = () => {
                   control={control}
                   rules={{ required: "Tình trạng không được để trống!" }}
                   render={({ field, fieldState }) => (
-                    <StatusDropdown field={field} fieldState={fieldState}/>
+                    <StatusDropdown field={field} fieldState={fieldState} />
                   )}
                 />
                 {getFormErrorMessage("StatusName")}
@@ -248,7 +251,7 @@ const RepairFormDetailPage = () => {
                   control={control}
                   rules={{ required: "Loại phiếu không được để trống!" }}
                   render={({ field, fieldState }) => (
-                    <RepairTypeDropdown field={field} fieldState={fieldState}/>
+                    <RepairTypeDropdown field={field} fieldState={fieldState} />
                   )}
                 />
                 {getFormErrorMessage("TypeName")}
@@ -429,7 +432,9 @@ const RepairFormDetailPage = () => {
                         setDiscountPercent(e.value);
                       }}
                       suffix=" %"
-                      mode="decimal" min={0} max={100}
+                      mode="decimal"
+                      min={0}
+                      max={100}
                       className="w-full"
                     />
                   )}

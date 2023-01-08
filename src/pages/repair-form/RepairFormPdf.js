@@ -2,7 +2,7 @@ import { forwardRef, Fragment } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
-import { InputTextarea } from 'primereact/inputtextarea';
+// import { InputTextarea } from 'primereact/inputtextarea';
 import { Row } from "primereact/row";
 import { sumBy } from "lodash";
 import classes from "./RepairFormPdf.module.scss";
@@ -104,7 +104,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
         </div>
         <div className="text-right mt-2 p-1 flex justify-content-end">
           <span>Số phiếu: </span>
-          <div className="w-2">{data.StatusId !== 1 && data.OrderCode}</div>
+          <div className="w-2">{data.OrderId}</div>
         </div>
         <section>
           <div className="surface-400 mt-0 p-1">
@@ -193,7 +193,8 @@ const RepairFormPdf = forwardRef((props, ref) => {
           <div className="surface-400 mt-0 p-1">
             <h4 className="my-0">Yêu cầu của khách hàng / Ghi chú</h4>
           </div>
-          <InputTextarea value={data.CustomerNote} className="border w-full px-3" rows={3} cols={30}/>
+          <p className="border w-full px-3">{data.CustomerNote}</p>
+          {/* <InputTextarea value={data.CustomerNote} className="border w-full px-3" rows={3} cols={30}/> */}
         </section>
 
         <section className="my-2">

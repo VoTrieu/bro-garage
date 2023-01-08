@@ -52,7 +52,7 @@ function RootLayout() {
             animationDuration=".5s"
             className={[
               classes.app_spinner,
-              classNames("absolute left-50", { hidden: !isShowSpinner }),
+              classNames("absolute left-50 bottom-50", { hidden: !isShowSpinner }),
             ]}
           />
         </main>
