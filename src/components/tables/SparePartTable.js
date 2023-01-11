@@ -10,7 +10,7 @@ import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
 import axios from "axios";
-import { sumBy } from "lodash";
+import { sumBy, findIndex } from "lodash";
 import { getSparePart } from "../../services/spare-part-service";
 
 const SparePartTable = (props) => {
@@ -51,13 +51,13 @@ const SparePartTable = (props) => {
   }, [existedSpareParts]);
 
   useEffect(() => {
-    if (!selectedSparePart.ProductCode) {
-      return;
-    }
+    // if (!selectedSparePart.ProductCode) {
+    //   return;
+    // }
     const source = axios.CancelToken.source();
     getSparePart(20, 1, searchText, source.token).then((res) => {
       const data = res?.data.Result.Data;
-      setFilteredSparePart(data);
+      setFilteredSparePart(data || []);
     });
     return () => {
       source.cancel();
@@ -76,9 +76,9 @@ const SparePartTable = (props) => {
   };
 
   const onDeleteSparePart = () => {
-    const newSparePartList = spareParts.filter(
-      (sparePart) => sparePart.ProductCode !== selectedSparePart.ProductCode
-    );
+    const newSparePartList = [...spareParts];
+    const index = findIndex(newSparePartList, selectedSparePart);
+    newSparePartList.splice(index, 1);
     setSpareParts(newSparePartList);
     setSelectedSparePart(emptySparePart);
     setIsShowDeleteDialog(false);
@@ -410,7 +410,7 @@ const SparePartTable = (props) => {
           <label htmlFor="txtUnitPrice">Đơn giá</label>
           <InputText
             id="txtUnitPrice"
-            value={selectedSparePart.UnitPrice || ""}
+            value={formatAmount(selectedSparePart.UnitPrice) || ""}
             disabled
           />
         </div>
