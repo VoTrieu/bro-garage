@@ -3,6 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
 // import { InputTextarea } from 'primereact/inputtextarea';
+import { classNames } from "primereact/utils";
 import { Row } from "primereact/row";
 import { sumBy } from "lodash";
 import classes from "./RepairFormPdf.module.scss";
@@ -20,11 +21,11 @@ const RepairFormPdf = forwardRef((props, ref) => {
   const titleFooterTemplate = () => {
     return (
       <Fragment>
-        <div className="py-2">Cộng (A)</div>
-        <div className="py-2">Chiết khấu ({data.Discount || 0}%) (B)</div>
-        <div className="py-2">Thuế GTGT (10%) (C)</div>
-        <div className="py-2">Tạm ứng (D)</div>
-        <div className="py-2">Tổng cộng (A-B+C-D)</div>
+        <div className="py-1">Cộng (A)</div>
+        <div className="py-1">Chiết khấu ({data.Discount || 0}%) (B)</div>
+        <div className="py-1">Thuế GTGT (10%) (C)</div>
+        <div className="py-1">Tạm ứng (D)</div>
+        <div className="py-1">Tổng cộng (A-B+C-D)</div>
       </Fragment>
     );
   };
@@ -39,7 +40,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
   const totalFooterTemplate = () => {
     const total = sumBy(orderDetails, (item) => item.Quantity * item.UnitPrice);
     const discount = total * (data.Discount / 100);
-    const tax = data.IsInvoice ? (total - discount ) * 0.1 : 0;
+    const tax = data.IsInvoice ? (total - discount) * 0.1 : 0;
     const finalAmount = total + tax - data.AdvancePayment;
     const totalElement = formatAmount(total);
     const discountElement = formatAmount(discount);
@@ -48,11 +49,11 @@ const RepairFormPdf = forwardRef((props, ref) => {
     const finalAmountElement = formatAmount(finalAmount);
     return (
       <Fragment>
-        <div className="py-2">{totalElement}</div>
-        <div className="py-2">{discountElement}</div>
-        <div className="py-2">{totalIncludedTaxElement}</div>
-        <div className="py-2">{advancePaymentElement}</div>
-        <div className="py-2">{finalAmountElement}</div>
+        <div className="py-1">{totalElement}</div>
+        <div className="py-1">{discountElement}</div>
+        <div className="py-1">{totalIncludedTaxElement}</div>
+        <div className="py-1">{advancePaymentElement}</div>
+        <div className="py-1">{finalAmountElement}</div>
       </Fragment>
     );
   };
@@ -63,12 +64,12 @@ const RepairFormPdf = forwardRef((props, ref) => {
         <Column
           footer={titleFooterTemplate}
           colSpan={4}
-          footerStyle={{ textAlign: "right" }}
+          className={classNames(classes.pdf_font_size, 'text-right')}
         />
         <Column
           footer={totalFooterTemplate}
           colSpan={2}
-          footerStyle={{ textAlign: "right" }}
+          className={classNames(classes.pdf_font_size, 'text-right')}
         />
       </Row>
     </ColumnGroup>
@@ -76,20 +77,23 @@ const RepairFormPdf = forwardRef((props, ref) => {
 
   return (
     data?.OrderId && (
-      <div className={`text-sm ${classes.pdf_container}`} ref={ref}>
+      <div
+        className={classNames(classes.pdf_container, classes.pdf_font_size)}
+        ref={ref}
+      >
         <div className="header-info mb-5">
           <h3 className="mb-1">CÔNG TY TNHH DỊCH VỤ SỮA CHỮA Ô TÔ XUÂN LAM</h3>
-          <div className="flex my-2 mb-1">
+          <div className="flex my-1 mb-1">
             <b className="w-2">Địa chỉ: </b>
             <span>36 Đường số 2, Phường Tân Thành, Quận Tân Phú, TPHCM</span>
           </div>
-          <div className="flex my-2 mb-1">
+          <div className="flex my-1 mb-1">
             <b className="w-2">Hotline: </b>
             <span className="w-3">0937640052</span>
             <b className="w-3">Mã số thuế: </b>
             <span className="w-3">0315337688</span>
           </div>
-          <div className="flex my-2 mb-1">
+          <div className="flex my-1 mb-1">
             <b className="w-2">Số tài khoản: </b>
             <span className="w-3">0171003472793</span>
             <b className="w-3">Chi nhánh ngân hàng: </b>
@@ -97,9 +101,9 @@ const RepairFormPdf = forwardRef((props, ref) => {
           </div>
         </div>
         <div className="text-center">
-          <h1 className="mb-2">
+          <h3 className="mb-2">
             {data.StatusId === 1 ? "PHIẾU BÁO GIÁ" : "QUYẾT TOÁN SỬA CHỮA"}
-          </h1>
+          </h3>
           <span>Ngày {data.CreatedDate}</span>
         </div>
         <div className="text-right mt-2 p-1 flex justify-content-end">
@@ -110,78 +114,82 @@ const RepairFormPdf = forwardRef((props, ref) => {
           <div className="surface-400 mt-0 p-1">
             <h4 className="my-0">Thông tin khách hàng</h4>
           </div>
-          <div className="px-3">
-            <div className="flex my-2">
-              <span className="w-2">Khách hàng</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.FullName}</span>
+          <div className="px-3 grid">
+            <div className="col-6">
+              <div className="flex my-1">
+                <span className="w-3">Khách hàng</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.FullName}</span>
+              </div>
+              <div className="flex my-1">
+                <span className="w-3">Người đại diện</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.Representative}</span>
+              </div>
+              <div className="flex my-1">
+                <span className="w-3">Mã số thuế</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.TaxCode}</span>
+              </div>
             </div>
-            <div className="flex my-2">
-              <span className="w-2">Người đại diện</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.Representative}</span>
-            </div>
-            <div className="flex my-2">
-              <span className="w-2">Mã số thuế</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.TaxCode}</span>
-            </div>
-            <div className="flex my-2">
-              <span className="w-2">Địa chỉ</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.Address}</span>
-            </div>
-            <div className="flex my-2">
-              <span className="w-2">Điện thoại liên lạc</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.PhoneNumber}</span>
-            </div>
-            <div className="flex my-2">
-              <span className="w-2">Email</span>
-              <span className="mx-2">:</span>
-              <span>{data.Car.Customer.Email}</span>
+            <div className="col-6">
+              <div className="flex my-1">
+                <span className="w-4">Địa chỉ</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.Address}</span>
+              </div>
+              <div className="flex my-1">
+                <span className="w-4">Điện thoại liên lạc</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.PhoneNumber}</span>
+              </div>
+              <div className="flex my-1">
+                <span className="w-4">Email</span>
+                <span className="mx-2">:</span>
+                <span>{data.Car.Customer.Email}</span>
+              </div>
             </div>
           </div>
         </section>
-        <section className="my-2">
+        <section className="my-1">
           <div className="surface-400 mt-0 p-1">
             <h4 className="my-0">Thông tin xe</h4>
           </div>
           <div className="grid px-3">
             <div className="col-6">
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-3">Biển số</span>
                 <span className="mx-2">:</span>
                 <span>{data.Car.LicensePlate}</span>
               </div>
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-3">Số VIN</span>
                 <span className="mx-2">:</span>
                 <span>{data.Car.VIN}</span>
               </div>
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-3">Số ODO vào</span>
                 <span className="mx-2">:</span>
                 <span>{data.ODOCurrent}</span>
               </div>
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-3">Ngày vào</span>
                 <span className="mx-2">:</span>
                 <span>{data.DateIn}</span>
               </div>
             </div>
             <div className="col-6">
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-4">Loại xe</span>
                 <span className="mx-2">:</span>
                 <span>{data.Car.TypeName}</span>
               </div>
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-4">Kỳ bảo dưỡng kế</span>
                 <span className="mx-2">:</span>
                 <span>{data.ODONext}</span>
               </div>
-              <div className="flex my-2">
+              <div className="flex my-1">
                 <span className="w-4">Ngày giao xe</span>
                 <span className="mx-2">:</span>
                 <span>{data.DateOutEstimated}</span>
@@ -189,7 +197,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
             </div>
           </div>
         </section>
-        <section className="my-2">
+        <section className="my-1">
           <div className="surface-400 mt-0 p-1">
             <h4 className="my-0">Yêu cầu của khách hàng / Ghi chú</h4>
           </div>
@@ -197,23 +205,37 @@ const RepairFormPdf = forwardRef((props, ref) => {
           {/* <InputTextarea value={data.CustomerNote} className="border w-full px-3" rows={3} cols={30}/> */}
         </section>
 
-        <section className="my-2">
-          <DataTable headerclassname={classes.spare_part_pdf_table} value={orderDetails} footerColumnGroup={footerGroup}>
+        <section className="my-1">
+          <DataTable
+            headerclassname={classes.spare_part_pdf_table}
+            value={orderDetails}
+            footerColumnGroup={footerGroup}
+            size="small"
+          >
             <Column
               field="ProductName"
               header="Nội dung công việc / Tên phụ tùng"
+              className={classes.pdf_font_size}
             ></Column>
-            <Column field="UnitName" header="Đơn vị tính"></Column>
-            <Column field="Quantity" className="text-right" header="Số lượng"></Column>
+            <Column
+              field="UnitName"
+              header="Đơn vị tính"
+              className={classes.pdf_font_size}
+            ></Column>
+            <Column
+              field="Quantity"
+              header="Số lượng"
+              className={classNames(classes.pdf_font_size, "text-right")}
+            ></Column>
             <Column
               field="UnitPrice"
-              className="text-right"
+              className={classNames(classes.pdf_font_size, "text-right")}
               body={(rowData) => priceBodyTemplate(rowData, "UnitPrice")}
               header="Đơn giá"
             ></Column>
             <Column
               field="Total"
-              className="text-right"
+              className={classNames(classes.pdf_font_size, "text-right")}
               body={(rowData) => priceBodyTemplate(rowData, "Total")}
               header="Thành tiền"
             ></Column>
@@ -238,7 +260,7 @@ const RepairFormPdf = forwardRef((props, ref) => {
             </div>
           </div>
         </section>
-        <section className="pt-8">
+        <section className="pt-4">
           <p>
             Phụ tùng thay thế được bảo hành 6 tháng hoặc 10.000 km tùy điều kiện
             nào đến trước.
