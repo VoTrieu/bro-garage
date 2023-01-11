@@ -29,11 +29,11 @@ export const getDateWithFormat = (date) => {
 export const getExpiredDate = (expiredDate) => {
   const date = new Date();
   date.setDate(date.getDate() + expiredDate);
-  return getDateWithFormat(date);
+  return date;
 };
 
 export const getTimestampInSeconds = () => {
-  return Math.floor(Date.now() / 1000)
+  return Math.floor(Date.now() / 1000);
 }
 
 export const convertDDMMYYY_To_MMDDYYYY = (stringDate) => {

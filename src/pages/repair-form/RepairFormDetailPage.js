@@ -53,6 +53,7 @@ const defaultValues = {
 };
 
 const RepairFormDetailPage = () => {
+
   const navigate = useNavigate();
   const {
     control,
@@ -175,9 +176,10 @@ const RepairFormDetailPage = () => {
   ];
 
   const onSubmit = (formValue) => {
-    const { LicensePlate, DateOutEstimated, DateOutActual, ...data } =
+    const { LicensePlate, DateOutEstimated, DateOutActual,ExpiredInDate, ...data } =
       formValue;
     data.DateOutEstimated = getDateWithFormat(DateOutEstimated);
+    data.ExpiredInDate = getDateWithFormat(ExpiredInDate);
     if (DateOutActual) {
       data.DateOutActual = getDateWithFormat(DateOutActual);
     }
@@ -189,8 +191,10 @@ const RepairFormDetailPage = () => {
     }
     createRepairForm(data)
       .then((res) => {
-        const orderId = res.data.Result;
-        navigate(`/app/repair-detail/${orderId}`);
+        if(res.data.IsSuccess){
+          const orderId = res.data.Result;
+          navigate(`/app/repair-detail/${orderId}`);
+        }
       })
       .finally(() => {
         setIsProcessing({ ...isProcessing, saving: false });
@@ -339,7 +343,6 @@ const RepairFormDetailPage = () => {
                       id={field.name}
                       {...field}
                       mode="decimal"
-                      disabled
                       className={classNames("w-full", {
                         "p-invalid": fieldState.error,
                       })}
@@ -377,18 +380,23 @@ const RepairFormDetailPage = () => {
                 <label htmlFor="ExpiredInDate">Thời hạn báo giá</label>
                 <Controller
                   name="ExpiredInDate"
+                  rules={{
+                    required: "Thời hạn báo giá không được để trống!",
+                  }}
                   control={control}
                   render={({ field, fieldState }) => (
-                    <InputText
+                    <Calendar
                       id={field.name}
                       {...field}
-                      disabled
+                      showIcon
+                      dateFormat="dd/mm/yy"
                       className={classNames("w-full", {
                         "p-invalid": fieldState.error,
                       })}
                     />
                   )}
                 />
+                {getFormErrorMessage("ExpiredInDate")}
               </div>
 
               <div className="field col-12 md:col-4">

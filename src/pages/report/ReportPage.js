@@ -163,7 +163,7 @@ const ReportPage = () => {
   };
   return (
     <Fragment>
-      <Fieldset className="mb-4" legend="Thông tin tìm kiếm" toggleable>
+      <Fieldset className="mb-4" legend="Thông tin tìm kiếm" collapsed={true} toggleable>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="formgrid grid">
             <div className="field col-12 md:col-4">

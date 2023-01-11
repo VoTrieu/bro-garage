@@ -103,7 +103,7 @@ const SparePartPage = () => {
     },
   ];
 
-  const units = ["Hộp", "Cái", "Lít", "Kg", "Gói", "Bịch"];
+  const units = ["Hộp", "Cái", "Lít", "Kg", "Chai", "Bộ", "Can"];
 
   const onDeletedSparePart = (selectedSparePart) => {
     deleteSparePart(selectedSparePart.ProductId).then(() => {

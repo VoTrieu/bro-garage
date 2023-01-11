@@ -95,7 +95,7 @@ const MaintainanceCycleDetailPage = () => {
   ];
 
   const onHandleSparePartsChange = (templateDetails) => {
-    setValue("TemplateDetails", templateDetails);
+    setValue("TemplateDetails", templateDetails, { shouldDirty: true });
   };
 
   const onSubmit = (formData, e) => {
