@@ -14,6 +14,17 @@ import {
   updateCustomer,
 } from "../../services/customer-service";
 
+const customerTypes = [
+  {
+    label: "Cá nhân",
+    value: 1,
+  },
+  {
+    label: "Doanh nghiệp",
+    value: 2,
+  },
+];
+
 const defaultValues = {
   CustomerId: "",
   Email: "",
@@ -60,17 +71,6 @@ const CustomerDetailPage = () => {
       action: () => {
         formRef.current.requestSubmit();
       },
-    },
-  ];
-
-  const customerTypes = [
-    {
-      label: "Cá nhân",
-      value: 1,
-    },
-    {
-      label: "Doanh nghiệp",
-      value: 2,
     },
   ];
 

@@ -1,12 +1,12 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import { Button } from "primereact/button";
+import { useForm, Controller } from "react-hook-form";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
-import { trim, includes } from "lodash";
 import {
   getSparePart,
   deleteSparePart,
@@ -26,15 +26,21 @@ const emptySparePart = {
   Remark: "",
 };
 
+const units = ["Hộp", "Cái", "Lít", "Kg", "Chai", "Bộ", "Can"];
+
 const SparePartPage = () => {
+  const formRef = useRef();
   const [spareParts, setSpareParts] = useState(null);
   const [showSparePartDetailDialog, setShowSparePartDetailDialog] =
     useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isFormDirty, setIsFormDirty] = useState(false);
   const [isShowCancelDialog, setIsShowCancelDialog] = useState(false);
   const [paginatorOptions, setPaginatorOptions] = useState();
-  const [selectedSparePart, setSelectSparePart] = useState(emptySparePart);
+  const {
+    control,
+    formState: { errors, isDirty },
+    handleSubmit,
+    reset,
+  } = useForm({ emptySparePart });
 
   const getData = (pageSize, pageIndex, keyword) => {
     getSparePart(pageSize, pageIndex, keyword).then((response) => {
@@ -78,7 +84,7 @@ const SparePartPage = () => {
       body: (rowData) => {
         return (
           <div className="text-right">
-            {new Intl.NumberFormat('vi-VN').format(rowData.UnitPrice)}
+            {new Intl.NumberFormat("vi-VN").format(rowData.UnitPrice)}
           </div>
         );
       },
@@ -92,7 +98,7 @@ const SparePartPage = () => {
       body: (rowData) => {
         return (
           <div className="text-right">
-            {new Intl.NumberFormat('vi-VN').format(rowData.Quantity)}
+            {new Intl.NumberFormat("vi-VN").format(rowData.Quantity)}
           </div>
         );
       },
@@ -103,59 +109,37 @@ const SparePartPage = () => {
     },
   ];
 
-  const units = ["Hộp", "Cái", "Lít", "Kg", "Chai", "Bộ", "Can"];
-
   const onDeletedSparePart = (selectedSparePart) => {
     deleteSparePart(selectedSparePart.ProductId).then(() => {
-      const updatedSparePartList = spareParts.filter(
-        (sparePart) => sparePart.ProductId !== selectedSparePart.ProductId
-      );
-      setSpareParts(updatedSparePartList);
+      refreshData();
     });
   };
 
   const onUpdateSparePart = (rowData) => {
-    setSelectSparePart(rowData);
-    setSubmitted(false);
+    reset(rowData);
     setShowSparePartDetailDialog(true);
   };
 
   const onCreateNewSparePart = () => {
-    setSelectSparePart(emptySparePart);
-    setSubmitted(false);
+    reset(emptySparePart);
     setShowSparePartDetailDialog(true);
   };
 
-  const saveSparePart = () => {
-    setSubmitted(true);
-    const optionalFields = ["AvatarUrl", "Remark", "Quantity"];
-    for (const key in selectedSparePart) {
-      const value = trim(selectedSparePart[key]);
-      if ((value === "" || value === "0") && !includes(optionalFields, key)) {
-        return;
-      }
-    }
-    setIsFormDirty(false);
-    //update existed spare part
-    if (selectedSparePart.ProductId) {
-      updateSparePart(selectedSparePart).then((response) => {
+  const onSubmit = (formData) => {
+    if (formData.ProductId) {
+      updateSparePart(formData).then((response) => {
         const {
           data: { IsSuccess },
         } = response;
         if (IsSuccess) {
-          const index = spareParts.findIndex(
-            (sparePart) => sparePart.ProductId === selectedSparePart.ProductId
-          );
-          const _spareParts = [...spareParts];
-          _spareParts[index] = selectedSparePart;
-          setSpareParts(_spareParts);
+          refreshData();
           setShowSparePartDetailDialog(false);
         }
       });
       return;
     }
 
-    createNewSparePart(selectedSparePart).then((response) => {
+    createNewSparePart(formData).then((response) => {
       const {
         data: { IsSuccess },
       } = response;
@@ -166,16 +150,14 @@ const SparePartPage = () => {
     });
   };
 
-  const onInputChange = (e, field, defaultValue) => {
-    setIsFormDirty(true);
-    const val = (e.target && e.target.value) || defaultValue;
-    let _selectedSparePart = { ...selectedSparePart };
-    _selectedSparePart[`${field}`] = val;
-    setSelectSparePart(_selectedSparePart);
+  const getFormErrorMessage = (name) => {
+    return (
+      errors[name] && <small className="p-error">{errors[name].message}</small>
+    );
   };
 
   const onSparePartCancel = () => {
-    if (isFormDirty) {
+    if (isDirty) {
       setIsShowCancelDialog(true);
       return;
     }
@@ -192,9 +174,10 @@ const SparePartPage = () => {
       />
       <Button
         label="Lưu"
+        disabled={!isDirty}
         icon="pi pi-check"
         className="p-button-text"
-        onClick={saveSparePart}
+        onClick={() => formRef.current.requestSubmit()}
       />
     </Fragment>
   );
@@ -216,7 +199,6 @@ const SparePartPage = () => {
         onClick={() => {
           setIsShowCancelDialog(false);
           setShowSparePartDetailDialog(false);
-          setIsFormDirty(false);
         }}
       />
     </Fragment>
@@ -248,98 +230,135 @@ const SparePartPage = () => {
         footer={sparePartDialogFooter}
         onHide={onSparePartCancel}
       >
-        <div className="field">
-          <label htmlFor="txtProductCode">
-            Mã phụ tùng <b className="p-error">*</b>
-          </label>
-          <InputText
-            id="txtProductCode"
-            value={selectedSparePart.ProductCode}
-            onChange={(e) => onInputChange(e, "ProductCode", "")}
-            required
-            className={classNames({
-              "p-invalid": submitted && !selectedSparePart.ProductCode,
-            })}
-          />
-          {submitted && !selectedSparePart.ProductCode && (
-            <small className="p-error">Mã phụ tùng không được để trống.</small>
-          )}
-        </div>
+        <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
+          <div className="field">
+            <label htmlFor="ProductCode">
+              Mã phụ tùng <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="ProductCode"
+              control={control}
+              rules={{ required: "Mã phụ tùng không được để trống." }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("ProductCode")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtProductName">
-            Mô tả <b className="p-error">*</b>
-          </label>
-          <InputText
-            id="txtProductName"
-            value={selectedSparePart.ProductName}
-            onChange={(e) => onInputChange(e, "ProductName", "")}
-            required
-            className={classNames({
-              "p-invalid": submitted && !selectedSparePart.ProductName,
-            })}
-          />
-          {submitted && !selectedSparePart.ProductName && (
-            <small className="p-error">Mô tả không được để trống.</small>
-          )}
-        </div>
+          <div className="field">
+            <label htmlFor="ProductName">
+              Mô tả <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="ProductName"
+              control={control}
+              rules={{ required: "Mô tả không được để trống." }}
+              render={({ field, fieldState }) => (
+                <InputText
+                  id={field.name}
+                  {...field}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("ProductName")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtUnitPrice">
-            Đơn giá <b className="p-error">*</b>
-          </label>
-          <InputNumber
-            inputId="txtUnitPrice"
-            value={selectedSparePart.UnitPrice}
-            onValueChange={(e) => onInputChange(e, "UnitPrice", 0)}
-            min={0}
-            locale="vi-VN"
-            className={classNames({
-              "p-invalid": submitted && !selectedSparePart.UnitPrice,
-            })}
-          />
-        </div>
+          <div className="field">
+            <label htmlFor="UnitPrice">
+              Đơn giá <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="UnitPrice"
+              control={control}
+              rules={{
+                required: "Đơn giá không được để trống."
+              }}
+              render={({ field, fieldState }) => (
+                <InputNumber
+                  id={field.name}
+                  ref={field._f?.ref}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  onValueChange={(e) => {
+                    field.onChange(e);
+                  }}
+                  min={0}
+                  mode="currency"
+                  currency="VND"
+                  currencyDisplay="code"
+                  locale="vi-VN"
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {getFormErrorMessage("UnitPrice")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtUnitName">
-            Đơn vị tính <b className="p-error">*</b>
-          </label>
-          <Dropdown
-            id="txtUnitName"
-            value={selectedSparePart.UnitName}
-            onChange={(e) => onInputChange(e, "UnitName")}
-            options={units}
-            autoFocus
-            className={classNames({
-              "p-invalid": submitted && !selectedSparePart.UnitName,
-            })}
-            placeholder="Chọn đơn vị tính"
-          />
-          {submitted && !selectedSparePart.UnitName && (
-            <small className="p-error">Đơn vị tính không được để trống.</small>
-          )}
-        </div>
+          <div className="field">
+            <label htmlFor="UnitName">
+              Đơn vị tính <b className="p-error">*</b>
+            </label>
+            <Controller
+              name="UnitName"
+              control={control}
+              rules={{ required: "Đơn vị tính không được để trống!" }}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={units}
+                  className={classNames({
+                    "p-invalid": fieldState.error,
+                  })}
+                  placeholder="Chọn đơn vị tính"
+                />
+              )}
+            />
+            {getFormErrorMessage("UnitName")}
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtQuantity">Số lượng tồn kho</label>
-          <InputNumber
-            inputId="txtQuantity"
-            value={selectedSparePart.Quantity}
-            min={0}
-            onValueChange={(e) => onInputChange(e, "Quantity", 0)}
-          />
-        </div>
+          <div className="field">
+            <label htmlFor="Quantity">Số lượng tồn kho</label>
+            <Controller
+              name="Quantity"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  id={field.name}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  onValueChange={(e) => field.onChange(e)}
+                  min={0}
+                  locale="vi-VN"
+                />
+              )}
+            />
+          </div>
 
-        <div className="field">
-          <label htmlFor="txtRemark">Ghi chú</label>
-          <InputTextarea
-            rows={5}
-            cols={30}
-            id="txtRemark"
-            value={selectedSparePart.Remark}
-            onChange={(e) => onInputChange(e, "Remark", "")}
-          />
-        </div>
+          <div className="field">
+            <label htmlFor="Remark">Ghi chú</label>
+            <Controller
+              name="Remark"
+              control={control}
+              render={({ field }) => (
+                <InputTextarea rows={5} cols={30} id={field.name} {...field} />
+              )}
+            />
+          </div>
+        </form>
       </Dialog>
 
       <Dialog
