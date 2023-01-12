@@ -189,7 +189,7 @@ const AppDataTable = (props) => {
         const first = currentPage ? options.rows * (page - 1) : 0;
         setFirst(first);
         setPageInputTooltip("Nhấn phím 'Enter' để đi tới trang này.");
-        fetchData(rows, page - 1);
+        fetchData(rows, page);
       }
     }
   };
