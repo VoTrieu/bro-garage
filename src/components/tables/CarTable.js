@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
+import { Calendar } from "primereact/calendar";
 import { classNames } from "primereact/utils";
 import { getCarTypes, getManufacturers } from "../../services/car-service";
 import { trim, forEach, isNumber } from "lodash";
@@ -72,8 +73,10 @@ const CarTable = (props) => {
   };
 
   const onEditCard = (car) => {
-    setSelectedCar(car);
-    reset(car);
+    const editCar = {...car}
+    editCar.YearOfManufacture = new Date(`1/1/${editCar.YearOfManufacture}`);
+    setSelectedCar(editCar);
+    reset(editCar);
     setIsShowCarDetailDialog(true);
   };
 
@@ -87,9 +90,10 @@ const CarTable = (props) => {
   };
 
   const onSubmit = (data) => {
+    data.YearOfManufacture = data.YearOfManufacture.getFullYear();
     const newCar = forEach(
       data,
-      (value, key) => (data[key] = !isNumber(value) ? trim(value, '. ') : value)
+      (value, key) => (data[key] = !isNumber(value) ? trim(value, ". ") : value)
     );
     const _cars = [...cars];
     const index = _cars.findIndex((car) => {
@@ -348,17 +352,32 @@ const CarTable = (props) => {
           </div>
 
           <div className="field">
-            <label htmlFor="txtYearOfManufacture">
+            <label htmlFor="YearOfManufacture">
               Năm sản xuất <b className="p-error">*</b>
             </label>
             <Controller
               name="YearOfManufacture"
               control={control}
-              rules={{ required: "Năm sản xuất không được để trống." }}
+              rules={{ 
+                required: "Năm sản xuất không được để trống.",
+                validate: {
+                  isDateValue: (value) => {
+                    const currentDate = new Date();
+                    if(value > currentDate){
+                      return "Năm sản xuất không được lớn hơn năm hiện tại";
+                    }
+                    return true;
+                  }
+                }, 
+              }}
               render={({ field, fieldState }) => (
-                <InputText
+                <Calendar
                   id={field.name}
                   {...field}
+                  ref={field._f?.ref}
+                  // maxDate={new Date()}
+                  view="year"
+                  dateFormat="yy"
                   className={classNames({
                     "p-invalid": fieldState.error,
                   })}

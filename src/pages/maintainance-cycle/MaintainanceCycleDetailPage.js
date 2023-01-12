@@ -249,13 +249,15 @@ const MaintainanceCycleDetailPage = () => {
                     ),
                 },
               }}
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <Calendar
                   id={field.name}
                   {...field}
                   view="year"
                   dateFormat="yy"
-                  className="w-full"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
                 />
               )}
             />
@@ -281,13 +283,15 @@ const MaintainanceCycleDetailPage = () => {
                     ),
                 },
               }}
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <Calendar
                   id={field.name}
                   {...field}
                   view="year"
                   dateFormat="yy"
-                  className="w-full"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
                 />
               )}
             />
