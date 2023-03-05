@@ -4,6 +4,10 @@ export const getCarTypes = () => {
   return axios.get("car-type/get-all");
 };
 
+export const getCarTypesByManufacturerId = (manufacturerId) => {
+  return axios.get(`car-type/get-by-manufacturer?manufacturerId=${manufacturerId}`);
+};
+
 export const getManufacturers = () => {
   return axios.get("manufacturer/get-all");
 };

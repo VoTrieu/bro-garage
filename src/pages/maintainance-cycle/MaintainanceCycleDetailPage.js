@@ -13,7 +13,7 @@ import {
   createMaintainanceCycle,
   updateMaintainanceCycle,
 } from "../../services/maintainance-cycle-service";
-import { getCarTypes, getManufacturers } from "../../services/car-service";
+import { getCarTypesByManufacturerId, getManufacturers } from "../../services/car-service";
 
 const defaultValues = {
   TemplateId: "",
@@ -31,6 +31,7 @@ const MaintainanceCycleDetailPage = () => {
   const [carTypes, setCarTypes] = useState();
   const [manufacturers, setManufacturers] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedManufacturerId, setSelectedManufacturerId] = useState();
 
   const formRef = useRef();
   const params = useParams();
@@ -38,10 +39,14 @@ const MaintainanceCycleDetailPage = () => {
 
   //get carTypes
   useEffect(() => {
-    getCarTypes().then((response) => {
+    if(!selectedManufacturerId){
+      return;
+    }
+    
+    getCarTypesByManufacturerId(selectedManufacturerId).then((response) => {
       setCarTypes(response.data.Result);
     });
-  }, []);
+  }, [selectedManufacturerId]);
 
   //get Manufacturers
   useEffect(() => {
@@ -169,7 +174,10 @@ const MaintainanceCycleDetailPage = () => {
                 <Dropdown
                   id={field.name}
                   value={field.value}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    setSelectedManufacturerId(e.value);
+                  }}
                   optionLabel="ManufacturerName"
                   optionValue="ManufacturerId"
                   options={manufacturers}
