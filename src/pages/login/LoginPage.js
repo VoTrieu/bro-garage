@@ -55,7 +55,7 @@ const LoginPage = () => {
       <img
         className="w-8 m-auto h-6rem"
         alt="Card"
-        src={require("../../images/garage-logo.webp")}
+        src='/images/logo.png'
       />
     </div>
   );

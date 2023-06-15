@@ -2,7 +2,7 @@
   "name": "bro-garage",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://votrieu.github.io/bro-garage/",
+  "homepage": "https://garagexuanlam.xyz/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.6",
     "@testing-library/jest-dom": "^5.16.5",

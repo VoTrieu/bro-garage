@@ -37,7 +37,7 @@ function MainNavigation() {
     <Fragment>
       <img
         alt="logo"
-        src={require("../../../images/garage-logo.webp")}
+        src='/images/logo.png'
         height="40"
         className="mr-2 md:w-13rem md:mr-8 hidden md:inline"
       ></img>
