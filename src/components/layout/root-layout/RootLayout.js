@@ -28,7 +28,7 @@ function RootLayout() {
     return () => {
       clearInterval(interval);
     };
-  }, [refreshToken, expirationTime]);
+  }, [refreshToken, expirationTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Fragment>

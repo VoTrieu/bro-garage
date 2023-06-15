@@ -39,7 +39,7 @@ const CarTable = (props) => {
 
   useEffect(() => {
     handleCarsChange(cars);
-  }, [cars]);
+  }, [cars]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setCars(existedCars);

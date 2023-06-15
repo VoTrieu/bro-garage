@@ -34,7 +34,7 @@ const AppDataTable = (props) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   //update page size
   useEffect(() => {
@@ -57,7 +57,7 @@ const AppDataTable = (props) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [searchText]);
+  }, [searchText]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchData = (pageSize, pageIndex, searchText) => {
     props.fnGetData(pageSize, pageIndex, searchText);

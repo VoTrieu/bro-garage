@@ -44,7 +44,7 @@ const SparePartTable = (props) => {
 
   useEffect(() => {
     handleSparePartsChange(spareParts);
-  }, [spareParts]);
+  }, [spareParts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setSpareParts(existedSpareParts);

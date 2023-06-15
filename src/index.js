@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import { authActions } from "./store/auth-slice";
-import { includes, endsWith } from "lodash";
+import { includes } from "lodash";
 import store from "./store/index";
 import "./index.css";
 import App from "./App";
